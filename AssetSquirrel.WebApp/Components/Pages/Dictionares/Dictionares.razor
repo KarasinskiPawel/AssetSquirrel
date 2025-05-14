@@ -1,0 +1,28 @@
+﻿@page "/dictionares"
+
+<div class="row col-12">
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(1))"> Suppilers </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(2))"> Equipment </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(3))"> Internet </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(4))"> Invoices </button>
+</div>
+
+@if(pageNumber == 1){
+    <DictionarySuppilers></DictionarySuppilers>
+} else if (pageNumber == 2) {
+    <DictionaryEquipment></DictionaryEquipment>
+} else if (pageNumber == 3) {
+    <DictionaryInternet></DictionaryInternet>
+} else if (pageNumber == 4) {
+    <DictionaryInvoices></DictionaryInvoices>
+} else {
+
+}
+
+@code {
+    int pageNumber = 0;
+
+    public void PageChange(int pageNumber){
+        this.pageNumber = pageNumber;
+    }
+}

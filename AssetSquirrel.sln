@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetSquirrel.WebApp", "AssetSquirrel.WebApp\AssetSquirrel.WebApp.csproj", "{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetSquirrel.UseCases", "AssetSquirrel.UseCases\AssetSquirrel.UseCases.csproj", "{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetSquirrel.CoreBusiness", "AssetSquirrel.CoreBusiness\AssetSquirrel.CoreBusiness.csproj", "{0CBA0DBA-E4DB-4FE5-89F0-1530EBBCADBB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssetsSquirrel.Plugins", "AssetsSquirrel.Plugins", "{58AC5C39-0150-448A-AE22-08B690959143}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetsSquirrel.Plugins.InMemory", "AssetsSquirrel.Plugins\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory.csproj", "{DDBF4362-538F-4CAC-B676-B9FA1F5CC366}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetsSquirrel.Plugins.EFCoreSqlServer", "AssetsSquirrel.Plugins\AssetsSquirrel.Plugins.EfCoreSqlServer\AssetsSquirrel.Plugins.EFCoreSqlServer\AssetsSquirrel.Plugins.EFCoreSqlServer.csproj", "{BD5706D8-5D0A-44CF-A62C-AC881646033C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CBA0DBA-E4DB-4FE5-89F0-1530EBBCADBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CBA0DBA-E4DB-4FE5-89F0-1530EBBCADBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CBA0DBA-E4DB-4FE5-89F0-1530EBBCADBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CBA0DBA-E4DB-4FE5-89F0-1530EBBCADBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDBF4362-538F-4CAC-B676-B9FA1F5CC366}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDBF4362-538F-4CAC-B676-B9FA1F5CC366}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDBF4362-538F-4CAC-B676-B9FA1F5CC366}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDBF4362-538F-4CAC-B676-B9FA1F5CC366}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD5706D8-5D0A-44CF-A62C-AC881646033C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD5706D8-5D0A-44CF-A62C-AC881646033C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD5706D8-5D0A-44CF-A62C-AC881646033C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD5706D8-5D0A-44CF-A62C-AC881646033C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DDBF4362-538F-4CAC-B676-B9FA1F5CC366} = {58AC5C39-0150-448A-AE22-08B690959143}
+		{BD5706D8-5D0A-44CF-A62C-AC881646033C} = {58AC5C39-0150-448A-AE22-08B690959143}
+	EndGlobalSection
+EndGlobal
