@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\AssetSquirrel.CoreBusiness\AssetSquirrel.CoreBusiness.csproj" />
+    <ProjectReference Include="..\..\..\AssetSquirrel.UseCases\AssetSquirrel.UseCases.csproj" />
   </ItemGroup>
 
 </Project>

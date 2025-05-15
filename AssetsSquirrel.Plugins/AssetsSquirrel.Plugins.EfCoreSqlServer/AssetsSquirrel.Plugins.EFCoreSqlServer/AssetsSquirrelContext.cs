@@ -12,17 +12,60 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
     {
         public AssetsSquirrelContext(DbContextOptions options) : base(options)
         {
-                
+
         }
-        public DbSet<DictionaryEquipment>? DictionaryEquipments { get; set; }
+        public DbSet<Location>? Locations { get; set; }
+        public DbSet<Suppiler>? Suppilers { get; set; }
+        public DbSet<Manufacturer>? Manufacturers { get; set; }
+        public DbSet<HardwareType>? HardwareTypes { get; set; }
+        public DbSet<Equipment>? Equipments { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DictionaryEquipment>().HasData(
-                new DictionaryEquipment { DictionaryEquipmentId = 1, Name = "AccessPoint", Description = "", IsActive=true },
-                new DictionaryEquipment { DictionaryEquipmentId = 2, Name = "Drukarka etykiet", Description = "", IsActive = true },
-                new DictionaryEquipment { DictionaryEquipmentId = 3, Name = "Drukarka fiskalna", Description = "", IsActive = true },
-                new DictionaryEquipment { DictionaryEquipmentId = 4, Name = "Dysk zewnętrzny", Description = "", IsActive = true }
+            modelBuilder.Entity<Location>().HasData(
+                new Location { LocationId = 1, Code = "M100", MPK = "PL1M100Z", City = "Stryków", Street = "Magazyn Centralny", Email = "", PhoneNumber = "", IsActive = true },
+                new Location { LocationId = 2, Code = "S000", MPK = "PL1C001Z", City = "Łódź", Street = "Biuro - Srebrzyńska 14", Email = "", PhoneNumber = "", IsActive = true },
+                new Location { LocationId = 3, Code = "N001", MPK = "PL1N001Z", City = "Łódź", Street = "Magazyn IT - Srebrzyńska 14", Email = "", PhoneNumber = "", IsActive = true }
                 );
+
+            modelBuilder.Entity<Suppiler>().HasData(
+                new Suppiler { SuppilerId = 1, Name = "X-KOM", Description = "", IsActive = true },
+                new Suppiler { SuppilerId = 2, Name = "MPC", Description = "", IsActive = true },
+                new Suppiler { SuppilerId = 3, Name = "Lantre", Description = "", IsActive = true }
+                );
+
+            modelBuilder.Entity<Manufacturer>().HasData(
+                new Manufacturer { ManufacturerId = 1, Name = "Asus", Description = "", IsActive = true },
+                new Manufacturer { ManufacturerId = 2, Name = "Acer", Description = "", IsActive = true },
+                new Manufacturer { ManufacturerId = 3, Name = "HP", Description = "", IsActive = true },
+                new Manufacturer { ManufacturerId = 4, Name = "Lenovo", Description = "", IsActive = true },
+                new Manufacturer { ManufacturerId = 5, Name = "Cisco", Description = "", IsActive = true }
+                );
+
+            modelBuilder.Entity<HardwareType>().HasData(
+                new HardwareType { HardwareTypeId = 1, Name = "Komputer", Description = "", IsActive = true },
+                new HardwareType { HardwareTypeId = 2, Name = "Laptop", Description = "", IsActive = true },
+                new HardwareType { HardwareTypeId = 3, Name = "Monitor", Description = "", IsActive = true },
+                new HardwareType { HardwareTypeId = 4, Name = "Mysz", Description = "", IsActive = true },
+                new HardwareType { HardwareTypeId = 5, Name = "Mysz optyczna", Description = "", IsActive = true },
+                new HardwareType { HardwareTypeId = 6, Name = "Klawiatura", Description = "", IsActive = true },
+                new HardwareType { HardwareTypeId = 7, Name = "Drukarka", Description = "", IsActive = true },
+                new HardwareType { HardwareTypeId = 8, Name = "Drukarka fiskalna", Description = "", IsActive = true }
+                );
+
+            modelBuilder.Entity<Equipment>()
+                .HasOne(a => a.Suppiler)
+                .WithMany(b => b.Equipments)
+                .HasForeignKey(a => a.SuppilerId);
+
+            modelBuilder.Entity<Equipment>()
+                .HasOne(a => a.Manufacturer)
+                .WithMany(b => b.Equipments)
+                .HasForeignKey(a => a.ManufacturerId);
+
+            modelBuilder.Entity<Equipment>()
+                .HasOne(a => a.HardwareType)
+                .WithMany(b => b.Equipments)
+                .HasForeignKey(a => a.HardwareTypeId);
         }
     }
 }
