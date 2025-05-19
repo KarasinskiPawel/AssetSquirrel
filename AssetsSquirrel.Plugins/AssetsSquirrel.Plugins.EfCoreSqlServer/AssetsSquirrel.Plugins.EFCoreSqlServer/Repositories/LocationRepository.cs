@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
 {
-    internal class LocationRepository : ILocationRepository
+    public class LocationRepository : ILocationRepository
     {
         private readonly IDbContextFactory<AssetsSquirrelContext> dbContextFactory;
 

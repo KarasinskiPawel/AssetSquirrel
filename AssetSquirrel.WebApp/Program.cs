@@ -1,6 +1,11 @@
+using AssetSquirrel.UseCases.Extensions;
+using AssetSquirrel.UseCases.Locations.Interfaces;
+using AssetSquirrel.UseCases.Locations;
 using AssetSquirrel.WebApp.Components;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.EntityFrameworkCore;
+using AssetSquirrel.UseCases.PluginInterfaces;
+using AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +18,18 @@ builder.Services.AddDbContextFactory<AssetsSquirrelContext>(options =>
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddServerSideBlazor()
+    .AddCircuitOptions(options =>
+    {
+        var detailedErrors = builder.Configuration
+            .GetSection("CircuitOptions")
+            .GetValue<bool>("DetailedErrors");
+
+        options.DetailedErrors = detailedErrors;
+    });
+
+LocationUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 

@@ -1,0 +1,25 @@
+﻿#dialog .dialog-container {
+    position: absolute;
+    top: 10%;
+    left: 30%;
+    width: 40%;
+    z-index: 10;
+    border: 3px double black;
+}
+
+    #dialog .dialog-container .dialog-header {
+        text-align: center;
+        font-size: 22px;
+        padding: 0.2rem 0 0.2rem 0;
+        background-color: darkblue;
+        color: white;
+        border-bottom: 1px black solid;
+    }
+
+    #dialog .dialog-container .dialog-body {
+        background-color: red;
+    }
+
+#dialog .dialog-footer {
+    background-color: blue;
+}

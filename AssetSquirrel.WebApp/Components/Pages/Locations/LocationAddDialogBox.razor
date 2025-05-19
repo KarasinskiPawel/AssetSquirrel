@@ -1,0 +1,27 @@
+﻿@using AssetSquirrel.CoreBusiness
+
+<div class="dialog-body">
+    <EditForm FormName="AddNewUser"
+              EditContext="EditContext"
+              OnValidSubmit="CNewLocation"
+              Model="Location">
+    </EditForm>
+</div>
+<div class="dialog-footer">
+    <button @onclick="OnCancel"> Zamknij </button>
+
+    <button type="submit"> Zapisz </button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnSave { get; set; }
+
+    LocationDto Location = new LocationDto();
+
+    private EditContext? EditContext;
+
+    private void CNewLocation(){
+
+    }
+}

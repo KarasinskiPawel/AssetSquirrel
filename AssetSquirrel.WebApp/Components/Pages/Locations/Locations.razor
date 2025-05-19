@@ -1,7 +1,40 @@
 ﻿@page "/locations"
+@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.UseCases.PluginInterfaces
+@using AssetSquirrel.WebApp.Mapper
 
-<h3>Locations</h3>
+@inject ILocationRepository LocationRepository
+
+<div class="row col-12">
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())"> Add location </button>
+</div>
+
+<DialogBox
+    Show="modal"
+    Title="Add location">
+    <LocationAddDialogBox 
+        OnCancel="HideModalAddLocation"
+        OnSave="HideModalAddLocation" />
+</DialogBox>
 
 @code {
+    bool modal = false;
 
+    IEnumerable<LocationDto> locations { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        locations = new GenericMapper<LocationDto, Location>().Map(
+            await LocationRepository.GetLocationsAsync(a => a.IsActive == true)
+        );
+    }
+
+    public void ShowModalAddLocation(){
+        modal = true;
+    }
+
+    public void HideModalAddLocation()
+    {
+        modal = false;
+    }
 }
