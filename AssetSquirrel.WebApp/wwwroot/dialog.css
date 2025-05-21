@@ -5,21 +5,26 @@
     width: 40%;
     z-index: 10;
     border: 3px double black;
+    background-color: whitesmoke;
 }
 
-    #dialog .dialog-container .dialog-header {
-        text-align: center;
-        font-size: 22px;
-        padding: 0.2rem 0 0.2rem 0;
-        background-color: darkblue;
-        color: white;
-        border-bottom: 1px black solid;
-    }
+#dialog .dialog-header {
+    text-align: center;
+    font-size: 22px;
+    padding: 0.2rem 0 0.2rem 0;
+    background-color: darkblue;
+    color: white;
+    border-bottom: 1px black solid;
+}
 
-    #dialog .dialog-container .dialog-body {
-        background-color: red;
-    }
+#dialog .dialog-body {
+    min-height: 4rem;
+}
 
 #dialog .dialog-footer {
+    display: flex;
+    margin: auto;
+    justify-content: space-around;
+    padding: 0.3rem 0 0.2rem 0;
     background-color: blue;
 }

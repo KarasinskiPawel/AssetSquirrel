@@ -12,7 +12,9 @@ namespace AssetSquirrel.CoreBusiness
         public int LocationId { get; set; }
         public string? Code { get; set; }
         public string? MPK { get; set; }
+        [Required]
         public string? City { get; set; }
+        [Required]
         public string? Street { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }

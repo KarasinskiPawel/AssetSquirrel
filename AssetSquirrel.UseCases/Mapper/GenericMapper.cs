@@ -2,7 +2,7 @@
 
 namespace AssetSquirrel.WebApp.Mapper
 {
-    public class GenericMapper<T, U>
+    public class GenericMapper<T, U> : IGenericMapper<T, U>
     {
         private IMapper mapper;
 

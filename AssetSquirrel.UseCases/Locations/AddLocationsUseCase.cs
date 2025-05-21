@@ -4,23 +4,23 @@ using AssetSquirrel.UseCases.PluginInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AssetSquirrel.UseCases.Locations
 {
-    public class ViewLocations : IViewLocations
+    public class AddLocationsUseCase : IAddLocationsUseCase
     {
         private readonly ILocationRepository locationRepository;
 
-        public ViewLocations(ILocationRepository locationRepository)
+        public AddLocationsUseCase(ILocationRepository locationRepository)
         {
             this.locationRepository = locationRepository;
         }
-        public async Task<IEnumerable<Location>> ExecuteAsync(Expression<Func<Location, bool>> where)
+
+        public async Task AddLocationAsync(Location location)
         {
-            return await locationRepository.GetLocationsAsync(where);
+            await locationRepository.AddLocationAsync(location);
         }
     }
 }

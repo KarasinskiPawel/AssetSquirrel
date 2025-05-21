@@ -1,40 +1,143 @@
 ﻿@page "/locations"
 @using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.UseCases.Locations.Interfaces
 @using AssetSquirrel.UseCases.PluginInterfaces
 @using AssetSquirrel.WebApp.Mapper
+@using System.Diagnostics
 
-@inject ILocationRepository LocationRepository
+@inject IViewLocationsUseCase ViewLocationsUseCase
+
+@rendermode InteractiveServer
 
 <div class="row col-12">
-    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())"> Add location </button>
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())"> Add location </button>
+
+        <InputText class="w-25" @bind-Value="searchFilter" placeholder="Code or MPK or City or Street"></InputText>
+
+        <button class="btn btn-sm btn-outline-danger" @onclick="(() => SearchLocations())" title="Dezaktywuj lokalizację.">
+            <i class="bi bi-search"></i>
+        </button>
+    </div>
 </div>
 
-<DialogBox
-    Show="modal"
-    Title="Add location">
-    <LocationAddDialogBox 
-        OnCancel="HideModalAddLocation"
-        OnSave="HideModalAddLocation" />
+<div class="row offset-1 col-10 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Code </th>
+                    <th scope="col"> MPK </th>
+                    <th scope="col"> City </th>
+                    <th scope="col"> Street </th>
+                    <th scope="col"> Email </th>
+                    <th scope="col"> Phone number </th>
+                    <th scope="col"> Is active? </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (locations is not null && locations.Count() > 0)
+                {
+                    @for (int i = 0; i < locations.Count(); i++)
+                    {
+                        <tr>
+                            <td> @(i + 1) </td>
+                            <td> @locations[i].Code </td>
+                            <td> @locations[i].MPK </td>
+                            <td> @locations[i].City </td>
+                            <td> @locations[i].Street </td>
+                            <td> @locations[i].Email </td>
+                            <td> @locations[i].PhoneNumber </td>
+                            @if (locations[i].IsActive)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeLocationIsActive(locations[i]))" title="Dezaktywuj lokalizację.">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationIsActive(locations[i]))" title="Aktywuj lokalizację.">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditLocation(locations[i]))" title="Edytuj dane lokalizacji.">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteLocation(locations[i]))" title="Usuń lokalizację.">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<DialogBox Show="modalAddLocation"
+Title="Add location">
+    <LocationAddDialogBox
+    OnCancel="HideModalAddLocation"
+    OnSave="HideModalAddLocation" />
 </DialogBox>
 
 @code {
-    bool modal = false;
+    bool modalAddLocation = false;
+    bool modalEditLocation = false;
 
-    IEnumerable<LocationDto> locations { get; set; }
+    string searchFilter = string.Empty;
+
+    List<LocationDto> locations { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        locations = new GenericMapper<LocationDto, Location>().Map(
-            await LocationRepository.GetLocationsAsync(a => a.IsActive == true)
-        );
+        locations = await ViewLocationsUseCase.GetLocationsAsync(a => true);
+    }
+
+    public async Task SearchLocations()
+    {
+        locations = await ViewLocationsUseCase.GetLocationsAsync(
+                a => a.Code.ToLower().Contains(searchFilter) ||
+                a.MPK.ToLower().Contains(searchFilter) ||
+                a.City.ToLower().Contains(searchFilter) ||
+                a.Street.ToLower().Contains(searchFilter)
+            );
+    }
+
+    public async Task ChangeLocationIsActive(LocationDto location){
+        location.IsActive = !location.IsActive;
+
+        await ViewLocationsUseCase.UpdateLocationAsync(location);
+    }
+
+    public void ShowModalEditLocation(LocationDto location){
+        modalEditLocation = true;
+    }
+
+    public void HideModalEditLocation(){
+        modalEditLocation = false;
+    }
+
+    public void DeleteLocation(LocationDto location){
+
     }
 
     public void ShowModalAddLocation(){
-        modal = true;
+        modalAddLocation = true;
     }
 
     public void HideModalAddLocation()
     {
-        modal = false;
+        modalAddLocation = false;
     }
 }

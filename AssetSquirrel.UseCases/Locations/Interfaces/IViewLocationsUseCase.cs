@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace AssetSquirrel.UseCases.Locations.Interfaces
 {
-    public interface IViewLocations
+    public interface IViewLocationsUseCase
     {
-        Task<IEnumerable<Location>> ExecuteAsync(Expression<Func<Location, bool>> where);
+        Task<List<LocationDto>> GetLocationsAsync(Expression<Func<Location, bool>> where);
+        Task UpdateLocationAsync(LocationDto location);
     }
 }

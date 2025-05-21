@@ -19,6 +19,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
         public DbSet<Manufacturer>? Manufacturers { get; set; }
         public DbSet<HardwareType>? HardwareTypes { get; set; }
         public DbSet<Equipment>? Equipments { get; set; }
+        public DbSet<Error>? Errors{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Location>().HasData(

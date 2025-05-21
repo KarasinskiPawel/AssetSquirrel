@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -18,45 +19,72 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
         {
             this.dbContextFactory = dbContextFactory;
         }
-        public async Task AddLocationAsync(Location location)
-        {
-            if(location is not null)
-            {
-                var dbContext = dbContextFactory.CreateDbContext();
-
-                dbContext.Locations.Add(location);
-                await dbContext.SaveChangesAsync();
-            }
-        }
-
-        public async Task DeleteLocationAsync(Location location)
-        {
-            if(location is not null)
-            {
-                var dbContext = dbContextFactory?.CreateDbContext();
-
-                dbContext.Locations.Remove(location);
-                await dbContext.SaveChangesAsync();
-            }
-        }
 
         public async Task<IEnumerable<Location>> GetLocationsAsync(Expression<Func<Location, bool>> where)
         {
             var dbContext = dbContextFactory.CreateDbContext();
 
-            var output = await dbContext.Locations.Where(where).ToListAsync() ?? Enumerable.Empty<Location>();
+            var output = await dbContext.Locations.Where(where).ToListAsync() ?? Enumerable.Empty<Location>().ToList();
 
             return output;
         }
-
-        public async Task UpdateLocationAsync(Location location)
+        public async Task<bool> AddLocationAsync(Location location)
         {
-            if(location is not null)
+            try
             {
-                var dbContext = dbContextFactory.CreateDbContext();
+                if (location is not null)
+                {
+                    var dbContext = dbContextFactory.CreateDbContext();
 
-                dbContext.Locations.Add(location);
-                await dbContext.SaveChangesAsync();
+                    dbContext.Locations.Add(location);
+                    await dbContext.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteLocationAsync(Location location)
+        {
+            try
+            {
+                if (location is not null)
+                {
+                    var dbContext = dbContextFactory?.CreateDbContext();
+
+                    dbContext.Locations.Remove(location);
+                    await dbContext.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateLocationAsync(Location location)
+        {
+            try
+            {
+                if (location is not null)
+                {
+                    var dbContext = dbContextFactory.CreateDbContext();
+
+                    dbContext.Locations.Add(location);
+                    await dbContext.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
