@@ -1,12 +1,12 @@
 ﻿@using AssetSquirrel.CoreBusiness
 @using System.Diagnostics
 @using AssetSquirrel.UseCases.Locations.Interfaces
-@using AssetSquirrel.WebApp.Mapper
+@using AssetSquirrel.UseCases.Mapper
 
 @inject IAddLocationsUseCase AddLocationsUseCase
 
 <div class="dialog-body">
-    <EditForm FormName="AddNewUser"
+    <EditForm FormName="AddNewLocation"
     EditContext="EditContext">
 
         <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -83,7 +83,7 @@
 
 @code {
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
 
     LocationDto Location = new LocationDto();
     private EditContext? EditContext;
@@ -98,12 +98,7 @@
     {
         if (EditContext is not null && EditContext.Validate())
         {
-            // Walidacja przeszła – kontynuuj zapis
-            await AddLocationsUseCase.AddLocationAsync(
-                new GenericMapper<Location, LocationDto>().Map(Location)
-            );
-
-            await OnSave.InvokeAsync(null);
+            await OnSave.InvokeAsync(await AddLocationsUseCase.AddLocationAsync(Location));
         }
         else
         {

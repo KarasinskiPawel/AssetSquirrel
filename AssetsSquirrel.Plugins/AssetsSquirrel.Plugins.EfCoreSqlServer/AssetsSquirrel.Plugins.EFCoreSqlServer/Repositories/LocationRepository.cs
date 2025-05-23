@@ -39,13 +39,13 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Locations.Add(location);
                     await dbContext.SaveChangesAsync();
                 }
-
-                return true;
             }
             catch
             {
                 return false;
             }
+
+            return true;
         }
 
         public async Task<bool> DeleteLocationAsync(Location location)
@@ -76,16 +76,16 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
 
-                    dbContext.Locations.Add(location);
+                    dbContext.Locations.Update(location);
                     await dbContext.SaveChangesAsync();
                 }
-
-                return true;
             }
             catch
             {
                 return false;
             }
+
+            return true;
         }
     }
 }

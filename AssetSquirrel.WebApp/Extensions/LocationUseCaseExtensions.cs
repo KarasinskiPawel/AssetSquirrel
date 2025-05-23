@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using AssetSquirrel.UseCases.Locations;
 using AssetSquirrel.UseCases.Locations.Interfaces;
 using AssetSquirrel.UseCases.PluginInterfaces;
-using AssetSquirrel.WebApp.Mapper;
+using AssetSquirrel.UseCases.Mapper;
 using AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +22,7 @@ namespace AssetSquirrel.UseCases.Extensions
 
             services.AddScoped<IViewLocationsUseCase, ViewLocationsUseCase>();
             services.AddScoped<IAddLocationsUseCase, AddLocationsUseCase>();
+            services.AddScoped<IEditLocationUseCase, EditLocationUseCase>();
 
             return services;
         }

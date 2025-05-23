@@ -1,5 +1,5 @@
 ﻿
-namespace AssetSquirrel.WebApp.Mapper
+namespace AssetSquirrel.UseCases.Mapper
 {
     public interface IGenericMapper<T, U>
     {

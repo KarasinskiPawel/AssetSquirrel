@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace AssetSquirrel.WebApp.Mapper
+namespace AssetSquirrel.UseCases.Mapper
 {
     public class GenericMapper<T, U> : IGenericMapper<T, U>
     {

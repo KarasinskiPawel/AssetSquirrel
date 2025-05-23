@@ -2,10 +2,11 @@
 @using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.UseCases.Locations.Interfaces
 @using AssetSquirrel.UseCases.PluginInterfaces
-@using AssetSquirrel.WebApp.Mapper
+@using AssetSquirrel.UseCases.Mapper
 @using System.Diagnostics
 
 @inject IViewLocationsUseCase ViewLocationsUseCase
+@inject IJSRuntime JSRuntime
 
 @rendermode InteractiveServer
 
@@ -42,20 +43,20 @@
             <tbody>
                 @if (locations is not null && locations.Count() > 0)
                 {
-                    @for (int i = 0; i < locations.Count(); i++)
+                    @foreach(var location in locations)
                     {
                         <tr>
-                            <td> @(i + 1) </td>
-                            <td> @locations[i].Code </td>
-                            <td> @locations[i].MPK </td>
-                            <td> @locations[i].City </td>
-                            <td> @locations[i].Street </td>
-                            <td> @locations[i].Email </td>
-                            <td> @locations[i].PhoneNumber </td>
-                            @if (locations[i].IsActive)
+                            <td> 1 </td>
+                            <td> @location.Code </td>
+                            <td> @location.MPK </td>
+                            <td> @location.City </td>
+                            <td> @location.Street </td>
+                            <td> @location.Email </td>
+                            <td> @location.PhoneNumber </td>
+                            @if (location.IsActive)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeLocationIsActive(locations[i]))" title="Dezaktywuj lokalizację.">
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeLocationIsActive(location))" title="Dezaktywuj lokalizację.">
                                         <i class="bi bi-check-circle"></i>
                                     </button>
                                 </td>
@@ -63,16 +64,16 @@
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationIsActive(locations[i]))" title="Aktywuj lokalizację.">
+                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationIsActive(location))" title="Aktywuj lokalizację.">
                                         <i class="bi bi-x-circle"></i>
                                     </button>
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditLocation(locations[i]))" title="Edytuj dane lokalizacji.">
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditLocation(location))" title="Edytuj dane lokalizacji.">
                                     <i class="bi bi-pen"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteLocation(locations[i]))" title="Usuń lokalizację.">
+                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteLocation(location))" title="Usuń lokalizację.">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </td>
@@ -87,8 +88,16 @@
 <DialogBox Show="modalAddLocation"
 Title="Add location">
     <LocationAddDialogBox
-    OnCancel="HideModalAddLocation"
-    OnSave="HideModalAddLocation" />
+    OnCancel="OnCancelHideModalAddLocation"
+    OnSave="OnSaveHideModalAddLocation" />
+</DialogBox>
+
+<DialogBox Show="modalEditLocation"
+Title="Edit location">
+    <LocationEditDialogBox
+    OnCancel="OnCancelHideModalEditLocation"
+    OnSave="OnSaveHideModalEditLocation"
+    Location="Location" />
 </DialogBox>
 
 @code {
@@ -98,6 +107,7 @@ Title="Add location">
     string searchFilter = string.Empty;
 
     List<LocationDto> locations { get; set; }
+    LocationDto Location { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,27 +127,68 @@ Title="Add location">
     public async Task ChangeLocationIsActive(LocationDto location){
         location.IsActive = !location.IsActive;
 
-        await ViewLocationsUseCase.UpdateLocationAsync(location);
+        if (await ViewLocationsUseCase.UpdateLocationAsync(location))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
     }
 
     public void ShowModalEditLocation(LocationDto location){
+        Location = location;
         modalEditLocation = true;
     }
 
-    public void HideModalEditLocation(){
+    public void OnCancelHideModalEditLocation(){
         modalEditLocation = false;
     }
 
-    public void DeleteLocation(LocationDto location){
+    public async Task OnSaveHideModalEditLocation(bool result)
+    {
+        if(result){
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            StateHasChanged();
+        } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
 
+        modalEditLocation = false;       
+    }
+
+    public async void DeleteLocation(LocationDto location){
+        if(await ViewLocationsUseCase.DeleteLocationAync(location)){
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
+            StateHasChanged();
+        } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Error.");
+        }
     }
 
     public void ShowModalAddLocation(){
         modalAddLocation = true;
     }
 
-    public void HideModalAddLocation()
+    public void OnCancelHideModalAddLocation()
     {
         modalAddLocation = false;
+    }
+
+    public async Task OnSaveHideModalAddLocation(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        modalEditLocation = false;
     }
 }

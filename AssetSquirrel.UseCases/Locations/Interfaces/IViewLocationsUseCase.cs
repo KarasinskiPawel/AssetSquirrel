@@ -10,7 +10,8 @@ namespace AssetSquirrel.UseCases.Locations.Interfaces
 {
     public interface IViewLocationsUseCase
     {
+        Task<bool> DeleteLocationAync(LocationDto location);
         Task<List<LocationDto>> GetLocationsAsync(Expression<Func<Location, bool>> where);
-        Task UpdateLocationAsync(LocationDto location);
+        Task<bool> UpdateLocationAsync(LocationDto location);
     }
 }

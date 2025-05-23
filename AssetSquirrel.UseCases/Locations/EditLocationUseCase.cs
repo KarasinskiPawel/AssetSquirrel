@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace AssetSquirrel.UseCases.Locations
 {
-    public class AddLocationsUseCase : IAddLocationsUseCase
+    public class EditLocationUseCase : IEditLocationUseCase
     {
         private readonly ILocationRepository locationRepository;
 
-        public AddLocationsUseCase(ILocationRepository locationRepository)
+        public EditLocationUseCase(ILocationRepository locationRepository)
         {
             this.locationRepository = locationRepository;
         }
 
-        public async Task<bool> AddLocationAsync(LocationDto location)
+        public async Task<bool> UpdateLocationAsync(LocationDto location)
         {
-            return await locationRepository.AddLocationAsync(
+            return await locationRepository.UpdateLocationAsync(
                 new GenericMapper<Location, LocationDto>().Map(location)
                 );
         }

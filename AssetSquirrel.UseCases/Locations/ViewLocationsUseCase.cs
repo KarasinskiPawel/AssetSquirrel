@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
-using AssetSquirrel.WebApp.Mapper;
+using AssetSquirrel.UseCases.Mapper;
 
 namespace AssetSquirrel.UseCases.Locations
 {
@@ -27,9 +27,16 @@ namespace AssetSquirrel.UseCases.Locations
             ).ToList();
         }
 
-        public async Task UpdateLocationAsync(LocationDto location)
+        public async Task<bool> UpdateLocationAsync(LocationDto location)
         {
-            await locationRepository.UpdateLocationAsync(
+            return await locationRepository.UpdateLocationAsync(
+                new GenericMapper<Location, LocationDto>().Map(location)
+                );
+        }
+
+        public async Task<bool> DeleteLocationAync(LocationDto location)
+        {
+            return await locationRepository.DeleteLocationAsync(
                 new GenericMapper<Location, LocationDto>().Map(location)
                 );
         }
