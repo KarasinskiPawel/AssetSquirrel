@@ -14,10 +14,12 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
     public class LocationRepository : ILocationRepository
     {
         private readonly IDbContextFactory<AssetsSquirrelContext> dbContextFactory;
+        private readonly IErrorsRepository errorsRepository;
 
-        public LocationRepository(IDbContextFactory<AssetsSquirrelContext> dbContextFactory)
+        public LocationRepository(IDbContextFactory<AssetsSquirrelContext> dbContextFactory, IErrorsRepository errorsRepository)
         {
             this.dbContextFactory = dbContextFactory;
+            this.errorsRepository = errorsRepository;
         }
 
         public async Task<IEnumerable<Location>> GetLocationsAsync(Expression<Func<Location, bool>> where)
@@ -40,8 +42,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     await dbContext.SaveChangesAsync();
                 }
             }
-            catch
+            catch(Exception e)
             {
+                await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "LocationRepository", "AddLocationAsync", e);
                 return false;
             }
 
@@ -62,8 +65,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
 
                 return true;
             }
-            catch
+            catch(Exception e)
             {
+                await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "LocationRepository", "DeleteLocationAsync", e);
                 return false;
             }
         }
@@ -80,8 +84,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     await dbContext.SaveChangesAsync();
                 }
             }
-            catch
+            catch(Exception e)
             {
+                await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "LocationRepository", "UpdateLocationAsync", e);
                 return false;
             }
 

@@ -8,13 +8,13 @@
 </div>
 
 @if(pageNumber == 1){
-    <DictionarySuppilers></DictionarySuppilers>
+    <DictionarySuppilers @rendermode="RenderMode.InteractiveServer"></DictionarySuppilers>
 } else if (pageNumber == 2) {
-    <DictionaryEquipment></DictionaryEquipment>
+    <DictionaryEquipment @rendermode="RenderMode.InteractiveServer"></DictionaryEquipment>
 } else if (pageNumber == 3) {
-    <DictionaryInternet></DictionaryInternet>
+    <DictionaryInternet @rendermode="RenderMode.InteractiveServer"></DictionaryInternet>
 } else if (pageNumber == 4) {
-    <DictionaryInvoices></DictionaryInvoices>
+    <DictionaryInvoices @rendermode="RenderMode.InteractiveServer"></DictionaryInvoices>
 } else {
 
 }

@@ -1,4 +1,5 @@
 ﻿@page "/locations"
+
 @using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.UseCases.Locations.Interfaces
 @using AssetSquirrel.UseCases.PluginInterfaces
@@ -12,13 +13,15 @@
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())"> Add location </button>
-
-        <InputText class="w-25" @bind-Value="searchFilter" placeholder="Code or MPK or City or Street"></InputText>
-
-        <button class="btn btn-sm btn-outline-danger" @onclick="(() => SearchLocations())" title="Dezaktywuj lokalizację.">
-            <i class="bi bi-search"></i>
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())">
+            <i class="bi bi-house-add"></i>
+            Add location
         </button>
+
+        <TextSearchBar 
+            placeholderText="Code, MPK, City, Street"
+                       TextSearchBarCallback="SearchLocationCallback">
+        </TextSearchBar>
     </div>
 </div>
 
@@ -114,6 +117,12 @@ Title="Edit location">
         locations = await ViewLocationsUseCase.GetLocationsAsync(a => true);
     }
 
+    public async void SearchLocationCallback(string searchFilter)
+    {
+        this.searchFilter = searchFilter;
+        await SearchLocations();
+    }
+
     public async Task SearchLocations()
     {
         locations = await ViewLocationsUseCase.GetLocationsAsync(
@@ -122,6 +131,8 @@ Title="Edit location">
                 a.City.ToLower().Contains(searchFilter) ||
                 a.Street.ToLower().Contains(searchFilter)
             );
+
+        StateHasChanged();
     }
 
     public async Task ChangeLocationIsActive(LocationDto location){
@@ -162,6 +173,7 @@ Title="Edit location">
     public async void DeleteLocation(LocationDto location){
         if(await ViewLocationsUseCase.DeleteLocationAync(location)){
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
+            await SearchLocations();
             StateHasChanged();
         } else {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Error.");
@@ -182,6 +194,7 @@ Title="Edit location">
         if (result)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchLocations();
             StateHasChanged();
         }
         else
@@ -189,6 +202,6 @@ Title="Edit location">
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
-        modalEditLocation = false;
+        modalAddLocation = false;
     }
 }

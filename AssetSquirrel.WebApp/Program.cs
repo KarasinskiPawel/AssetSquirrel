@@ -6,6 +6,7 @@ using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.EntityFrameworkCore;
 using AssetSquirrel.UseCases.PluginInterfaces;
 using AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories;
+using AssetSquirrel.WebApp.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,10 @@ builder.Services.AddServerSideBlazor()
         options.DetailedErrors = detailedErrors;
     });
 
+//Extensions
 LocationUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
+DictionaresUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
+ErrorsExtensions.AddExtension(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
