@@ -2,23 +2,23 @@
 
 <div class="row col-12">
     <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(1))"> Suppilers </button>
-    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(2))"> Equipment </button>
-    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(3))"> Internet </button>
-    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(4))"> Invoices </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(2))"> Manufacturer </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(3))"> Hardware type </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(4))"> Equipment </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(5))"> Internet </button>
 </div>
 
 @if(pageNumber == 1){
     <DictionarySuppilers @rendermode="RenderMode.InteractiveServer"></DictionarySuppilers>
 } else if (pageNumber == 2) {
-    <DictionaryEquipment @rendermode="RenderMode.InteractiveServer"></DictionaryEquipment>
+    <DictionaryManufacturer @rendermode="RenderMode.InteractiveServer"></DictionaryManufacturer>
 } else if (pageNumber == 3) {
-    <DictionaryInternet @rendermode="RenderMode.InteractiveServer"></DictionaryInternet>
+    <DictionaryHardwareType @rendermode="RenderMode.InteractiveServer"></DictionaryHardwareType>
 } else if (pageNumber == 4) {
-    <DictionaryInvoices @rendermode="RenderMode.InteractiveServer"></DictionaryInvoices>
-} else {
-
+    <DictionaryEquipment @rendermode="RenderMode.InteractiveServer"></DictionaryEquipment>
+} else if (pageNumber == 5) {
+    <DictionaryInternet @rendermode="RenderMode.InteractiveServer"></DictionaryInternet>
 }
-
 @code {
     int pageNumber = 0;
 

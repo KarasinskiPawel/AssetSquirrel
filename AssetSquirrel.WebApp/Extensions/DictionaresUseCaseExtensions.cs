@@ -12,6 +12,8 @@ namespace AssetSquirrel.WebApp.Extensions
             services.AddScoped<ISuppilersRepository, SuppilersRepository>();
 
             services.AddScoped<IViewSuppilersUseCase, ViewSuppilersUseCase>();
+            services.AddScoped<IAddSuppilerUseCase, AddSuppilerUseCase>();
+            services.AddScoped<IEditSuppilerUseCase, EditSuppilerUseCase>();
 
             return services;
         }

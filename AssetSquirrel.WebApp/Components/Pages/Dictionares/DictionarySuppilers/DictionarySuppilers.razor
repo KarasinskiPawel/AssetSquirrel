@@ -53,7 +53,7 @@
                             {
                                 <td>
                                     <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Dezaktywuj lokalizację.">
-                                        <i class="bi bi-check-circle"></i>
+                                        <i class="bi bi-x-circle"></i>
                                     </button>
                                 </td>
                             }
@@ -73,13 +73,30 @@
     </div>
 </div>
 
+<DialogBox Show="addSuppilererModal"
+Title="Add new suppiler.">
+    <SuppilerAddDialogBox 
+    OnCancel="HideModalAddSuppiler"
+    OnSave="OnSaveAddModalSuppiler">
+    </SuppilerAddDialogBox>
+</DialogBox>
 
+<DialogBox Show="editSuppilerModal"
+Title="Edycja danych dostawcy">
+    <SuppilerEditDialogBox
+    OnCancel="HideModalEditSuppiler"
+    OnSave="OnSaveEditModalSuppiler"
+    Suppiler="Suppiler">
+    </SuppilerEditDialogBox>
+</DialogBox>
 
 @code {
     public string searchFilter { get; set; } = string.Empty;
-    public bool addSupillerModal { get; set; } = false;
+    public bool addSuppilererModal { get; set; } = false;
+    public bool editSuppilerModal { get; set; } = false;
 
     List<SuppilerDto> suppilers { get; set; }
+    SuppilerDto Suppiler { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -89,7 +106,7 @@
     public async Task SearchSuppilerCallback(string searchFilter)
     {
         this.searchFilter = searchFilter;
-        await Task.Delay(100);
+        await SearchSuppiler();
     }
 
     public async Task SearchSuppiler()
@@ -118,15 +135,58 @@
 
     public void ShowModalAddSuppiler()
     {
-
+        addSuppilererModal = true;
     }
 
-    public void ShowModalEditSuppiler()
+    public void HideModalAddSuppiler()
     {
-
+        addSuppilererModal = false;
     }
 
-    public void DeleteSuppiler(){
+    public async Task OnSaveAddModalSuppiler(bool result)
+    {
+        if(result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchSuppiler();
+            StateHasChanged();
+        } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
 
+        HideModalAddSuppiler();
+    }
+
+    public void ShowModalEditSuppiler(SuppilerDto suppiler)
+    {
+        Suppiler = suppiler;
+        editSuppilerModal = true;
+    }
+
+    public void HideModalEditSuppiler(){
+        editSuppilerModal = false;
+    }
+
+    public async Task OnSaveEditModalSuppiler(bool result){
+        if(result) {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchSuppiler();
+            StateHasChanged();
+        } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        HideModalEditSuppiler();
+    }
+
+    public async Task DeleteSuppiler(SuppilerDto suppiler)
+    {
+       if(await ViewSuppilersUseCase.DeleteSuppiler(suppiler)){
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchSuppiler();
+            StateHasChanged();
+       } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+       }
     }
 }

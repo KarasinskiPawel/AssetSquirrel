@@ -26,7 +26,10 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
         {
             var dbContext = dbContextFactory.CreateDbContext();
 
-            var output = await dbContext.Locations.Where(where).ToListAsync() ?? Enumerable.Empty<Location>().ToList();
+            var output = await dbContext.Locations.Where(where)
+                .OrderBy(a => a.City)
+                .ThenBy(a => a.Street)
+                .ToListAsync() ?? Enumerable.Empty<Location>().ToList();
 
             return output;
         }

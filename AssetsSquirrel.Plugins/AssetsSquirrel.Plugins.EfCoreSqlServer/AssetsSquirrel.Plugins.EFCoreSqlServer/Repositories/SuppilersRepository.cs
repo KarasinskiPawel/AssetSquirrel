@@ -25,7 +25,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
         {
             var dbContext = dbContextFactory.CreateDbContext();
 
-            var output = await dbContext.Suppilers.Where(where).ToListAsync() ?? Enumerable.Empty<Suppiler>().ToList();
+            var output = await dbContext.Suppilers.Where(where)
+                .OrderBy(x => x.Name)
+                .ToListAsync() ?? Enumerable.Empty<Suppiler>().ToList();
 
             return output;
         }
