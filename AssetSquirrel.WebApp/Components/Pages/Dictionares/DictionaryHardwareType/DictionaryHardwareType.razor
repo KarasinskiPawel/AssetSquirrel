@@ -1,5 +1,126 @@
-﻿<h3>HardwareType</h3>
+﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.HardwareType.Interfaces
+
+@inject IViewHardwareTypeUseCase ViewHardwareTypeUseCase
+@inject IJSRuntime JSRuntime
+
+<div class="row col-12">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddHardwareType())">
+            <i class="bi bi-shop"></i>
+            Add manufacturer
+        </button>
+
+        <TextSearchBar placeholderText="suppiler name"
+                       TextSearchBarCallback="SearchBarCallback">
+        </TextSearchBar>
+    </div>
+</div>
+
+<div class="row offset-1 col-10 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Name </th>
+                    <th scope="col"> Description </th>
+                    <th scope="col"> IsActive? </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (hardwareTypes is not null && hardwareTypes.Count() > 0)
+                {
+                    @foreach (var hardwareType in hardwareTypes)
+                    {
+                        <tr>
+                            <td> 1 </td>
+                            <td> @hardwareType.Name </td>
+                            <td> @hardwareType.Description </td>
+                            @if (hardwareType.IsActive)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeHardwareTypeIsActive(hardwareType))" title="Dezaktywuj producenta.">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeHardwareTypeIsActive(hardwareType))" title="Dezaktywuj producenta.">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalHardwareType(hardwareType))" title="Edytuj dane producenta.">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteHardwareType(hardwareType))" title="Usuń producenta.">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 @code {
+    bool modalAddHardwareType = false;
 
+    string searchText = string.Empty;
+    List<HardwareTypeDto> hardwareTypes = new List<HardwareTypeDto>();
+
+    public async Task SearchHardwareTypes()
+    {
+        hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(a => a.Name.ToLower().Contains(searchText));
+    }
+
+    private void ShowModalAddHardwareType()
+    {
+        modalAddHardwareType = true;
+    }
+
+    private async Task SearchBarCallback(string searchText)
+    {
+        this.searchText = searchText;
+        await SearchHardwareTypes();
+    }
+
+    private async Task ChangeHardwareTypeIsActive(HardwareTypeDto hardwareType)
+    {
+        hardwareType.IsActive = !hardwareType.IsActive;
+
+        if(await ViewHardwareTypeUseCase.UpdateHardwareType(hardwareType))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchHardwareTypes();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+    }
+
+    private async Task DeleteHardwareType(HardwareTypeDto hardwareType)
+    {
+        if (await ViewHardwareTypeUseCase.DeleteHardwareTypeAsync(hardwareType))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchHardwareTypes();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+    }
 }

@@ -1,13 +1,13 @@
 ﻿@using AssetSquirrel.CoreBusiness.Dto
-@using AssetSquirrel.UseCases.Suppilers.Interfaces
+@using AssetSquirrel.UseCases.Manufacturers.Interfaces
 
-@inject IEditSuppilerUseCase EditSuppilerUseCase
+@inject IEditManufactureruseCase EditManufactureruseCase
 
-@if (Suppiler is not null)
+@if(Manufacturer is not null)
 {
     <div class="dialog-body">
         <EditForm FormName="AddNewSuppiler"
-        EditContext="EditContext">
+                  EditContext="EditContext">
 
             <DataAnnotationsValidator></DataAnnotationsValidator>
 
@@ -16,7 +16,7 @@
                     <label class="col-form-label"> Name </label>
                 </div>
                 <div class="col-7">
-                    <InputText class="form-control" @bind-Value="Suppiler.Name"></InputText>
+                    <InputText class="form-control" @bind-Value="Manufacturer.Name"></InputText>
                 </div>
                 <div class="col-1">
                 </div>
@@ -27,7 +27,7 @@
                     <label class="col-form-label"> Description </label>
                 </div>
                 <div class="col-7">
-                    <InputTextArea class="form-control" @bind-Value="Suppiler.Description"></InputTextArea>
+                    <InputTextArea class="form-control" @bind-Value="Manufacturer.Description"></InputTextArea>
                 </div>
                 <div class="col-1">
                 </div>
@@ -38,13 +38,13 @@
     <div class="dialog-footer">
         <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Zamknij </button>
 
-        <button class="btn btn-sm btn-primary w-25" @onclick="EditSuppiler"> Zapisz </button>
+        <button class="btn btn-sm btn-primary w-25" @onclick="EditManufacturer"> Zapisz </button>
     </div>
 }
 
 @code {
     [Parameter, EditorRequired]
-    public SuppilerDto Suppiler { get; set; }
+    public ManufacturerDto Manufacturer { get; set; }
 
     [Parameter, EditorRequired]
     public EventCallback OnCancel { get; set; }
@@ -56,15 +56,15 @@
 
     protected override void OnInitialized()
     {
-        EditContext = new EditContext(Suppiler);
+        EditContext = new EditContext(Manufacturer);
         base.OnInitialized();
     }
 
-    private async Task EditSuppiler()
+    private async Task EditManufacturer()
     {
-        if(EditContext is not null && EditContext.Validate())
+        if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync(await EditSuppilerUseCase.UpdateSuppilerAsync(Suppiler));
+            await OnSave.InvokeAsync(await EditManufactureruseCase.UpdateManufacturerAsync(Manufacturer));
         }
     }
 }

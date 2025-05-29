@@ -21,7 +21,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             this.errorsRepository = errorsRepository;
         }
 
-        public async Task<IEnumerable<Manufacturer>> GetManufacturersAsync(Expression<Func<Manufacturer>> where)
+        public async Task<IEnumerable<Manufacturer>> GetManufacturersAsync(Expression<Func<Manufacturer, bool>> where)
         {
             var dbContext = dbContextFactory.CreateDbContext();
 

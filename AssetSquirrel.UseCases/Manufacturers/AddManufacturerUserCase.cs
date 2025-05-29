@@ -11,18 +11,16 @@ using System.Threading.Tasks;
 
 namespace AssetSquirrel.UseCases.Manufacturers
 {
-    public class EditManufactureruseCase : IEditManufactureruseCase
+    public class AddManufacturerUserCase : IAddManufacturerUserCase
     {
         private readonly IManufacturersRepository manufacturersRepository;
-
-        public EditManufactureruseCase(IManufacturersRepository manufacturersRepository)
+        public AddManufacturerUserCase(IManufacturersRepository manufacturersRepository)
         {
             this.manufacturersRepository = manufacturersRepository;
         }
-
-        public async Task<bool> UpdateManufacturerAsync(ManufacturerDto manufacturer)
+        public async Task<bool> AddManufacturerAsync(ManufacturerDto manufacturer)
         {
-            return await manufacturersRepository.UpdateManufacturerAsync(
+            return await manufacturersRepository.AddManufacturerAsync(
                 new GenericMapper<Manufacturer, ManufacturerDto>().Map(manufacturer)
                 );
         }

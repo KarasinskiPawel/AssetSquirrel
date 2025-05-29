@@ -29,7 +29,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             var output = await dbContext.Locations.Where(where)
                 .OrderBy(a => a.City)
                 .ThenBy(a => a.Street)
-                .ToListAsync() ?? Enumerable.Empty<Location>().ToList();
+                .ToListAsync() ?? Enumerable.Empty<Location>();
 
             return output;
         }
@@ -43,6 +43,10 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
 
                     dbContext.Locations.Add(location);
                     await dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    return false;
                 }
             }
             catch(Exception e)

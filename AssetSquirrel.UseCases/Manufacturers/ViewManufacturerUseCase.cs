@@ -21,11 +21,11 @@ namespace AssetSquirrel.UseCases.Manufacturers
             this.manufacturersRepository = manufacturersRepository;
         }
 
-        public async Task<IEnumerable<ManufacturerDto>> GetManufacturersAsync(Expression<Func<Manufacturer>> where)
+        public async Task<List<ManufacturerDto>> GetManufacturersAsync(Expression<Func<Manufacturer, bool>> where)
         {
-            return new GenericMapper<ManufacturerDto, Manufacturer>().Map(
+            return [.. new GenericMapper<ManufacturerDto, Manufacturer>().Map(
                 await manufacturersRepository.GetManufacturersAsync(where)
-                );
+                )];
         }
 
         public async Task<bool> UpdateManufacturer(ManufacturerDto manufacturer)

@@ -44,7 +44,7 @@
                             @if(suppiler.IsActive)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Dezaktywuj lokalizację.">
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
                                         <i class="bi bi-check-circle"></i>
                                     </button>
                                 </td>
@@ -52,16 +52,16 @@
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Dezaktywuj lokalizację.">
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
                                         <i class="bi bi-x-circle"></i>
                                     </button>
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditSuppiler(suppiler))" title="Edytuj dane lokalizacji.">
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditSuppiler(suppiler))" title="Edit location data.">
                                     <i class="bi bi-pen"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteSuppiler(suppiler))" title="Usuń lokalizację.">
+                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteSuppiler(suppiler))" title="Remove location.">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </td>

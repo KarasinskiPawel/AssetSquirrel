@@ -1,0 +1,65 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.Manufacturers
+@using AssetSquirrel.UseCases.Manufacturers.Interfaces
+
+@inject IAddManufacturerUserCase AddManufacturerUserCase
+
+<div class="dialog-body">
+    <EditForm FormName="AddNewManufacturer"
+              EditContext="EditContext">
+
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> Name </label>
+            </div>
+            <div class="col-7">
+                <InputText class="form-control" @bind-Value="Manufacturer.Name"></InputText>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> Description </label>
+            </div>
+            <div class="col-7">
+                <InputTextArea class="form-control" @bind-Value="Manufacturer.Description"></InputTextArea>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+
+    </EditForm>
+</div>
+<div class="dialog-footer">
+    <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Zamknij </button>
+
+    <button class="btn btn-sm btn-primary w-25" @onclick="CreateNewManufacturer"> Zapisz </button>
+</div>
+
+@code {
+    ManufacturerDto Manufacturer = new ManufacturerDto();
+    EditContext? EditContext;
+
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(Manufacturer);
+        base.OnInitialized();
+    }
+
+    private async Task<bool> CreateNewManufacturer()
+    {
+        if (EditContext is not null && EditContext.Validate())
+        {
+            await OnSave.InvokeAsync(await AddManufacturerUserCase.AddManufacturerAsync(Manufacturer));
+        }
+
+        return false;
+    }
+}
