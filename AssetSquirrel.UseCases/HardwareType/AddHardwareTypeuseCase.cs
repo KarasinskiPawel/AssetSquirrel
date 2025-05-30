@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace AssetSquirrel.UseCases.HardwareType
 {
-    public class AddHardwareTypeuseCase : IAddHardwareTypeuseCase
+    public class AddHardwareTypeUseCase : IAddHardwareTypeUseCase
     {
         private readonly IHardwareTypeRepository hardwareTypeRepository;
 
-        public AddHardwareTypeuseCase(IHardwareTypeRepository hardwareTypeRepository)
+        public AddHardwareTypeUseCase(IHardwareTypeRepository hardwareTypeRepository)
         {
             this.hardwareTypeRepository = hardwareTypeRepository;
         }
@@ -27,3 +27,4 @@ namespace AssetSquirrel.UseCases.HardwareType
                 );
         }
     }
+}

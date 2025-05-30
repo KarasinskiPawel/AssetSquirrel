@@ -25,3 +25,4 @@ namespace AssetSquirrel.UseCases.HardwareType
                 );
         }
     }
+}

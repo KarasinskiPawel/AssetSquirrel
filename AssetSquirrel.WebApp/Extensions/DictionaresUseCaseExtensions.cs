@@ -1,4 +1,6 @@
-﻿using AssetSquirrel.UseCases.Manufacturers;
+﻿using AssetSquirrel.UseCases.HardwareType;
+using AssetSquirrel.UseCases.HardwareType.Interfaces;
+using AssetSquirrel.UseCases.Manufacturers;
 using AssetSquirrel.UseCases.Manufacturers.Interfaces;
 using AssetSquirrel.UseCases.PluginInterfaces;
 using AssetSquirrel.UseCases.Suppilers;
@@ -13,6 +15,7 @@ namespace AssetSquirrel.WebApp.Extensions
         {
             services.AddScoped<ISuppilersRepository, SuppilersRepository>();
             services.AddScoped<IManufacturersRepository, ManufacturersRepository>();
+            services.AddScoped<IHardwareTypeRepository, HardwareTypeRepository>();
 
             services.AddScoped<IViewSuppilersUseCase, ViewSuppilersUseCase>();
             services.AddScoped<IAddSuppilerUseCase, AddSuppilerUseCase>();
@@ -21,6 +24,10 @@ namespace AssetSquirrel.WebApp.Extensions
             services.AddScoped<IViewManufacturerUseCase, ViewManufacturerUseCase>();
             services.AddScoped<IAddManufacturerUserCase, AddManufacturerUserCase>();
             services.AddScoped<IEditManufactureruseCase, EditManufactureruseCase>();
+
+            services.AddScoped<IViewHardwareTypeUseCase, ViewHardwareTypeUseCase>();
+            services.AddScoped<IAddHardwareTypeUseCase, AddHardwareTypeUseCase>();
+            services.AddScoped<IEditHardwareTypeUseCase, EditHardwareTypeUseCase>();
 
             return services;
         }

@@ -57,7 +57,7 @@
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalHardwareType(hardwareType))" title="Edytuj dane producenta.">
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditHardwareType(hardwareType))" title="Edytuj dane producenta.">
                                     <i class="bi bi-pen"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteHardwareType(hardwareType))" title="Usuń producenta.">
@@ -72,11 +72,35 @@
     </div>
 </div>
 
+<DialogBox Show="modalAddHardwareType"
+    Title="Add hardware type">
+    <HardwareTypeAddDialogBox
+        OnCancel="HideModalAddHardwareType"
+        OnSave="OnSaveAddHardwareType">
+    </HardwareTypeAddDialogBox>
+</DialogBox>
+
+<DialogBox Show="modalEditHardwareType"
+    Title="Edit hardware type">
+    <HardwareTypeEditDialogBox
+        OnCancel="HideModalEditHardwareType"
+        OnSave="OnSaveEditHardwareType"
+        HardwareType="hardwareType">
+    </HardwareTypeEditDialogBox>
+</DialogBox>
+
 @code {
     bool modalAddHardwareType = false;
+    bool modalEditHardwareType = false;
 
     string searchText = string.Empty;
     List<HardwareTypeDto> hardwareTypes = new List<HardwareTypeDto>();
+    HardwareTypeDto hardwareType;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(a => true);
+    }
 
     public async Task SearchHardwareTypes()
     {
@@ -86,6 +110,54 @@
     private void ShowModalAddHardwareType()
     {
         modalAddHardwareType = true;
+    }
+
+    private void HideModalAddHardwareType()
+    {
+        modalAddHardwareType = false;
+    }
+
+    public async Task OnSaveAddHardwareType(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchHardwareTypes();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        HideModalAddHardwareType();
+    }
+
+    private void ShowModalEditHardwareType(HardwareTypeDto hardware)
+    {
+        this.hardwareType = hardware;
+        modalEditHardwareType = true;
+    }
+
+    private void HideModalEditHardwareType()
+    {
+        modalEditHardwareType = false;
+    }
+
+    public async Task OnSaveEditHardwareType(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchHardwareTypes();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        HideModalEditHardwareType();
     }
 
     private async Task SearchBarCallback(string searchText)

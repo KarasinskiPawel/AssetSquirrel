@@ -2,7 +2,7 @@
 
 namespace AssetSquirrel.UseCases.HardwareType.Interfaces
 {
-    public interface IAddHardwareTypeuseCase
+    public interface IAddHardwareTypeUseCase
     {
         Task<bool> AddHardwareTypeAsync(HardwareTypeDto hardwareType);
     }
