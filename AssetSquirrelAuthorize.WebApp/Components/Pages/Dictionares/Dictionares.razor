@@ -1,0 +1,29 @@
+﻿@page "/dictionares"
+@rendermode InteractiveServer
+
+
+<div class="row col-12">
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(1))"> Suppilers </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(2))"> Manufacturer </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(3))"> Hardware type </button>
+    <button class="btn btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => PageChange(4))"> Internet </button>
+</div>
+
+@if(pageNumber == 1){
+    <DictionarySuppilers @rendermode="RenderMode.InteractiveServer"></DictionarySuppilers>
+} else if (pageNumber == 2) {
+    <DictionaryManufacturer @rendermode="RenderMode.InteractiveServer"></DictionaryManufacturer>
+} else if (pageNumber == 3) {
+    <DictionaryHardwareType @rendermode="RenderMode.InteractiveServer"></DictionaryHardwareType>
+} else if (pageNumber == 4) {
+    <DictionaryInternet @rendermode="RenderMode.InteractiveServer"></DictionaryInternet>
+} else if (pageNumber == 5) {
+@*     <DictionaryInternet @rendermode="RenderMode.InteractiveServer"></DictionaryInternet> *@
+}
+@code {
+    int pageNumber = 0;
+
+    public void PageChange(int pageNumber){
+        this.pageNumber = pageNumber;
+    }
+}

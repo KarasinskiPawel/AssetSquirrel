@@ -1,0 +1,192 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.Suppilers;
+@using AssetSquirrel.UseCases.Suppilers.Interfaces
+
+@inject IViewSuppilersUseCase ViewSuppilersUseCase;
+@inject IJSRuntime JSRuntime
+
+<div class="row col-12">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddSuppiler())">
+            <i class="bi bi-shop"></i>
+            Add suppiler
+        </button>
+
+        <TextSearchBar placeholderText="suppiler name"
+        TextSearchBarCallback="SearchSuppilerCallback">
+        </TextSearchBar>
+    </div>
+</div>
+
+<div class="row offset-1 col-10 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Name </th>
+                    <th scope="col"> Description </th>
+                    <th scope="col"> IsActive? </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(suppilers is not null && suppilers.Count() > 0)
+                {
+                    @foreach(var suppiler in suppilers)
+                    {
+                        <tr>
+                            <td> 1 </td>
+                            <td> @suppiler.Name </td>
+                            <td> @suppiler.Description </td>
+                            @if(suppiler.IsActive)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditSuppiler(suppiler))" title="Edit location data.">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteSuppiler(suppiler))" title="Remove location.">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<DialogBox Show="addSuppilererModal"
+Title="Add new suppiler.">
+    <SuppilerAddDialogBox 
+    OnCancel="HideModalAddSuppiler"
+    OnSave="OnSaveAddModalSuppiler">
+    </SuppilerAddDialogBox>
+</DialogBox>
+
+<DialogBox Show="editSuppilerModal"
+Title="Edycja danych dostawcy">
+    <SuppilerEditDialogBox
+    OnCancel="HideModalEditSuppiler"
+    OnSave="OnSaveEditModalSuppiler"
+    Suppiler="Suppiler">
+    </SuppilerEditDialogBox>
+</DialogBox>
+
+@code {
+    public string searchFilter { get; set; } = string.Empty;
+    public bool addSuppilererModal { get; set; } = false;
+    public bool editSuppilerModal { get; set; } = false;
+
+    List<SuppilerDto> suppilers { get; set; }
+    SuppilerDto Suppiler { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        suppilers = await ViewSuppilersUseCase.GetSuppilersAsync(a => true);
+    }
+
+    public async Task SearchSuppilerCallback(string searchFilter)
+    {
+        this.searchFilter = searchFilter;
+        await SearchSuppiler();
+    }
+
+    public async Task SearchSuppiler()
+    {
+        suppilers = await ViewSuppilersUseCase.GetSuppilersAsync(
+            a => a.Name.ToLower().Contains(this.searchFilter)
+            );
+
+        StateHasChanged();
+    }
+
+    public async Task ChangeSuppilerIsActive(SuppilerDto suppiler)
+    {
+        suppiler.IsActive = !suppiler.IsActive;
+
+        if(await ViewSuppilersUseCase.UpdateSuppiler(suppiler))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+    }
+
+    public void ShowModalAddSuppiler()
+    {
+        addSuppilererModal = true;
+    }
+
+    public void HideModalAddSuppiler()
+    {
+        addSuppilererModal = false;
+    }
+
+    public async Task OnSaveAddModalSuppiler(bool result)
+    {
+        if(result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchSuppiler();
+            StateHasChanged();
+        } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        HideModalAddSuppiler();
+    }
+
+    public void ShowModalEditSuppiler(SuppilerDto suppiler)
+    {
+        Suppiler = suppiler;
+        editSuppilerModal = true;
+    }
+
+    public void HideModalEditSuppiler(){
+        editSuppilerModal = false;
+    }
+
+    public async Task OnSaveEditModalSuppiler(bool result){
+        if(result) {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchSuppiler();
+            StateHasChanged();
+        } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        HideModalEditSuppiler();
+    }
+
+    public async Task DeleteSuppiler(SuppilerDto suppiler)
+    {
+       if(await ViewSuppilersUseCase.DeleteSuppiler(suppiler)){
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchSuppiler();
+            StateHasChanged();
+       } else {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+       }
+    }
+}

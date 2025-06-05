@@ -1,0 +1,108 @@
+﻿@using AssetSquirrel.CoreBusiness
+@using System.Diagnostics
+@using AssetSquirrel.UseCases.Locations.Interfaces
+@using AssetSquirrel.UseCases.Mapper
+
+@inject IAddLocationsUseCase AddLocationsUseCase
+
+<div class="dialog-body">
+    <EditForm FormName="AddNewLocation"
+        EditContext="EditContext">
+
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> Code </label>
+            </div>
+            <div class="col-7">
+                <InputText class="form-control" @bind-Value="Location.Code"></InputText>
+            </div>
+            <div class="col-1">
+
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> MPK </label>
+            </div>
+            <div class="col-7">
+                <InputText class="form-control" @bind-Value="Location.MPK"></InputText>
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> City </label>
+            </div>
+            <div class="col-7">
+                <InputText class="form-control" @bind-Value="Location.City"></InputText>
+            </div>
+        </div>
+        <div class="row offset-1 col-10 text-center">
+            <ValidationMessage For="() => Location.City"></ValidationMessage>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> Street </label>
+            </div>
+            <div class="col-7">
+                <InputText class="form-control" @bind-Value="Location.Street"></InputText>
+            </div>
+        </div>
+        <div class="row offset-1 col-10 text-center">
+            <ValidationMessage For="() => Location.Street"></ValidationMessage>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> Email </label>
+            </div>
+            <div class="col-7">
+                <InputText class="form-control" @bind-Value="Location.Email"></InputText>
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-2">
+                <label class="col-form-label"> Phone number </label>
+            </div>
+            <div class="col-7">
+                <InputText class="form-control" @bind-Value="Location.PhoneNumber" ></InputText>
+            </div>
+        </div>
+    </EditForm>
+</div>
+<div class="dialog-footer">
+    <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Zamknij </button>
+
+    <button class="btn btn-sm btn-primary w-25" @onclick="CreateNewLocation"> Zapisz </button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+
+    LocationDto Location = new LocationDto();
+    private EditContext? EditContext;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(Location);
+        base.OnInitialized();
+    }
+
+    private async Task CreateNewLocation()
+    {
+        if (EditContext is not null && EditContext.Validate())
+        {
+            await OnSave.InvokeAsync(await AddLocationsUseCase.AddLocationAsync(Location));
+        }
+        else
+        {
+            Debug.WriteLine("Walidacja nieudana.");
+        }
+    }
+}

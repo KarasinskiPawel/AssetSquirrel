@@ -1,0 +1,22 @@
+﻿<InputText class="w-25"
+    @bind-Value="searchFilter"
+    placeholder="@placeholderText">
+</InputText>
+
+<button class="btn btn-sm btn-outline-danger" @onclick="(() => HandleSearch())" title="Dezaktywuj lokalizację.">
+    <i class="bi bi-search"></i>
+</button>
+
+@code {
+    [Parameter]
+    public string placeholderText { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> TextSearchBarCallback { get; set; }
+
+    public string searchFilter { get; set; } = string.Empty;
+
+    private void HandleSearch(){
+        TextSearchBarCallback.InvokeAsync(searchFilter);
+    }
+}

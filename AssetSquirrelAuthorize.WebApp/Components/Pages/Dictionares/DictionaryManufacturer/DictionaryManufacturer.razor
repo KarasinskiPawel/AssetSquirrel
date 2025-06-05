@@ -1,0 +1,185 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.Manufacturers.Interfaces
+@using AssetSquirrel.UseCases.Suppilers.Interfaces
+
+@inject IViewManufacturerUseCase ViewManufacturerUseCase
+@inject IJSRuntime JSRuntime
+
+<div class="row col-12">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddManufacturer())">
+            <i class="bi bi-shop"></i>
+            Add manufacturer
+        </button>
+
+        <TextSearchBar placeholderText="suppiler name"
+                       TextSearchBarCallback="SearchBarCallback">
+        </TextSearchBar>
+    </div>
+</div>
+
+<div class="row offset-1 col-10 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Name </th>
+                    <th scope="col"> Description </th>
+                    <th scope="col"> IsActive? </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (manufacturers is not null && manufacturers.Count() > 0)
+                {
+                    @foreach (var manufacturer in manufacturers)
+                    {
+                        <tr>
+                            <td> 1 </td>
+                            <td> @manufacturer.Name </td>
+                            <td> @manufacturer.Description </td>
+                            @if (manufacturer.IsActive)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeManufacturerIsActive(manufacturer))" title="Dezaktywuj producenta.">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeManufacturerIsActive(manufacturer))" title="Dezaktywuj producenta.">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditManufacturer(manufacturer))" title="Edytuj dane producenta.">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteManufacturer(manufacturer))" title="Usuń producenta.">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<DialogBox Show="modalAddManufacturerVisible"
+    Title="Add manufacturer">
+        <ManufacturerAddDialogBox
+            OnCancel="HideModalAddManufacturer"
+            OnSave="OnSaveAddManufacturer">
+        </ManufacturerAddDialogBox>
+</DialogBox>
+
+<DialogBox Show="modalEditManufacturerVisible"
+           Title="Edit manufacturer">
+            <ManufacturerEditDialogBox
+                OnCancel="HideModalEditManufacturer"
+                OnSave="OnSaveAddManufacturer"
+                Manufacturer="Manufacturer">
+            </ManufacturerEditDialogBox>
+</DialogBox>
+
+@code {
+    bool modalAddManufacturerVisible = false;
+    bool modalEditManufacturerVisible = false;
+
+    string searchText = string.Empty;
+    List<ManufacturerDto> manufacturers = new List<ManufacturerDto>();
+    ManufacturerDto Manufacturer { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        manufacturers = await ViewManufacturerUseCase.GetManufacturersAsync(a => true);
+    }
+
+    public async Task SearchBarCallback(string searchText)
+    {
+        this.searchText = searchText;
+        await SearchManufacturers();
+    }
+
+    public async Task SearchManufacturers()
+    {
+        manufacturers = await ViewManufacturerUseCase.GetManufacturersAsync(
+            a => a.Name.ToLower().Contains(searchText)
+        );
+    }
+
+    public void ShowModalAddManufacturer()
+    {
+        modalAddManufacturerVisible = true;
+    }
+
+    public void HideModalAddManufacturer()
+    {
+        modalAddManufacturerVisible = false;
+    }
+
+    public void ShowModalEditManufacturer(ManufacturerDto manufacturer)
+    {
+        Manufacturer = manufacturer;
+        modalEditManufacturerVisible = true;
+    }
+
+    public void HideModalEditManufacturer()
+    {
+        modalEditManufacturerVisible = false;
+    }
+
+    private async Task OnSaveAddManufacturer(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchManufacturers();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        HideModalAddManufacturer();
+    }
+
+    public async Task ChangeManufacturerIsActive(ManufacturerDto manufacturer)
+    {
+        manufacturer.IsActive = !manufacturer.IsActive;
+
+        if (await ViewManufacturerUseCase.UpdateManufacturer(manufacturer))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchManufacturers();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+    }
+
+    public async Task DeleteManufacturer(ManufacturerDto manufacturer)
+    {
+        if(await ViewManufacturerUseCase.Deletemanufacturer(manufacturer))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchManufacturers();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+    }
+}

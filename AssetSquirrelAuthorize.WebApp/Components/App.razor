@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+@* <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="AssetSquirrelAuthorize.WebApp.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet @rendermode="RenderModeForPage" />
+</head>
+
+<body>
+    <Routes @rendermode="RenderModeForPage" />
+    <script src="_framework/blazor.web.js"></script>
+</body>
+
+</html> *@
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="AssetSquirrelAuthorize.WebApp.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <link href="bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+@* Powiadomienia popup *@
+    <link href="izitoast/css/izitoast.min.css" rel="stylesheet" />
+    <script src="izitoast/js/izitoast.min.js"></script>
+
+    <script src="iziToast/izitoastreadyfunction.js"></script>
+
+    <HeadOutlet @rendermode="InteractiveServer" />
+    </head>
+
+    <body>
+        <Routes @rendermode="RenderModeForPage" />
+        <script src="_framework/blazor.web.js"></script>
+    </body>
+</html>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
+        ? null
+        : InteractiveServer;
+}

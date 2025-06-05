@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
-using BlazorWebApp.Authentication.Components.Account.Pages;
-using BlazorWebApp.Authentication.Components.Account.Pages.Manage;
+using AssetSquirrel.WebApp.Components.Account.Pages;
+using AssetSquirrel.WebApp.Components.Account.Pages.Manage;
 using BlazorWebApp.Authentication.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
