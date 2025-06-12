@@ -14,14 +14,21 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
         {
 
         }
-        public DbSet<Location>? Locations { get; set; }
-        public DbSet<Suppiler>? Suppilers { get; set; }
-        public DbSet<Manufacturer>? Manufacturers { get; set; }
-        public DbSet<HardwareType>? HardwareTypes { get; set; }
-        public DbSet<Equipment>? Equipments { get; set; }
-        public DbSet<Error>? Errors{ get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<Suppiler> Suppilers { get; set; }
+        public DbSet<Manufacturer> Manufacturers { get; set; }
+        public DbSet<HardwareType> HardwareTypes { get; set; }
+        public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<Error> Errors{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Employee>().HasData(
+                new Employee { EmployeeId = 1, FirstName = "Paweł", LastName = "Karasiński", Email = "pawelka@komfort.pl", PhoneNumber = null, IsActive = true },
+                new Employee { EmployeeId = 1, FirstName = "Dariusz", LastName = "Gąsiorowski", Email = "dariusz.gasiorowski@komfort.pl", PhoneNumber = null, IsActive = true },
+                new Employee { EmployeeId = 1, FirstName = "Konrad", LastName = "Wawrzyniak", Email = "Konrad.Wawrzyniak@komfort.pl", PhoneNumber = null, IsActive = true }
+                );
+
             modelBuilder.Entity<Location>().HasData(
                 new Location { LocationId = 1, Code = "M100", MPK = "PL1M100Z", City = "Stryków", Street = "Magazyn Centralny", Email = "", PhoneNumber = "", IsActive = true },
                 new Location { LocationId = 2, Code = "S000", MPK = "PL1C001Z", City = "Łódź", Street = "Biuro - Srebrzyńska 14", Email = "", PhoneNumber = "", IsActive = true },

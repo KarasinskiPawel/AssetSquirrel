@@ -4,7 +4,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">AssetSquirrelAuthorize.WebApp</a>
+        <a class="navbar-brand" href="">Asset Squirrel</a>
     </div>
 </div>
 
@@ -19,20 +19,8 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="hardware">
-                <span class="bi bi-motherboard icon-menu"></span> Hardware
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="invoices">
-                <span class="bi bi-file-earmark-medical icon-menu"></span> Invoices
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="search">
-                <span class="bi bi-search icon-menu" aria-hidden="true"></span> Search
+            <NavLink class="nav-link" href="equipmentassignment">
+                <span class="bi bi-layout-text-sidebar-reverse icon-menu"></span> Equipment assignment
             </NavLink>
         </div>
 
@@ -49,8 +37,14 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="logs">
-                <span class="bi bi-list icon-menu" aria-hidden="true"></span> Logs
+            <NavLink class="nav-link" href="equipment">
+                <span class="bi bi-boombox icon-menu" aria-hidden="true"></span> Equipment
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="invoices">
+                <span class="bi bi-file-earmark-medical icon-menu"></span> Invoices
             </NavLink>
         </div>
 
@@ -61,16 +55,22 @@
         </div>
 
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="employees">
+                <span class="bi bi-people icon-menu" aria-hidden="true"></span> Employees
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
             <NavLink class="nav-link" href="dictionares">
                 <span class="bi bi-journal-album icon-menu" aria-hidden="true"></span> Dictionares
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
+@*         <div class="nav-item px-3">
             <NavLink class="nav-link" href="auth">
                 <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
             </NavLink>
-        </div>
+        </div> *@
 
         <AuthorizeView>
             <Authorized>

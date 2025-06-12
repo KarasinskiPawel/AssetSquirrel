@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetSquirrel.WebApp", "AssetSquirrel.WebApp\AssetSquirrel.WebApp.csproj", "{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetSquirrel.UseCases", "AssetSquirrel.UseCases\AssetSquirrel.UseCases.csproj", "{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetSquirrel.CoreBusiness", "AssetSquirrel.CoreBusiness\AssetSquirrel.CoreBusiness.csproj", "{0CBA0DBA-E4DB-4FE5-89F0-1530EBBCADBB}"
@@ -23,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3567DFA9-7CAD-4EF3-8FC8-9B204A6041F9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58D5A8BB-8D56-484D-BC2A-0CA8C5AF2F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
