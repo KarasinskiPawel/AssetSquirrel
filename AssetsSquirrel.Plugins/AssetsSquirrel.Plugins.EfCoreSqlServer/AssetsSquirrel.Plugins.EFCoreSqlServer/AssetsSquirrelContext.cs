@@ -25,8 +25,8 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
         {
             modelBuilder.Entity<Employee>().HasData(
                 new Employee { EmployeeId = 1, FirstName = "Paweł", LastName = "Karasiński", Email = "pawelka@komfort.pl", PhoneNumber = null, IsActive = true },
-                new Employee { EmployeeId = 1, FirstName = "Dariusz", LastName = "Gąsiorowski", Email = "dariusz.gasiorowski@komfort.pl", PhoneNumber = null, IsActive = true },
-                new Employee { EmployeeId = 1, FirstName = "Konrad", LastName = "Wawrzyniak", Email = "Konrad.Wawrzyniak@komfort.pl", PhoneNumber = null, IsActive = true }
+                new Employee { EmployeeId = 2, FirstName = "Dariusz", LastName = "Gąsiorowski", Email = "dariusz.gasiorowski@komfort.pl", PhoneNumber = null, IsActive = true },
+                new Employee { EmployeeId = 3, FirstName = "Konrad", LastName = "Wawrzyniak", Email = "Konrad.Wawrzyniak@komfort.pl", PhoneNumber = null, IsActive = true }
                 );
 
             modelBuilder.Entity<Location>().HasData(

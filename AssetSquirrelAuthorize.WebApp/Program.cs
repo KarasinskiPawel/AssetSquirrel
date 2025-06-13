@@ -53,6 +53,7 @@ builder.Services.Configure<CircuitOptions>(options =>
 //Extensions
 LocationUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 DictionaresUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
+EmployeesUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 ErrorsExtensions.AddExtension(builder.Services, builder.Configuration);
 
 var app = builder.Build();

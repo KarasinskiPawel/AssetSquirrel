@@ -11,6 +11,8 @@ namespace AssetSquirrel.CoreBusiness
     {
         [Key]
         public int EmployeeId { get; set; }
+        public int? EmployeeReferenceNumber { get; set; }
+        public string? EmployeeCode { get; set; }
         [Required]
         [MinLength(3)]
         public string? FirstName { get; set; }
