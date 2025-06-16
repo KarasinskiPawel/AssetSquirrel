@@ -10,6 +10,7 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
 {
     public interface IEmployeesRepository
     {
+        Task<bool> AddEmployeeAsync(Employee employee);
         Task<bool> DeleteEmployeeAsync(Employee employee);
         Task<IEnumerable<Employee>> GetEmployeesAsync(Expression<Func<Employee, bool>> where);
         Task<bool> UpdateEmployeeAsync(Employee employee);

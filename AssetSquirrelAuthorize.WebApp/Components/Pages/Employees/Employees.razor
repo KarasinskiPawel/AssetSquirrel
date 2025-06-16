@@ -81,6 +81,21 @@
     </div>
 </div>
 
+<DialogBox Show="modalAddEmployeeVisible"
+Title="Add employee">
+    <EmployeeAddDialogBox
+    OnCancel="OnCancelHideModalAddEmployee"
+    OnSave="OnSaveHideModalAddEmployee" />
+</DialogBox>
+
+<DialogBox Show="modalEditEmployeeVisible"
+Title="Edit employee">
+    <EmployeeEditDialogBox
+    OnCancel="OnCancelHideModalEditEmployee"
+    OnSave="OnSaveHideModalEditEmployee"
+    Employee="employee" />
+</DialogBox>
+
 @code {
     string searchFilter = string.Empty;
 
@@ -93,6 +108,48 @@
     protected override async Task OnInitializedAsync()
     {
         employees = await ViewEmployeesUseCase.GetEmployeesAsync(a => true);
+    }
+
+    public void OnCancelHideModalAddEmployee()
+    {
+        modalAddEmployeeVisible = false;
+    }
+
+    public async Task OnSaveHideModalAddEmployee(bool result)
+    {
+        if(result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchEmployees();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        modalAddEmployeeVisible = false;
+    }
+
+    public void OnCancelHideModalEditEmployee()
+    {
+        modalEditEmployeeVisible = false;
+    }
+
+    public async Task OnSaveHideModalEditEmployee(bool result)
+    {
+        if(result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await SearchEmployees();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        modalEditEmployeeVisible = false;
     }
 
     public async Task SearchEmployees()
@@ -123,21 +180,32 @@
 
     }
 
-    public void ChangeEmployeeIsActive(EmployeeDto employee)
+    public async Task ChangeEmployeeIsActive(EmployeeDto employee)
     {
         employee.IsActive = !employee.IsActive;
-        // Here you would typically call a method to update the employee status in the database
+
+        if(await ViewEmployeesUseCase.UpdateEmployee(employee))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
     }
 
     public async Task DeleteEmployee(EmployeeDto employee)
     {
         if(await ViewEmployeesUseCase.DeleteEmployeeAsync(employee))
         {
-
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
+            await SearchEmployees();
+            StateHasChanged();
         }
         else
         {
-            
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Error.");
         }
     }
 }

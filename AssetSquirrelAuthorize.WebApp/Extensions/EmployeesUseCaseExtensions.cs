@@ -11,9 +11,8 @@ namespace AssetSquirrelAuthorize.WebApp.Extensions
         {
             services.AddScoped<IEmployeesRepository, EmployeesRepository>();
             services.AddScoped<IViewEmployeesUseCase, ViewEmployeesUseCase>();
-
-            //services.AddScoped<IAddEmployeesUseCase, AddEmployeesUseCase>();
-            //services.AddScoped<IEditEmployeeUseCase, EditEmployeeUseCase>();
+            services.AddScoped<IAddEmployeeUseCase, AddEmployeeUseCase>();
+            services.AddScoped<IEditEmployeeUseCase, EditEmployeeUseCase>();
 
             return services;
         }

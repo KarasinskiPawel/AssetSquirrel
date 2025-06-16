@@ -1,0 +1,45 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.Employees.Interfaces
+@using System.Diagnostics
+
+@inject IEditEmployeeUseCase EditEmployeeUseCase
+
+@if(Employee is not null)
+{
+    
+}
+else
+{
+    <p class="text-center"> "Something went wrong..." </p>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<bool> OnSave { get; set; }
+
+    [Parameter, EditorRequired]
+    public EmployeeDto Employee { get; set; }
+
+    private EditContext? EditContext;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(Employee);
+        base.OnInitialized();
+    }
+
+    public async Task EditEmployee()
+    {
+        if (EditContext is not null && EditContext!.Validate())
+        {
+            await OnSave.InvokeAsync(await EditEmployeeUseCase.EditEmployeeAsync(Employee));
+        }
+        else
+        {
+            Debug.WriteLine("Validation failed.");
+        }
+    }
+}

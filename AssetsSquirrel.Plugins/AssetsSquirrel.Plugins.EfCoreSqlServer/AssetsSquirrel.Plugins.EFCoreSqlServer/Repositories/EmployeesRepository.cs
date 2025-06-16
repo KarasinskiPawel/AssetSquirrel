@@ -20,6 +20,28 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             this.dbContextFactory = dbContextFactory;
             this.errorsRepository = errorsRepository;
         }
+        public async Task<bool> AddEmployeeAsync(Employee employee)
+        {
+            try
+            {
+                if (employee is not null)
+                {
+                    var dbContext = dbContextFactory.CreateDbContext();
+                    await dbContext.Employees.AddAsync(employee);
+                    await dbContext.SaveChangesAsync();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EmployeesRepository", "AddEmployeeAsync", ex);
+                return false;
+            }
+        }
 
         public async Task<bool> DeleteEmployeeAsync(Employee employee)
         {
