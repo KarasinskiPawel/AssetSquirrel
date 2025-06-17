@@ -176,8 +176,8 @@ Title="Edit employee">
 
     public void ShowModalEditEmployee(EmployeeDto employee)
     {
+        this.employee = employee;
         modalEditEmployeeVisible = true;
-
     }
 
     public async Task ChangeEmployeeIsActive(EmployeeDto employee)
@@ -186,7 +186,7 @@ Title="Edit employee">
 
         if(await ViewEmployeesUseCase.UpdateEmployee(employee))
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Employee status has been changed.");
             StateHasChanged();
         }
         else

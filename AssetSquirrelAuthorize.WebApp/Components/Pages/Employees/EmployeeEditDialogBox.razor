@@ -4,6 +4,75 @@
 
 @inject IEditEmployeeUseCase EditEmployeeUseCase
 
+<div class="dialog-body">
+    <EditForm FormName="EditEmployee"
+        EditContext="EditContext">
+    
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+    
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-3">
+                <label class="col-form-label"> Employee Code </label>
+            </div>
+            <div class="col-6">
+                <InputText class="form-control" @bind-Value="Employee.EmployeeCode"></InputText>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-3">
+                <label class="col-form-label"> First Name </label>
+            </div>
+            <div class="col-6">
+                <InputText class="form-control" @bind-Value="Employee.FirstName"></InputText>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-3">
+                <label class="col-form-label"> Last Name </label>
+            </div>
+            <div class="col-6">
+                <InputText class="form-control" @bind-Value="Employee.LastName"></InputText>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-3">
+                <label class="col-form-label"> Email </label>
+            </div>
+            <div class="col-6">
+                <InputText class="form-control" @bind-Value="Employee.Email"></InputText>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="offset-1 col-3">
+                <label class="col-form-label"> Phone number </label>
+            </div>
+            <div class="col-6">
+                <InputText class="form-control" @bind-Value="Employee.PhoneNumber"></InputText>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+
+    </EditForm>
+</div>
+<div class="dialog-footer">
+    <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Zamknij </button>
+
+    <button class="btn btn-sm btn-primary w-25" @onclick="UpdateEmployee"> Zapisz </button>
+</div>
+
 @if(Employee is not null)
 {
     
@@ -31,7 +100,7 @@ else
         base.OnInitialized();
     }
 
-    public async Task EditEmployee()
+    public async Task UpdateEmployee()
     {
         if (EditContext is not null && EditContext!.Validate())
         {
