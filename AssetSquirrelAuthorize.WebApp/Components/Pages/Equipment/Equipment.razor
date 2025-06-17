@@ -1,7 +1,82 @@
 ﻿@page "/equipment"
+@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
 
-<h3>Equipment</h3>
+@inject IJSRuntime JSRuntime
+@inject IViewEquipmentUseCase ViewEquipmentUseCase
+
+@rendermode InteractiveServer
+
+<div class="row col-12">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())">
+            <i class="bi bi-house-add"></i>
+            Add location
+        </button>
+
+        <TextSearchBar placeholderText="serial number, model..."
+                       TextSearchBarCallback="SearchLocationCallback">
+        </TextSearchBar>
+    </div>
+</div>
+
+<DialogBox Show="modalAddEquipment"
+Title="Add equipment">
+    <EquipmentAddDialogBox
+    OnCancel="OnCancelHideModalAddEquipment"
+    OnSave="OnSaveHideModalAddEquipment" />
+</DialogBox>
 
 @code {
+    bool modalAddEquipment = false;
 
+    string searchText = string.Empty;
+    List<EquipmentDto> equipments { get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        equipments = await ViewEquipmentUseCase.GetEquipmentAsync(a => true);
+    }
+
+    private void ShowModalAddLocation()
+    {
+        modalAddEquipment = true;
+    }
+
+    private void OnCancelHideModalAddEquipment()
+    {
+        modalAddEquipment = false;
+    }
+
+    private async Task OnSaveHideModalAddEquipment(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been added.");
+            await SearchEquipments();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        modalAddEquipment = false;
+    }
+
+    private async Task SearchLocationCallback(string searchText)
+    {
+        this.searchText = searchText;
+        await SearchEquipments();
+    }
+
+    public async Task SearchEquipments()
+    {
+        equipments = await ViewEquipmentUseCase.GetEquipmentAsync(
+            a => a.ModelName.Contains(searchText) ||
+            a.SerialNumber.Contains(searchText)
+        );
+
+        StateHasChanged();
+    }
 }

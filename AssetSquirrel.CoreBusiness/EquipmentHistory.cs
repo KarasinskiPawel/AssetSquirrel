@@ -2,16 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AssetSquirrel.CoreBusiness
 {
-    public class Equipment
+    public class EquipmentHistory
     {
         [Key]
+        public int EquipmentHistoryId { get; set; }
         public int EquipmentId { get; set; }
         public int? SuppilerId { get; set; }
         public int? ManufacturerId { get; set; }
@@ -22,7 +22,8 @@ namespace AssetSquirrel.CoreBusiness
         public string? Description { get; set; }
         public DateTime? DateAdd { get; set; }
         public DateTime? DateRemoved { get; set; }
-        public bool IsActive { get; set; } = true;
+        public DateTime DateOfChange { get; set; } = DateTime.Now;
+        public bool IsActive { get; set; }
 
         //Navigation
         public Suppiler? Suppiler { get; set; }
@@ -32,7 +33,7 @@ namespace AssetSquirrel.CoreBusiness
         public string? ApplicationUserId { get; set; }
         public ApplicationUser? ApplicationUser { get; set; }
 
-        // Relation 1:N
-        public ICollection<EquipmentHistory>? EquipmentHistories { get; set; }
+        // Relation N:1
+        public Equipment? Equipment { get; set; }
     }
 }

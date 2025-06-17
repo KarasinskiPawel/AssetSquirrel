@@ -1,3 +1,4 @@
+using AssetsSquirrel.CoreBusiness;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;

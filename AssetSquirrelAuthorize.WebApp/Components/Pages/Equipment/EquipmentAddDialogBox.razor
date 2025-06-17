@@ -1,0 +1,110 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentUseCase
+@using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
+
+@inject IAddEquipmentUseCase AddEquipmentUseCase
+
+@if(isLoading)
+{
+
+}
+else
+{
+    <div class="dialog-body">
+        <EditForm FormName="AddEquipment"
+                  EditContext="EditContext">
+
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Suppiler </label>
+                </div>
+                <div class="col-6">
+                    <InputSelect class="form-control" @bind-Value="Equipment.SuppilerId">
+                        <option value=""> ...suppiler... </option>
+                        @foreach (var suppiler in suppilers)
+                        {
+                            <option value="@suppiler.SuppilerId"> @suppiler.Name </option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Suppiler </label>
+                </div>
+                <div class="col-6">
+                    <InputSelect class="form-control" @bind-Value="Equipment.ManufacturerId">
+                        <option value=""> ...manufacturer... </option>
+                        @foreach (var manufacturer in manufacturers)
+                        {
+                            <option value="@manufacturer.ManufacturerId"> @manufacturer.Name </option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Hardware type </label>
+                </div>
+                <div class="col-6">
+                    <InputSelect class="form-control" @bind-Value="Equipment.HardwareTypeId">
+                        <option value=""> ...hardware type... </option>
+                        @foreach (var hardwareType in hardwareTypes)
+                        {
+                            <option value="@hardwareType.HardwareTypeId"> @hardwareType.Name </option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Code </label>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="Equipment.ModelName"></InputText>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+
+    EquipmentDto Equipment = new EquipmentDto();
+
+    List<SuppilerDto> suppilers;
+    List<ManufacturerDto> manufacturers;
+    List<HardwareTypeDto> hardwareTypes;
+
+    bool isLoading = true;
+
+    private EditContext? EditContext;
+
+    protected async override Task OnInitializedAsync()
+    {
+        EditContext = new EditContext(Equipment);
+
+        suppilers = await AddEquipmentUseCase.GetSuppilersAsync(a => a.IsActive == true);
+        manufacturers = await AddEquipmentUseCase.GetManufacturersAsync(a => a.IsActive == true);
+        hardwareTypes = await AddEquipmentUseCase.GetHardwareTypesAsync(a => a.IsActive == true);
+
+        isLoading = false;
+    }
+}

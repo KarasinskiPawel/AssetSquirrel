@@ -4,6 +4,7 @@ using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 {
     [DbContext(typeof(AssetsSquirrelContext))]
-    partial class AssetsSquirrelContextModelSnapshot : ModelSnapshot
+    [Migration("20250617100447_AddEquipmentHist")]
+    partial class AddEquipmentHist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,9 +96,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EquipmentId"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime?>("DateAdd")
                         .HasColumnType("datetime2");
 
@@ -128,8 +128,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
                     b.HasKey("EquipmentId");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("HardwareTypeId");
 
                     b.HasIndex("InvoiceId");
@@ -148,9 +146,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EquipmentHistoryId"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("DateAdd")
                         .HasColumnType("datetime2");
@@ -189,8 +184,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("EquipmentHistoryId");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("EquipmentId");
 
@@ -522,7 +515,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         });
                 });
 
-            modelBuilder.Entity("AssetsSquirrel.CoreBusiness.ApplicationUser", b =>
+            modelBuilder.Entity("AssetsSquirrel.Plugins.EFCoreSqlServer.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -722,10 +715,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
             modelBuilder.Entity("AssetSquirrel.CoreBusiness.Equipment", b =>
                 {
-                    b.HasOne("AssetsSquirrel.CoreBusiness.ApplicationUser", "ApplicationUser")
-                        .WithMany("Equipments")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("AssetSquirrel.CoreBusiness.HardwareType", "HardwareType")
                         .WithMany("Equipments")
                         .HasForeignKey("HardwareTypeId");
@@ -743,8 +732,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         .WithMany("Equipments")
                         .HasForeignKey("SuppilerId");
 
-                    b.Navigation("ApplicationUser");
-
                     b.Navigation("HardwareType");
 
                     b.Navigation("Invoice");
@@ -756,10 +743,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
             modelBuilder.Entity("AssetSquirrel.CoreBusiness.EquipmentHistory", b =>
                 {
-                    b.HasOne("AssetsSquirrel.CoreBusiness.ApplicationUser", "ApplicationUser")
-                        .WithMany("EquipmentHistories")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("AssetSquirrel.CoreBusiness.Equipment", "Equipment")
                         .WithMany("EquipmentHistories")
                         .HasForeignKey("EquipmentId")
@@ -786,8 +769,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         .HasForeignKey("SuppilerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("ApplicationUser");
-
                     b.Navigation("Equipment");
 
                     b.Navigation("HardwareType");
@@ -810,7 +791,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("AssetsSquirrel.CoreBusiness.ApplicationUser", null)
+                    b.HasOne("AssetsSquirrel.Plugins.EFCoreSqlServer.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -819,7 +800,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("AssetsSquirrel.CoreBusiness.ApplicationUser", null)
+                    b.HasOne("AssetsSquirrel.Plugins.EFCoreSqlServer.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -834,7 +815,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AssetsSquirrel.CoreBusiness.ApplicationUser", null)
+                    b.HasOne("AssetsSquirrel.Plugins.EFCoreSqlServer.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -843,7 +824,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("AssetsSquirrel.CoreBusiness.ApplicationUser", null)
+                    b.HasOne("AssetsSquirrel.Plugins.EFCoreSqlServer.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -872,13 +853,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
             modelBuilder.Entity("AssetSquirrel.CoreBusiness.Suppiler", b =>
                 {
-                    b.Navigation("Equipments");
-                });
-
-            modelBuilder.Entity("AssetsSquirrel.CoreBusiness.ApplicationUser", b =>
-                {
-                    b.Navigation("EquipmentHistories");
-
                     b.Navigation("Equipments");
                 });
 #pragma warning restore 612, 618

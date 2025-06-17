@@ -2,6 +2,7 @@ using AssetSquirrelAuthorize.UseCases.Extensions;
 using AssetSquirrelAuthorize.WebApp.Components;
 using AssetSquirrelAuthorize.WebApp.Components.Account;
 using AssetSquirrelAuthorize.WebApp.Extensions;
+using AssetsSquirrel.CoreBusiness;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
@@ -55,6 +56,7 @@ builder.Services.Configure<CircuitOptions>(options =>
 LocationUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 DictionaresUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 EmployeesUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
+EquipmentsUseCaseExtensions.AddExtension(builder.Services, builder.Configuration);
 ErrorsExtensions.AddExtension(builder.Services, builder.Configuration);
 
 var app = builder.Build();

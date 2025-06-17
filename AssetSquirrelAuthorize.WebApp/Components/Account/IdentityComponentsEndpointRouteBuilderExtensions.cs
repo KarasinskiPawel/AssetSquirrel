@@ -1,5 +1,6 @@
 using AssetSquirrelAuthorize.WebApp.Components.Account.Pages;
 using AssetSquirrelAuthorize.WebApp.Components.Account.Pages.Manage;
+using AssetsSquirrel.CoreBusiness;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
