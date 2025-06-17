@@ -1,7 +1,6 @@
 using AssetSquirrelAuthorize.UseCases.Extensions;
 using AssetSquirrelAuthorize.WebApp.Components;
 using AssetSquirrelAuthorize.WebApp.Components.Account;
-using AssetSquirrelAuthorize.WebApp.Data;
 using AssetSquirrelAuthorize.WebApp.Extensions;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -29,21 +28,21 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContextFactory<AssetsSquirrelContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AssetsSquirrelDB")
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AssetsSquirrelIdentityAccountsDB")
         , sql => sql.MigrationsAssembly("AssetsSquirrel.Plugins.EFCoreSqlServer"));
 });
 
-builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("AssetsSquirrelAccountsDB") ?? throw new InvalidOperationException("Connection string 'AssetsSquirrelAccountsDB' not found.")
-    ));
-
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddEntityFrameworkStores<AssetsSquirrelContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+
+//builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+//    options.UseSqlServer(
+//        builder.Configuration.GetConnectionString("AssetsSquirrelAccountsDB") ?? throw new InvalidOperationException("Connection string 'AssetsSquirrelAccountsDB' not found.")
+//    ));
+
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 

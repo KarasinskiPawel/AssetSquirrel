@@ -1,4 +1,4 @@
-using AssetSquirrelAuthorize.WebApp.Data;
+using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 

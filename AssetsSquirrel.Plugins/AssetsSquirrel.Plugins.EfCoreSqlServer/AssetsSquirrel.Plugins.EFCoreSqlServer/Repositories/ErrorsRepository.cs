@@ -1,6 +1,5 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.UseCases.PluginInterfaces;
-using AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -1,38 +1,33 @@
-Ôªøusing AssetSquirrel.CoreBusiness;
+using AssetSquirrel.CoreBusiness;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer
 {
-    public class AssetsSquirrelContext : DbContext
+    public class AssetsSquirrelContext(DbContextOptions<AssetsSquirrelContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
-        public AssetsSquirrelContext(DbContextOptions options) : base(options)
-        {
-
-        }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Suppiler> Suppilers { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<HardwareType> HardwareTypes { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
-        public DbSet<Error> Errors{ get; set; }
+        public DbSet<Error> Errors { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Employee>().HasData(
-                new Employee { EmployeeId = 1, FirstName = "Pawe≈Ç", LastName = "Karasi≈Ñski", Email = "pawelka@komfort.pl", PhoneNumber = null, IsActive = true },
-                new Employee { EmployeeId = 2, FirstName = "Dariusz", LastName = "GƒÖsiorowski", Email = "dariusz.gasiorowski@komfort.pl", PhoneNumber = null, IsActive = true },
+                new Employee { EmployeeId = 1, FirstName = "Pawe≥", LastName = "KarasiÒski", Email = "pawelka@komfort.pl", PhoneNumber = null, IsActive = true },
+                new Employee { EmployeeId = 2, FirstName = "Dariusz", LastName = "Gπsiorowski", Email = "dariusz.gasiorowski@komfort.pl", PhoneNumber = null, IsActive = true },
                 new Employee { EmployeeId = 3, FirstName = "Konrad", LastName = "Wawrzyniak", Email = "Konrad.Wawrzyniak@komfort.pl", PhoneNumber = null, IsActive = true }
                 );
 
             modelBuilder.Entity<Location>().HasData(
-                new Location { LocationId = 1, Code = "M100", MPK = "PL1M100Z", City = "Stryk√≥w", Street = "Magazyn Centralny", Email = "", PhoneNumber = "", IsActive = true },
-                new Location { LocationId = 2, Code = "S000", MPK = "PL1C001Z", City = "≈Å√≥d≈∫", Street = "Biuro - Srebrzy≈Ñska 14", Email = "", PhoneNumber = "", IsActive = true },
-                new Location { LocationId = 3, Code = "N001", MPK = "PL1N001Z", City = "≈Å√≥d≈∫", Street = "Magazyn IT - Srebrzy≈Ñska 14", Email = "", PhoneNumber = "", IsActive = true }
+                new Location { LocationId = 1, Code = "M100", MPK = "PL1M100Z", City = "StrykÛw", Street = "Magazyn Centralny", Email = "", PhoneNumber = "", IsActive = true },
+                new Location { LocationId = 2, Code = "S000", MPK = "PL1C001Z", City = "£Ûdü", Street = "Biuro - SrebrzyÒska 14", Email = "", PhoneNumber = "", IsActive = true },
+                new Location { LocationId = 3, Code = "N001", MPK = "PL1N001Z", City = "£Ûdü", Street = "Magazyn IT - SrebrzyÒska 14", Email = "", PhoneNumber = "", IsActive = true }
                 );
 
             modelBuilder.Entity<Suppiler>().HasData(
