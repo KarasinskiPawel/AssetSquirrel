@@ -58,6 +58,7 @@ DictionaresUseCaseExtensions.AddExtensions(builder.Services, builder.Configurati
 EmployeesUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 EquipmentsUseCaseExtensions.AddExtension(builder.Services, builder.Configuration);
 ErrorsExtensions.AddExtension(builder.Services, builder.Configuration);
+InvoicesUseCaseExtensions.AddExtension(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 

@@ -4,6 +4,7 @@ using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 {
     [DbContext(typeof(AssetsSquirrelContext))]
-    partial class AssetsSquirrelContextModelSnapshot : ModelSnapshot
+    [Migration("20250618071906_Invoices update")]
+    partial class Invoicesupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,8 +340,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"));
 
                     b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
@@ -347,19 +349,12 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UploadDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("InvoiceId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Invoices");
                 });
@@ -816,16 +811,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                     b.Navigation("Suppiler");
                 });
 
-            modelBuilder.Entity("AssetSquirrel.CoreBusiness.Invoice", b =>
-                {
-                    b.HasOne("AssetsSquirrel.CoreBusiness.ApplicationUser", "User")
-                        .WithMany("Invoices")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -907,8 +892,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                     b.Navigation("EquipmentHistories");
 
                     b.Navigation("Equipments");
-
-                    b.Navigation("Invoices");
                 });
 #pragma warning restore 612, 618
         }

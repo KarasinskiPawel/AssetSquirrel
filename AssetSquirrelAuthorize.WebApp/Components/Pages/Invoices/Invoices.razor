@@ -1,7 +1,181 @@
 ﻿@page "/invoices"
+@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.Invoices
+@using AssetSquirrel.UseCases.Invoices.Interfaces
 
-<h3>Invoices</h3>
+@inject IViewInvoicesUseCase ViewInvoicesUseCase
+@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
+
+<div class="row col-12">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddInvoice())">
+            <i class="bi bi-house-add"></i>
+            Add invoice
+        </button>
+
+        <TextSearchBar placeholderText="...invoice number, description..."
+                       TextSearchBarCallback="SearchInvoicesCallback">
+        </TextSearchBar>
+    </div>
+</div>
+
+<div class="row offset-1 col-10 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Invoice number </th>
+                    <th scope="col"> Invoice date </th>
+                    <th scope="col"> Description </th>
+                    <th scope="col"> File path </th>
+                    <th scope="col"> File upload date </th>
+                    <th scope="col"> User </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(invoices is not null && invoices.Count() > 0)
+                {
+                    foreach(var invoice in invoices)
+                    {
+                        <tr>
+                            <td> @(invoices.IndexOf(invoice) + 1) </td>
+                            <td> @invoice.InvoiceNumber </td>
+                            <td> @invoice.InvoiceDate?.ToShortDateString() </td>
+                            <td> @invoice.Description </td>
+                            <td> @invoice.FilePath </td>
+                            <td> @invoice.UploadDate?.ToShortDateString() </td>
+                            <td> @invoice.UserName </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalAddInvoiceDocument(invoice))" title="Add invoice">
+                                    <i class="bi bi-file-arrow-up"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" @onclick="(() => DownloadInvoice(invoice))" title="Download invoice">
+                                    <i class="bi bi-file-arrow-down"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditInvoice(invoice))" title="Edit">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteInvoice(invoice))" title="Remove">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">No invoices found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<DialogBox Show="modalAddInvoice"
+Title="Add invoice">
+    <InvoiceAddDialogBox
+    OnCancel="OnCancelHideModalAddInvoice"
+    OnSave="OnSaveHideModalAddInvoice" />
+</DialogBox>
+
+<DialogBox Show="modalAddInvoice"
+           Title="Add invoice">
+    <InvoiceAddDocumentDialogBox
+        OnCancel="OnCancelHideModalAddDocument"
+        OnSave="OnSaveHideModalAddDocument"
+        Invoice="Invoice" />
+</DialogBox>
 
 @code {
+    bool modalAddInvoice = false;
+    bool modalAddInvoiceDocument = false;
 
+    string searchText = string.Empty;
+
+    List<InvoiceDto> invoices;
+    InvoiceDto Invoice { get; set; } = new InvoiceDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        invoices = await ViewInvoicesUseCase.GetInvoicesAsync(a => true);
+    }
+
+    public void ShowModalAddInvoiceDocument(InvoiceDto invoice)
+    {
+        this.Invoice = invoice;
+        modalAddInvoiceDocument = true;
+    }
+
+    public void OnCancelHideModalAddDocument()
+    {
+        modalAddInvoiceDocument = false;
+    }
+
+    public void OnSaveHideModalAddDocument()
+    {
+        
+    }
+
+    public void DownloadInvoice(InvoiceDto invoice)
+    {
+
+    }
+
+    public void ShowModalEditInvoice(InvoiceDto invoice)
+    {
+        
+    }
+
+    public void DeleteInvoice(InvoiceDto invoice)
+    {
+        // Logic to delete the invoice
+    }
+
+    public void ShowModalAddInvoice()
+    {
+        modalAddInvoice = true;
+    }
+
+    public void OnCancelHideModalAddInvoice()
+    {
+        modalAddInvoice = false;
+    }
+
+    public async Task OnSaveHideModalAddInvoice(bool result)
+    {
+        if(result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice has been added.");
+            await SearchInvoices();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        modalAddInvoice = false;
+    }
+
+    public async Task SearchInvoicesCallback(string searchText)
+    {
+        this.searchText = searchText;
+        await SearchInvoices();
+    }
+
+    public async Task SearchInvoices()
+    {
+        invoices = await ViewInvoicesUseCase.GetInvoicesAsync(
+            a => a.InvoiceNumber.Contains(searchText) ||
+            a.Description.Contains(searchText)
+        );
+    }
 }

@@ -1,5 +1,6 @@
 using AssetSquirrel.CoreBusiness;
 using AssetsSquirrel.CoreBusiness;
+using AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
         public DbSet<HardwareType> HardwareTypes { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<EquipmentHistory> EquipmentHistories { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Error> Errors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,58 +59,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
                 new HardwareType { HardwareTypeId = 8, Name = "Drukarka fiskalna", Description = "", IsActive = true }
                 );
 
-            modelBuilder.Entity<Equipment>()
-                .HasOne(a => a.Suppiler)
-                .WithMany(b => b.Equipments)
-                .HasForeignKey(a => a.SuppilerId);
-
-            modelBuilder.Entity<Equipment>()
-                .HasOne(a => a.Manufacturer)
-                .WithMany(b => b.Equipments)
-                .HasForeignKey(a => a.ManufacturerId);
-
-            modelBuilder.Entity<Equipment>()
-                .HasOne(a => a.HardwareType)
-                .WithMany(b => b.Equipments)
-                .HasForeignKey(a => a.HardwareTypeId);
-
-            modelBuilder.Entity<Equipment>()
-                .HasOne(e => e.Invoice)
-                .WithMany(i => i.Equipments)
-                .HasForeignKey(e => e.InvoiceId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            // Relacja: Equipment (1) -> (N) EquipmentHistory
-            modelBuilder.Entity<EquipmentHistory>()
-                .HasOne(eh => eh.Equipment)               // jedna historia ma jeden sprzêt
-                .WithMany(e => e.EquipmentHistories)      // jeden sprzêt ma wiele historii
-                .HasForeignKey(eh => eh.EquipmentId)      // klucz obcy
-                .OnDelete(DeleteBehavior.Cascade);        // np. kasuj historiê, gdy sprzêt usuwany
-
-            // (Opcjonalnie) Dla Invoice, Supplier, Manufacturer, HardwareType:
-            modelBuilder.Entity<EquipmentHistory>()
-                .HasOne(eh => eh.Invoice)
-                .WithMany() // Jeœli nie ma odwrotnej nawigacji
-                .HasForeignKey(eh => eh.InvoiceId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<EquipmentHistory>()
-                .HasOne(eh => eh.Suppiler)
-                .WithMany()
-                .HasForeignKey(eh => eh.SuppilerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<EquipmentHistory>()
-                .HasOne(eh => eh.Manufacturer)
-                .WithMany()
-                .HasForeignKey(eh => eh.ManufacturerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<EquipmentHistory>()
-                .HasOne(eh => eh.HardwareType)
-                .WithMany()
-                .HasForeignKey(eh => eh.HardwareTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.ApplyConfiguration(new EquipmentConfiguration());
+            modelBuilder.ApplyConfiguration(new EquipmentHistoryConfiguration());
+            modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
         }
     }
 }

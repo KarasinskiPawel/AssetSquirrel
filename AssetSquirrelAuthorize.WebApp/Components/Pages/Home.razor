@@ -10,7 +10,46 @@
 </div>
 
 <div class="row">
-    <div class="offset-2 col-8">
-        <img class="mx-auto d-block" style="width: 60%;" src="/pictures/AssetSquirrel.png" />
-    </div>
+    @if(randomValue == 1)
+    {
+        <div class="offset-2 col-8">
+            <img class="mx-auto d-block" style="width: 60%;" src="/pictures/01.jpeg" />
+        </div>
+    }
+    else if (randomValue == 2)
+    {
+        <div class="offset-2 col-8">
+            <img class="mx-auto d-block" style="width: 60%;" src="/pictures/02.jpeg" />
+        </div>
+    }
+    else if (randomValue == 3)
+    {
+        <div class="offset-2 col-8">
+            <img class="mx-auto d-block" style="width: 60%;" src="/pictures/03.jpeg" />
+        </div>
+    }
+    else if (randomValue == 4)
+    {
+        <div class="offset-2 col-8">
+            <img class="mx-auto d-block" style="width: 60%;" src="/pictures/04.jpeg" />
+        </div>
+    }
+    else
+    {
+        <div class="offset-2 col-8">
+            <img class="mx-auto d-block" style="width: 60%;" src="/pictures/AssetSquirrel.png" />
+        </div>
+    }
+
 </div>
+
+@code{
+    int randomValue = 0;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Random random = new Random();
+        randomValue = random.Next(1, 5); // Generates a number between 1 and 4
+    }
+}

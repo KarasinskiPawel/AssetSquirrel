@@ -9,5 +9,6 @@ namespace AssetsSquirrel.CoreBusiness
     {
         public ICollection<Equipment>? Equipments { get; set; }
         public ICollection<EquipmentHistory>? EquipmentHistories{ get; set; }
+        public ICollection<Invoice>? Invoices { get; set; }
     }
 }

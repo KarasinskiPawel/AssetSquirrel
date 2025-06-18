@@ -22,7 +22,7 @@ else
                 </div>
                 <div class="col-6">
                     <InputSelect class="form-control" @bind-Value="Equipment.SuppilerId">
-                        <option value=""> ...suppiler... </option>
+                        <option value="@((int?)null)"> ...suppiler... </option>
                         @foreach (var suppiler in suppilers)
                         {
                             <option value="@suppiler.SuppilerId"> @suppiler.Name </option>
@@ -39,7 +39,7 @@ else
                 </div>
                 <div class="col-6">
                     <InputSelect class="form-control" @bind-Value="Equipment.ManufacturerId">
-                        <option value=""> ...manufacturer... </option>
+                        <option value="@((int?)null)"> ...manufacturer... </option>
                         @foreach (var manufacturer in manufacturers)
                         {
                             <option value="@manufacturer.ManufacturerId"> @manufacturer.Name </option>
@@ -56,7 +56,7 @@ else
                 </div>
                 <div class="col-6">
                     <InputSelect class="form-control" @bind-Value="Equipment.HardwareTypeId">
-                        <option value=""> ...hardware type... </option>
+                        <option value="@((int?)null)"> ...hardware type... </option>
                         @foreach (var hardwareType in hardwareTypes)
                         {
                             <option value="@hardwareType.HardwareTypeId"> @hardwareType.Name </option>

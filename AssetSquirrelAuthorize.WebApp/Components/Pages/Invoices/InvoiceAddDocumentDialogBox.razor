@@ -1,0 +1,107 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+<h3>InvoiceAddDocumentDialogBox</h3>
+
+@* @inject IAddInvoiceDocumentUseCase AddInvoiceDocumentUseCase *@
+@inject IJSRuntime JSRuntime
+
+@if (Invoice is not null)
+{
+    <div class="dialog-body">
+        <EditForm FormName="AddInvoiceDocument"
+                  EditContext="EditContext">
+
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Invoice number </label>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="Invoice.InvoiceNumber" readonly></InputText>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Invoice date </label>
+                </div>
+                <div class="col-6">
+                    <InputDate class="form-control" @bind-Value="Invoice.InvoiceDate" readonly></InputDate>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Description </label>
+                </div>
+                <div class="col-6">
+                    <InputTextArea class="form-control" @bind-Value="Invoice.Description" readonly></InputTextArea>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Invoice file </label>
+                </div>
+                <div class="col-6">
+                    <InputFile class="form-control" OnChange="HandleFileSelected"></InputFile>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+    <div class="dialog-footer">
+        <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Close </button>
+
+        <button class="btn btn-sm btn-primary w-25" @onclick="AddDocument"> Save & Close </button>
+    </div>
+}
+else
+{
+    <div class="dialog-body">
+        <p>Loading...</p>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public InvoiceDto Invoice { get; set; }
+
+    private EditContext? EditContext;
+
+    private IBrowserFile? uploadedFile;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(Invoice);
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+    }
+
+    public void AddDocument(){
+        if (uploadedFile is not null)
+        {
+            // var fileName = uploadedFile.Name;
+            // using var stream = uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10 MB limit
+            // AddInvoiceDocumentUseCase.AddDocument(Invoice.InvoiceId, fileName, stream);
+            // OnSave.InvokeAsync(true);
+            JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been added.");
+        }
+        else
+        {
+            JSRuntime.InvokeVoidAsync("OperationAborted", "No file selected!");
+        }
+    }
+}

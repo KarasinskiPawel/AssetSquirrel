@@ -58,7 +58,7 @@ Title="Add equipment">
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
         }
 
         modalAddEquipment = false;
