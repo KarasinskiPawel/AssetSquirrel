@@ -19,17 +19,20 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
         private readonly IHardwareTypeRepository hardwareTypeRepository;
         private readonly IManufacturersRepository manufacturersRepository;
         private readonly ISuppilersRepository suppilersRepository;
+        private readonly IInvoiceRepository invoiceRepository;
 
         public AddEquipmentUseCase(
             IEquipmentRepository equipmentRepository,
             IHardwareTypeRepository hardwareTypeRepository,
             IManufacturersRepository manufacturersRepository,
-            ISuppilersRepository suppilersRepository)
+            ISuppilersRepository suppilersRepository,
+            IInvoiceRepository invoiceRepository)
         {
             this.equipmentRepository = equipmentRepository;
             this.hardwareTypeRepository = hardwareTypeRepository;
             this.manufacturersRepository = manufacturersRepository;
             this.suppilersRepository = suppilersRepository;
+            this.invoiceRepository = invoiceRepository;
         }
 
         public async Task<bool> AddEquipmentAsync(EquipmentDto equipment)
@@ -55,6 +58,11 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
         {
             return suppilersRepository.GetSuppilersAsync(where)
                 .ContinueWith(task => task.Result.Select(s => new GenericMapper<Suppiler, SuppilerDto>().Map(s)).ToList());
+        }
+
+        public async Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where)
+        {
+            return await invoiceRepository.GetInvoicesAsync(where);
         }
     }
 }

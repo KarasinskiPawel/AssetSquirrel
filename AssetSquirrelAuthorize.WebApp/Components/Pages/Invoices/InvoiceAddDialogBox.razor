@@ -81,7 +81,6 @@
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
         Invoice.UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         //var appUser = await UserManager.FindByIdAsync(userId);
     }

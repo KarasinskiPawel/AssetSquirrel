@@ -44,14 +44,15 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             }
         }
 
-        public async Task<IEnumerable<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where)
+        public async Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where)
         {
             var dbContext = dbContextFactory.CreateDbContext();
 
             var output = await dbContext.Invoices
                 .Where(where)
                 .Include(i => i.User)
-                .Select(a => new InvoiceDto {
+                .Select(a => new InvoiceDto
+                {
                     InvoiceId = a.InvoiceId,
                     InvoiceNumber = a.InvoiceNumber,
                     Description = a.Description,
@@ -61,7 +62,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     UserId = a.UserId,
                     UserName = a.User != null ? a.User.UserName : null
                 })
-                .ToListAsync() ?? Enumerable.Empty<InvoiceDto>();
+                .ToListAsync();
 
             return output;
         }

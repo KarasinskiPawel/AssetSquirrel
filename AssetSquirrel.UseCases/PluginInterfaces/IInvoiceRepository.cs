@@ -11,7 +11,7 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
 {
     public interface IInvoiceRepository
     {
-        Task<IEnumerable<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where);
+        Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where);
         Task<bool> UpdateInvoiceAsync(Invoice invoice);
         Task<bool> DeleteInvoiceAsync(Invoice invoiceId);
     }
