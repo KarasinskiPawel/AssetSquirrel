@@ -1,0 +1,22 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+<h3>EquipmentEditDialogBox</h3>
+
+@code {
+    [Parameter, EditorRequired]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<bool> OnSave { get; set; }
+
+    [Parameter, EditorRequired]
+    public EquipmentDto Equipment { get; set; }
+
+    private EditContext? EditContext;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(Equipment);
+
+        base.OnInitialized();
+    }
+}

@@ -72,14 +72,34 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             }
         }
 
-        public async Task<IEnumerable<Equipment>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where)
+        public async Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where)
         {
             var dbContext = dbContextFactory.CreateDbContext();
 
             var output = await dbContext.Equipments.Where(where)
+                .Select(a => new EquipmentDto
+                {
+                    EquipmentId = a.EquipmentId,
+                    SuppilerId = a.SuppilerId,
+                    SuppilerName = a.Suppiler.Name,
+                    ManufacturerId = a.ManufacturerId,
+                    ManufacturerName = a.Manufacturer.Name,
+                    HardwareTypeId = a.HardwareTypeId,
+                    HardwareTypeName = a.HardwareType.Name,
+                    ModelName = a.ModelName,
+                    IsActive = a.IsActive,
+                    DateAdd = a.DateAdd,
+                    DateRemoved = a.DateRemoved,
+                    Description = a.Description,
+                    InvoiceId = a.InvoiceId,
+                    InvoiceNumber = a.Invoice != null ? a.Invoice.InvoiceNumber : null,
+                    SerialNumber = a.SerialNumber,
+                    UserId = a.UserId,
+                    UserName = a.User != null ? a.User.UserName : null
+                })
                 .OrderBy(a => a.ModelName)
                 .ThenBy(a => a.SerialNumber)
-                .ToListAsync() ?? Enumerable.Empty<Equipment>();
+                .ToListAsync();
 
             return output;
         }

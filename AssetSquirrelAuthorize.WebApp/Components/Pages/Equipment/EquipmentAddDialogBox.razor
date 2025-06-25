@@ -211,7 +211,7 @@ else
 
         if (user.Identity?.IsAuthenticated == true)
         {
-            this.Equipment.ApplicationUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            this.Equipment.UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
 
         isLoading = false;

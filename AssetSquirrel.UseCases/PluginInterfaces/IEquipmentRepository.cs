@@ -11,7 +11,7 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
 {
     public interface IEquipmentRepository
     {
-        Task<IEnumerable<Equipment>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where);
+        Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where);
 
         Task<bool> DeleteEquipmentAsync(Equipment equipment);
 

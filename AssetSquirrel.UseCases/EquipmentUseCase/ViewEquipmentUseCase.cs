@@ -23,9 +23,7 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
 
         public async Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where)
         {
-            return new GenericMapper<EquipmentDto, Equipment>().Map(
-                await equipmentRepository.GetEquipmentAsync(where)
-                ).ToList();
+            return await equipmentRepository.GetEquipmentAsync(where);
         }
 
         public async Task<bool> DeleteEquipmentAsync(EquipmentDto equipment)

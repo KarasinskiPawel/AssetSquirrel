@@ -12,11 +12,15 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public int EquipmentId { get; set; }
         [Required]
         public int SuppilerId { get; set; }
+        public string? SuppilerName { get; set; }
         [Required]
         public int ManufacturerId { get; set; }
+        public string? ManufacturerName { get; set; }
         [Required]
         public int HardwareTypeId { get; set; }
+        public string? HardwareTypeName { get; set; }   
         public int? InvoiceId { get; set; }
+        public string? InvoiceNumber { get; set; }
         [Required]
         [MinLength(5, ErrorMessage = "Min length 5 chars.")]
         public string ModelName { get; set; } = string.Empty;
@@ -27,6 +31,7 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public DateTime? DateRemoved { get; set; }
         public bool IsActive { get; set; } = true;
 
-        public string? ApplicationUserId { get; set; }
+        public string? UserId { get; set; } // Foreign key to ApplicationUser
+        public string? UserName { get; set; }
     }
 }

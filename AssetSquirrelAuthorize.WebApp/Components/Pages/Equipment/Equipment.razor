@@ -9,14 +9,77 @@
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())">
+        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEquipment())">
             <i class="bi bi-motherboard"></i>
             Add equipment
         </button>
 
         <TextSearchBar placeholderText="serial number, model..."
-                       TextSearchBarCallback="SearchLocationCallback">
+                       TextSearchBarCallback="SearchCallback">
         </TextSearchBar>
+    </div>
+</div>
+
+<div class="row col-12 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Suppiler name </th>
+                    <th scope="col"> Manufacturer name </th>
+                    <th scope="col"> Hardware type </th>
+                    <th scope="col"> Model name </th>
+                    <th scope="col"> Serial number </th>
+                    <th scope="col"> Description </th>
+                    <th scope="col"> Date add </th>
+                    <th scope="col"> Date removed </th>
+                    <th scope="col"> Is active? </th>
+                    <th scope="col"> User </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (equipments is not null && equipments.Count() > 0)
+                {
+                    @foreach(var equipment in equipments)
+                    {
+                        <tr>
+                            <td> @(equipments.IndexOf(equipment) + 1) </td>
+                            <td> @equipment.SuppilerName </td>
+                            <td> @equipment.ManufacturerName </td>
+                            <td> @equipment.HardwareTypeName </td>
+                            <td> @equipment.ModelName </td>
+                            <td> @equipment.SerialNumber </td>
+                            <td> @equipment.Description </td>
+                            <td> @equipment.DateAdd.ToShortDateString() </td>
+                            <td> @equipment.DateRemoved?.ToShortDateString() </td>
+                            <td>
+                                @if(equipment.IsActive)
+                                {
+                                    <i class="bi bi-shield-check form-control"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-shield-x form-control"></i>
+                                }
+                            </td>
+                            <td> @equipment.UserName </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" title="Remove">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -27,18 +90,55 @@ Title="Add equipment">
     OnSave="OnSaveHideModalAddEquipment" />
 </DialogBox>
 
+<DialogBox Show="modalAddEquipment"
+           Title="Add equipment">
+    <EquipmentEditDialogBox
+        OnCancel="OnCancelHideModalAddEquipment"
+        OnSave="OnSaveHideModalAddEquipment" />
+        Equipment="Equipment"
+</DialogBox>
+
 @code {
     bool modalAddEquipment = false;
+    bool modalEditEquipment = false;
 
     string searchText = string.Empty;
     List<EquipmentDto> equipments { get; set;}
+    EquipmentDto equipment;
 
     protected override async Task OnInitializedAsync()
     {
-        equipments = await ViewEquipmentUseCase.GetEquipmentAsync(a => true);
+        equipments = await ViewEquipmentUseCase.GetEquipmentAsync(a => a.IsActive == true);
     }
 
-    private void ShowModalAddLocation()
+    public void ShowModalEditEquipment(EquipmentDto equipment)
+    {
+        this.equipment = equipment;
+        modalEditEquipment = true;
+    }
+
+    public void OnCancelHideModalEditEquipment()
+    {
+        modalEditEquipment = false;
+    }
+
+    public async Task OnSaveHideModalEditEquipment(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been edited.");
+            await SearchEquipments();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
+        }
+
+        modalEditEquipment = false;
+    }
+
+    private void ShowModalAddEquipment()
     {
         modalAddEquipment = true;
     }
@@ -64,7 +164,7 @@ Title="Add equipment">
         modalAddEquipment = false;
     }
 
-    private async Task SearchLocationCallback(string searchText)
+    private async Task SearchCallback(string searchText)
     {
         this.searchText = searchText;
         await SearchEquipments();

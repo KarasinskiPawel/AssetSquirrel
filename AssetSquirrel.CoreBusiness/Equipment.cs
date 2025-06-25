@@ -35,8 +35,8 @@ namespace AssetSquirrel.CoreBusiness
         public Manufacturer? Manufacturer { get; set; }
         public HardwareType? HardwareType { get; set; }
         public Invoice? Invoice { get; set; }
-        public string? ApplicationUserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
+        public string? UserId { get; set; } // Foreign key to ApplicationUser
+        public ApplicationUser? User { get; set; }
 
         // Relation 1:N
         public ICollection<EquipmentHistory>? EquipmentHistories { get; set; }
