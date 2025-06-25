@@ -1,5 +1,6 @@
 ﻿@using AssetSquirrel.CoreBusiness.Dto
-<h3>EquipmentEditDialogBox</h3>
+
+
 
 @code {
     [Parameter, EditorRequired]
@@ -18,5 +19,17 @@
         EditContext = new EditContext(Equipment);
 
         base.OnInitialized();
+    }
+
+    public async Task EditEquipment()
+    {
+        if (EditContext!.Validate())
+        {
+            await OnSave.InvokeAsync(true);
+        }
+        else
+        {
+            await OnSave.InvokeAsync(false);
+        }
     }
 }
