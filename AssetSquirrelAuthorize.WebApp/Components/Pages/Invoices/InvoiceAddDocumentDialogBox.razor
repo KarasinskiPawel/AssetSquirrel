@@ -1,7 +1,7 @@
 ﻿@using AssetSquirrel.CoreBusiness.Dto
-<h3>InvoiceAddDocumentDialogBox</h3>
+@using AssetSquirrel.UseCases.Invoices.Interfaces
 
-@* @inject IAddInvoiceDocumentUseCase AddInvoiceDocumentUseCase *@
+@inject IAddInvoiceDocumentUseCase AddInvoiceDocumentUseCase
 @inject IJSRuntime JSRuntime
 
 @if (Invoice is not null)
@@ -50,7 +50,7 @@
                     <label class="col-form-label"> Invoice file </label>
                 </div>
                 <div class="col-6">
-                    <InputFile class="form-control" OnChange="HandleFileSelected"></InputFile>
+                    <InputFile class="form-control" OnChange="HandleFileSelected" accept="application/pdf"></InputFile>
                 </div>
                 <div class="col-1">
                 </div>
@@ -90,18 +90,26 @@ else
         uploadedFile = e.File;
     }
 
-    public void AddDocument(){
+    public async Task AddDocument(){
         if (uploadedFile is not null)
         {
-            // var fileName = uploadedFile.Name;
-            // using var stream = uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10 MB limit
-            // AddInvoiceDocumentUseCase.AddDocument(Invoice.InvoiceId, fileName, stream);
-            // OnSave.InvokeAsync(true);
-            JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been added.");
+            if (await AddInvoiceDocumentUseCase.AddInvoiceDocumentAsync(
+                this.Invoice
+                ,this.uploadedFile.Name
+                ,this.uploadedFile.ContentType
+                ,uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))
+            )
+            {
+                await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been added.");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("OperationAborted", "Failed to add document!");
+            }
         }
         else
         {
-            JSRuntime.InvokeVoidAsync("OperationAborted", "No file selected!");
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "No file selected!");
         }
     }
 }

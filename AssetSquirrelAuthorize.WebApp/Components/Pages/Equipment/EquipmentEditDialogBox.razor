@@ -1,6 +1,197 @@
 ﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
+@using AssetsSquirrel.CoreBusiness
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 
+@inject IEditEquipmentUseCase EditEquipmentUseCase
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
+@if (Equipment is not null)
+{
+    @if (isLoading)
+    {
+        <div class="dialog-body">
+            <EditForm FormName="AddEquipment"
+                      EditContext="EditContext">
+
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Suppiler </label>
+                    </div>
+                    <div class="col-6">
+                        <InputSelect class="form-control" @bind-Value="Equipment.SuppilerId">
+                            <option value="0"> ...suppiler... </option>
+                            @foreach (var suppiler in suppilers)
+                            {
+                                <option value="@suppiler.SuppilerId"> @suppiler.Name </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-1">
+                        @if (Equipment.SuppilerId == 0)
+                        {
+                            <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
+                        }
+                        else
+                        {
+                            <i class="form-control bi bi-check-circle"></i>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Suppiler </label>
+                    </div>
+                    <div class="col-6">
+                        <InputSelect class="form-control" @bind-Value="Equipment.ManufacturerId">
+                            <option value="@(0)"> ...manufacturer... </option>
+                            @foreach (var manufacturer in manufacturers)
+                            {
+                                <option value="@manufacturer.ManufacturerId"> @manufacturer.Name </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-1">
+                        @if (Equipment.ManufacturerId == 0)
+                        {
+                            <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
+                        }
+                        else
+                        {
+                            <i class="form-control bi bi-check-circle"></i>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Hardware type </label>
+                    </div>
+                    <div class="col-6">
+                        <InputSelect class="form-control" @bind-Value="Equipment.HardwareTypeId">
+                            <option value="@(0)"> ...hardware type... </option>
+                            @foreach (var hardwareType in hardwareTypes)
+                            {
+                                <option value="@hardwareType.HardwareTypeId"> @hardwareType.Name </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-1">
+                        @if (Equipment.HardwareTypeId == 0)
+                        {
+                            <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
+                        }
+                        else
+                        {
+                            <i class="form-control bi bi-check-circle"></i>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Invoice number </label>
+                    </div>
+                    <div class="col-6">
+                        <InputSelect class="form-control" @bind-Value="Equipment.InvoiceId">
+                            <option value="@(0)"> ...invoice number... </option>
+                            @foreach (var invoice in invoices)
+                            {
+                                <option value="@invoice.InvoiceId" title="@invoice.Description"> @invoice.InvoiceNumber </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-1">
+                        @if (Equipment.HardwareTypeId == 0)
+                        {
+                            <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
+                        }
+                        else
+                        {
+                            <i class="form-control bi bi-check-circle"></i>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Modal name </label>
+                    </div>
+                    <div class="col-6">
+                        <InputText class="form-control" @bind-Value="Equipment.ModelName"></InputText>
+                    </div>
+                    <div class="col-1">
+                        @if (Equipment.ModelName.Length <= 5)
+                        {
+                            <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
+                        }
+                        else
+                        {
+                            <i class="form-control bi bi-check-circle"></i>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Serial number </label>
+                    </div>
+                    <div class="col-6">
+                        <InputText class="form-control" @bind-Value="Equipment.SerialNumber"></InputText>
+                    </div>
+                    <div class="col-1">
+                        @if (Equipment.SerialNumber is null || Equipment.SerialNumber?.Length == 0)
+                        {
+                            <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
+                        }
+                        else
+                        {
+                            <i class="form-control bi bi-check-circle"></i>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Description </label>
+                    </div>
+                    <div class="col-6">
+                        <InputTextArea class="form-control" @bind-Value="Equipment.Description"></InputTextArea>
+                    </div>
+                    <div class="col-1">
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
+                        <label class="col-form-label"> Is active? </label>
+                    </div>
+                    <div class="col-6 text-center">
+                        <InputCheckbox class="form-check-input" @bind-Value="Equipment.IsActive"></InputCheckbox>
+                    </div>
+                    <div class="col-1">
+                    </div>
+                </div>
+
+            </EditForm>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Zamknij </button>
+
+            <button class="btn btn-sm btn-primary w-25" @onclick="EditEquipment"> Zapisz </button>
+        </div>
+    }
+}
+else
+{
+    <p> Something went wrong...  </p>
+}
 
 @code {
     [Parameter, EditorRequired]
@@ -14,18 +205,42 @@
 
     private EditContext? EditContext;
 
-    protected override void OnInitialized()
+    List<SuppilerDto> suppilers;
+    List<ManufacturerDto> manufacturers;
+    List<HardwareTypeDto> hardwareTypes;
+    List<InvoiceDto> invoices;
+
+    bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
     {
         EditContext = new EditContext(Equipment);
+
+        suppilers = await EditEquipmentUseCase.GetSuppilersAsync(a => a.IsActive == true);
+        manufacturers = await EditEquipmentUseCase.GetManufacturersAsync(a => a.IsActive == true);
+        hardwareTypes = await EditEquipmentUseCase.GetHardwareTypesAsync(a => a.IsActive == true);
+        invoices = await EditEquipmentUseCase.GetInvoicesAsync(a => true);
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            this.Equipment.UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        isLoading = true;
 
         base.OnInitialized();
     }
 
     public async Task EditEquipment()
     {
-        if (EditContext!.Validate())
+        if (EditContext is not null && EditContext!.Validate())
         {
-            await OnSave.InvokeAsync(true);
+            await OnSave.InvokeAsync(
+                await EditEquipmentUseCase.UpdateEquipmentAsync(Equipment)
+        );
         }
         else
         {

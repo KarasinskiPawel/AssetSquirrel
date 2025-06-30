@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AssetSquirrel.CoreBusiness\AssetSquirrel.CoreBusiness.csproj" />
+    <ProjectReference Include="..\AssetsSquirrel.Plugins\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory.csproj" />
   </ItemGroup>
 
 </Project>

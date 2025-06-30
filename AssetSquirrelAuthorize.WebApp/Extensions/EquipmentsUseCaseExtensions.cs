@@ -13,6 +13,7 @@ namespace AssetSquirrelAuthorize.WebApp.Extensions
 
             services.AddScoped<IViewEquipmentUseCase, ViewEquipmentUseCase>();
             services.AddScoped<IAddEquipmentUseCase, AddEquipmentUseCase>();
+            services.AddScoped<IEditEquipmentUseCase, EditEquipmentUseCase>();
 
             return services;
         }

@@ -59,19 +59,19 @@
                             <td>
                                 @if(equipment.IsActive)
                                 {
-                                    <i class="bi bi-shield-check form-control"></i>
+                                    <i class="bi bi-shield-check form-control as-bg-green"></i>
                                 }
                                 else
                                 {
-                                    <i class="bi bi-shield-x form-control"></i>
+                                    <i class="bi bi-shield-x form-control as-bg-red"></i>
                                 }
                             </td>
                             <td> @equipment.UserName </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                <button class="btn btn-sm btn-outline-warning" title="Edit" @onclick="(() => ShowModalEditEquipment(equipment))">
                                     <i class="bi bi-pen"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" title="Remove">
+                                <button class="btn btn-sm btn-outline-danger" title="Remove" @onclick="(() => RemoveEquipment(equipment))">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </td>
@@ -90,12 +90,12 @@ Title="Add equipment">
     OnSave="OnSaveHideModalAddEquipment" />
 </DialogBox>
 
-<DialogBox Show="modalAddEquipment"
+<DialogBox Show="modalEditEquipment"
            Title="Add equipment">
     <EquipmentEditDialogBox
-        OnCancel="OnCancelHideModalAddEquipment"
-        OnSave="OnSaveHideModalAddEquipment" />
-        Equipment="Equipment"
+        OnCancel="OnCancelHideModalEditEquipment"
+        OnSave="OnSaveHideModalEditEquipment"
+        Equipment="equipment" />
 </DialogBox>
 
 @code {
@@ -109,12 +109,6 @@ Title="Add equipment">
     protected override async Task OnInitializedAsync()
     {
         equipments = await ViewEquipmentUseCase.GetEquipmentAsync(a => a.IsActive == true);
-    }
-
-    public void ShowModalEditEquipment(EquipmentDto equipment)
-    {
-        this.equipment = equipment;
-        modalEditEquipment = true;
     }
 
     public void OnCancelHideModalEditEquipment()
@@ -141,6 +135,12 @@ Title="Add equipment">
     private void ShowModalAddEquipment()
     {
         modalAddEquipment = true;
+    }
+
+    private void ShowModalEditEquipment(EquipmentDto equipment)
+    {
+        this.equipment = equipment;
+        modalEditEquipment = true;
     }
 
     private void OnCancelHideModalAddEquipment()
@@ -178,5 +178,21 @@ Title="Add equipment">
         );
 
         StateHasChanged();
+    }
+
+    public async Task RemoveEquipment(EquipmentDto equipment)
+    {
+        await Task.Delay(100); // Simulate some delay for the operation
+
+        // if (await ViewEquipmentUseCase.RemoveEquipmentAsync(equipment))
+        // {
+        //     await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been removed.");
+        //     await SearchEquipments();
+        //     StateHasChanged();
+        // }
+        // else
+        // {
+        //     await JSRuntime.InvokeVoidAsync("OperationAborted", "Removing error.");
+        // }
     }
 }

@@ -52,3 +52,11 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.as-bg-green {
+    background-color: #3CB371;
+}
+
+.as-bg-red {
+    background-color: #FF0000;
+}

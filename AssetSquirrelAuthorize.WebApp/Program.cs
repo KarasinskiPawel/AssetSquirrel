@@ -53,6 +53,7 @@ builder.Services.Configure<CircuitOptions>(options =>
 });
 
 //Extensions
+FilesRepositoryExtensions.AddExtensions(builder.Services, builder.Configuration);
 LocationUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 DictionaresUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
 EmployeesUseCaseExtensions.AddExtensions(builder.Services, builder.Configuration);
