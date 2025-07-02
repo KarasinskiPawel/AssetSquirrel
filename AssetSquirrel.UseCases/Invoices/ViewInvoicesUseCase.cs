@@ -25,13 +25,6 @@ namespace AssetSquirrel.UseCases.Invoices
                 .ContinueWith(t => t.Result.ToList(), TaskScheduler.Default);
         }
 
-        public async Task<bool> UpdateInvoice(InvoiceDto invoice)
-        {
-            return await _invoiceRepository.UpdateInvoiceAsync(
-                new GenericMapper<Invoice, InvoiceDto>().Map(invoice)
-                );
-        }
-
         public async Task<bool> DeleteInvoice(InvoiceDto invoice)
         {
             return await _invoiceRepository.DeleteInvoiceAsync(

@@ -16,26 +16,29 @@ namespace AssetSquirrel.UseCases.Invoices
         private readonly IInvoiceRepository invoiceRepository;
         private readonly IViewInvoicesUseCase viewInvoicesUseCase;
         private readonly IFileManagementRepository fileManagementRepository;
+        private readonly IEditInvoiceUseCase editInvoiceUseCase;
 
         public AddInvoiceDocumentUseCase(
             IInvoiceRepository invoiceRepository,
             IViewInvoicesUseCase viewInvoicesUseCase,
-            IFileManagementRepository fileManagementRepository
+            IFileManagementRepository fileManagementRepository,
+            IEditInvoiceUseCase editInvoiceUseCase
             )
         {
             this.invoiceRepository = invoiceRepository;
             this.viewInvoicesUseCase = viewInvoicesUseCase;
             this.fileManagementRepository = fileManagementRepository;
+            this.editInvoiceUseCase = editInvoiceUseCase;
         }
 
         public async Task<bool> AddInvoiceDocumentAsync(InvoiceDto invoice, string fileName, string contentType, Stream fileStream)
         {
-            if(fileManagementRepository.AddNewFile(invoice.InvoiceId, fileName, contentType, fileStream))
+            if(await fileManagementRepository.AddNewFile(invoice.InvoiceId, fileName, contentType, fileStream))
             {
                 invoice.FilePath = System.IO.Path.Combine("Files", "Invoices", invoice.InvoiceId.ToString(), fileName);
                 invoice.UploadDate = DateTime.Now;
 
-                return await viewInvoicesUseCase.UpdateInvoice(invoice);
+                return await editInvoiceUseCase.UpdateInvoice(invoice);
             }
 
             return false;

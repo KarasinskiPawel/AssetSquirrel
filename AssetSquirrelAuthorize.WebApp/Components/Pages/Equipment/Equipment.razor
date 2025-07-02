@@ -1,6 +1,7 @@
 ﻿@page "/equipment"
 @using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
+@using AssetSquirrelAuthorize.WebApp.Components.ViewModels
 
 @inject IJSRuntime JSRuntime
 @inject IViewEquipmentUseCase ViewEquipmentUseCase
@@ -13,6 +14,11 @@
             <i class="bi bi-motherboard"></i>
             Add equipment
         </button>
+
+        <InputSelect class="form-control-sm w-10" @bind-Value="equipmentRequest.IsActive">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </InputSelect>
 
         <TextSearchBar placeholderText="serial number, model..."
                        TextSearchBarCallback="SearchCallback">
@@ -31,6 +37,7 @@
                     <th scope="col"> Hardware type </th>
                     <th scope="col"> Model name </th>
                     <th scope="col"> Serial number </th>
+                    <th scope="col"> Invoice number </th>
                     <th scope="col"> Description </th>
                     <th scope="col"> Date add </th>
                     <th scope="col"> Date removed </th>
@@ -53,6 +60,7 @@
                             <td> @equipment.HardwareTypeName </td>
                             <td> @equipment.ModelName </td>
                             <td> @equipment.SerialNumber </td>
+                            <td> @equipment.InvoiceNumber </td>
                             <td> @equipment.Description </td>
                             <td> @equipment.DateAdd.ToShortDateString() </td>
                             <td> @equipment.DateRemoved?.ToShortDateString() </td>
@@ -102,7 +110,11 @@ Title="Add equipment">
     bool modalAddEquipment = false;
     bool modalEditEquipment = false;
 
-    string searchText = string.Empty;
+    EquipmentRequest equipmentRequest = new EquipmentRequest();
+
+    // string searchText = string.Empty;
+    // bool? searchActive = null;
+
     List<EquipmentDto> equipments { get; set;}
     EquipmentDto equipment;
 
@@ -166,15 +178,16 @@ Title="Add equipment">
 
     private async Task SearchCallback(string searchText)
     {
-        this.searchText = searchText;
+        this.equipmentRequest.SearchText = searchText;
         await SearchEquipments();
     }
 
     public async Task SearchEquipments()
     {
         equipments = await ViewEquipmentUseCase.GetEquipmentAsync(
-            a => a.ModelName.Contains(searchText) ||
-            a.SerialNumber.Contains(searchText)
+            a => (a.ModelName.Contains(equipmentRequest.SearchText ?? "") ||
+            a.SerialNumber.Contains(equipmentRequest.SearchText ?? "")) &&
+            a.IsActive == equipmentRequest.IsActive
         );
 
         StateHasChanged();

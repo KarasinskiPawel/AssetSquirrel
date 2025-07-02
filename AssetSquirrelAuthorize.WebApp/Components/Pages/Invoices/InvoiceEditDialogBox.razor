@@ -1,0 +1,93 @@
+﻿@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.Invoices.Interfaces
+@using AssetsSquirrel.CoreBusiness
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@inject IEditInvoiceUseCase EditInvoiceUseCase
+@inject IJSRuntime JSRuntime
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
+@if (Invoice is not null)
+{
+    <div class="dialog-body">
+        <EditForm FormName="AddInvoice"
+                  EditContext="EditContext">
+
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Invoice number </label>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="Invoice.InvoiceNumber"></InputText>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Invoice date </label>
+                </div>
+                <div class="col-6">
+                    <InputDate class="form-control" @bind-Value="Invoice.InvoiceDate"></InputDate>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Description </label>
+                </div>
+                <div class="col-6">
+                    <InputTextArea class="form-control" @bind-Value="Invoice.Description"></InputTextArea>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    <div class="dialog-footer">
+        <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Close </button>
+
+        <button class="btn btn-sm btn-primary w-25" @onclick="UpdateInvoice"> Save & Close </button>
+    </div>
+}
+else
+{
+    
+}
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public InvoiceDto Invoice { get; set; }
+
+    private EditContext? EditContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        EditContext = new EditContext(Invoice);
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Invoice.UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    }
+
+    private async Task UpdateInvoice()
+    {
+        if (EditContext is not null && EditContext.Validate())
+        {
+            await OnSave.InvokeAsync(await EditInvoiceUseCase.UpdateInvoice(Invoice));
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Please fill in all required fields correctly.");
+        }
+    }
+}

@@ -10,7 +10,7 @@ namespace AssetsSquirrel.Plugins.InMemory.Files
     public class FileManagementRepository : IFileManagementRepository
     {
         const string BaseFolder = @"Files\Invoices";
-        private readonly string _basePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, BaseFolder);
+        private readonly string _basePath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", BaseFolder);
 
         public FileManagementRepository()
         {
@@ -57,7 +57,7 @@ namespace AssetsSquirrel.Plugins.InMemory.Files
             return false;
         }
 
-        public bool AddNewFile(int invoiceId, string fileName, string contentType, Stream fileStream)
+        public async Task<bool> AddNewFile(int invoiceId, string fileName, string contentType, Stream fileStream)
         {
             var folderPath = System.IO.Path.Combine(_basePath, invoiceId.ToString());
 
@@ -75,7 +75,7 @@ namespace AssetsSquirrel.Plugins.InMemory.Files
 
             using (var file = System.IO.File.Create(filePath))
             {
-                fileStream.CopyTo(file);
+                await fileStream.CopyToAsync(file);
             }
             return true;
         }

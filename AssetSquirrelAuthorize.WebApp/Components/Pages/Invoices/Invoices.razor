@@ -3,6 +3,7 @@
 @using AssetSquirrel.UseCases.Invoices
 @using AssetSquirrel.UseCases.Invoices.Interfaces
 
+@inject NavigationManager NavigationManager
 @inject IViewInvoicesUseCase ViewInvoicesUseCase
 @inject IJSRuntime JSRuntime
 
@@ -52,18 +53,25 @@
                             <td> @invoice.UploadDate?.ToShortDateString() </td>
                             <td> @invoice.UserName </td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalAddInvoiceDocument(invoice))" title="Add invoice">
-                                    <i class="bi bi-file-arrow-up"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-success" @onclick="(() => DownloadInvoice(invoice))" title="Download invoice">
-                                    <i class="bi bi-file-arrow-down"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditInvoice(invoice))" title="Edit">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteInvoice(invoice))" title="Remove">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <div class="d-flex justify-content-evenly align-items-center w-100">
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalAddInvoiceDocument(invoice))" title="Add invoice">
+                                        <i class="bi bi-file-arrow-up"></i>
+                                    </button>
+
+                                    @if (invoice.FilePath is not null)
+                                    {
+                                        <button class="btn btn-sm btn-outline-success" @onclick="(() => DownloadInvoice(invoice))" title="Download invoice">
+                                            <i class="bi bi-file-arrow-down"></i>
+                                        </button>
+                                    }
+
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditInvoice(invoice))" title="Edit">
+                                        <i class="bi bi-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteInvoice(invoice))" title="Remove">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -86,8 +94,15 @@ Title="Add invoice">
     OnSave="OnSaveHideModalAddInvoice" />
 </DialogBox>
 
+<DialogBox Show="modalEditInvoice"
+           Title="Edit invoice">
+    <InvoiceEditDialogBox OnCancel="OnCancelHideModalEditInvoice"
+                         OnSave="OnSaveHideModalEditInvoice"
+                         Invoice="Invoice"/>
+</DialogBox>
+
 <DialogBox Show="modalAddInvoiceDocument"
-           Title="Add invoice">
+           Title="Add document">
     <InvoiceAddDocumentDialogBox
         OnCancel="OnCancelHideModalAddDocument"
         OnSave="OnSaveHideModalAddDocument"
@@ -96,9 +111,12 @@ Title="Add invoice">
 
 @code {
     bool modalAddInvoice = false;
+    bool modalEditInvoice = false;
     bool modalAddInvoiceDocument = false;
 
     string searchText = string.Empty;
+
+    // const string baseFolder = @"Files\Invoices";
 
     List<InvoiceDto> invoices;
     InvoiceDto Invoice { get; set; } = new InvoiceDto();
@@ -119,24 +137,73 @@ Title="Add invoice">
         modalAddInvoiceDocument = false;
     }
 
-    public void OnSaveHideModalAddDocument()
+    public async Task OnSaveHideModalAddDocument(bool result)
     {
-        
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been added.");
+            await SearchInvoices();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Incorect data!");
+        }
+
+        modalAddInvoiceDocument = false;
     }
 
-    public void DownloadInvoice(InvoiceDto invoice)
+    public async Task DownloadInvoice(InvoiceDto invoice)
     {
-
+        if (invoice.FilePath is not null)
+        {
+            var fileUrl = $"{invoice.FilePath}";
+            await JSRuntime.InvokeVoidAsync("openInNewTab", fileUrl);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Invoice unavailable.");
+        }
     }
 
     public void ShowModalEditInvoice(InvoiceDto invoice)
     {
-        
+        this.Invoice = invoice;
+        modalEditInvoice = true;
     }
 
-    public void DeleteInvoice(InvoiceDto invoice)
+    public void OnCancelHideModalEditInvoice()
     {
-        // Logic to delete the invoice
+        modalEditInvoice = false;
+    }
+
+    public async Task OnSaveHideModalEditInvoice(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice has been updated.");
+            await SearchInvoices();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
+        }
+        modalEditInvoice = false;
+    }
+
+    public async Task DeleteInvoice(InvoiceDto invoice)
+    {
+        if (await ViewInvoicesUseCase.DeleteInvoice(invoice))
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice removed.");
+            await SearchInvoices();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Invoice deletion failed.");
+        }
     }
 
     public void ShowModalAddInvoice()
@@ -159,7 +226,7 @@ Title="Add invoice">
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
         }
 
         modalAddInvoice = false;

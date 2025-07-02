@@ -8,6 +8,5 @@ namespace AssetSquirrel.UseCases.Invoices.Interfaces
     {
         Task<bool> DeleteInvoice(InvoiceDto invoice);
         Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where);
-        Task<bool> UpdateInvoice(InvoiceDto invoice);
     }
 }

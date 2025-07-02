@@ -2,7 +2,7 @@
 {
     public interface IFileManagementRepository
     {
-        bool AddNewFile(int invoiceId, string fileName, string contentType, Stream fileStream);
+        Task<bool> AddNewFile(int invoiceId, string fileName, string contentType, Stream fileStream);
         bool CreateFolder(int invoiceId);
         bool DeleteFiles(int invoiceId);
         bool IfFilesExist(int invoiceId);
