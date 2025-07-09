@@ -9,16 +9,11 @@ using System.Threading.Tasks;
 
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
 {
-    internal class EquipmentAssignmentConfigurations : IEntityTypeConfiguration<EquipmentAssignment>
+    internal class EquipmentAssignmentHistoryConfigurations : IEntityTypeConfiguration<EquipmentAssignmentHistory>
     {
-        public void Configure(EntityTypeBuilder<EquipmentAssignment> builder)
+        public void Configure(EntityTypeBuilder<EquipmentAssignmentHistory> builder)
         {
-            builder.HasKey(ea => ea.EquipmentAssignmentId);
-
-            builder.HasMany(ea => ea.EquipmentAssignmentHistories)
-               .WithOne(eah => eah.EquipmentAssignment)
-               .HasForeignKey(eah => eah.EquipmentAssignmentId)
-               .OnDelete(DeleteBehavior.Restrict);
+            builder.HasKey(eah => eah.EquipmentAssignmentHistoryId);
 
             builder.HasOne(ea => ea.Equipment)
                    .WithMany()

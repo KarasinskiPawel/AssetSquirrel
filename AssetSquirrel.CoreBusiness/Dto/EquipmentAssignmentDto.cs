@@ -1,16 +1,14 @@
 ﻿using AssetsSquirrel.CoreBusiness;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AssetSquirrel.CoreBusiness
+namespace AssetSquirrel.CoreBusiness.Dto
 {
-    public class EquipmentAssignment
+    public class EquipmentAssignmentDto
     {
-        [Key]
         public int EquipmentAssignmentId { get; set; }
         public int EquipmentId { get; set; }
         public Equipment? Equipment { get; set; }
@@ -23,9 +21,5 @@ namespace AssetSquirrel.CoreBusiness
 
         //Navigation
         public string? UserId { get; set; } // Foreign key to ApplicationUser
-        public ApplicationUser? User { get; set; }
-
-        // Relation 1:N
-        public ICollection<EquipmentAssignmentHistory>? EquipmentAssignmentHistories { get; set; }
     }
 }

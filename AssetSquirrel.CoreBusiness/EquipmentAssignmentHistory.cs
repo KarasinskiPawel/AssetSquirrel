@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 
 namespace AssetSquirrel.CoreBusiness
 {
-    public class EquipmentAssignment
+    public class EquipmentAssignmentHistory
     {
         [Key]
+        public int EquipmentAssignmentHistoryId { get; set; }
         public int EquipmentAssignmentId { get; set; }
+        [Required]
+        public EquipmentAssignment EquipmentAssignment { get; set; }
         public int EquipmentId { get; set; }
         public Equipment? Equipment { get; set; }
         public int? LocationId { get; set; }
@@ -20,12 +23,10 @@ namespace AssetSquirrel.CoreBusiness
         public Employee? Employee { get; set; }
         public DateTime? DateOfHandover { get; set; }
         public DateTime? DateOfReturn { get; set; }
+        public DateTime ChangeDate { get; set; } = DateTime.Now; // When the change was made
 
         //Navigation
         public string? UserId { get; set; } // Foreign key to ApplicationUser
         public ApplicationUser? User { get; set; }
-
-        // Relation 1:N
-        public ICollection<EquipmentAssignmentHistory>? EquipmentAssignmentHistories { get; set; }
     }
 }

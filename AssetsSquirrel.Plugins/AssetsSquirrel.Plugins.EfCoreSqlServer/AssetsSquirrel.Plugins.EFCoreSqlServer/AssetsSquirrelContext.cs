@@ -62,6 +62,8 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
             modelBuilder.ApplyConfiguration(new EquipmentConfiguration());
             modelBuilder.ApplyConfiguration(new EquipmentHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
+            modelBuilder.ApplyConfiguration(new EquipmentAssignmentConfigurations());
+            modelBuilder.ApplyConfiguration(new EquipmentAssignmentHistoryConfigurations());
         }
     }
 }

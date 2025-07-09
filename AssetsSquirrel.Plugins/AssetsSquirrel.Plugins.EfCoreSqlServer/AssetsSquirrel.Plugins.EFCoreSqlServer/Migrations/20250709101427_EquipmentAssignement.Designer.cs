@@ -4,6 +4,7 @@ using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 {
     [DbContext(typeof(AssetsSquirrelContext))]
-    partial class AssetsSquirrelContextModelSnapshot : ModelSnapshot
+    [Migration("20250709101427_EquipmentAssignement")]
+    partial class EquipmentAssignement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -189,9 +192,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EquipmentAssignmentHistoryId"));
-
-                    b.Property<DateTime>("ChangeDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateOfHandover")
                         .HasColumnType("datetime2");

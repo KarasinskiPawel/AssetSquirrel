@@ -17,4 +17,8 @@
     <ProjectReference Include="..\AssetsSquirrel.Plugins\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="EquipmentHandover\Interfaces\" />
+  </ItemGroup>
+
 </Project>
