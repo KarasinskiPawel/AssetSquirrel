@@ -15,6 +15,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
         public DbSet<HardwareType> HardwareTypes { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<EquipmentHistory> EquipmentHistories { get; set; }
+
+        public DbSet<EquipmentAssignment> EquipmentAssignments { get; set; }
+        public DbSet<EquipmentAssignmentHistory> EquipmentAssignmentHistories { get; set; }
+        public DbSet<EquipmentHandover> EquipmentHandovers { get; set; }
+        public DbSet<EquipmentHandoverDetail> EquipmentHandoverDetails { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Error> Errors { get; set; }
 
@@ -64,6 +69,8 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
             modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
             modelBuilder.ApplyConfiguration(new EquipmentAssignmentConfigurations());
             modelBuilder.ApplyConfiguration(new EquipmentAssignmentHistoryConfigurations());
+            modelBuilder.ApplyConfiguration(new EquipmentHandoverConfiguration());
+            modelBuilder.ApplyConfiguration(new EquipmentHandoverDetailConfiguration());
         }
     }
 }
