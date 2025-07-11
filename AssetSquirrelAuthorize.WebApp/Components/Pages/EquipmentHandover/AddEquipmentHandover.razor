@@ -1,7 +1,92 @@
 ﻿@page "/addequipmenthandover"
+@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentHandover.Interfaces
 
-<h3>Add EquipmentHandover</h3>
+@inject NavigationManager Navigation
+@inject IAddEquipmentHandoverUseCase AddEquipmentHandoverUseCase
+@inject IJSRuntime JSRuntime
+
+<div class="row col-12">
+    <p class="text-center fw-bold">Equipment Handover Form</p>
+</div>
+
+@if (employees is not null && locations is not null && equipments is not null)
+{
+    <EditForm FormName="AddEquipmentHandover"
+              EditContext="EditContext">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+
+        <div class="row col-6">
+            <div class="row">
+                <div class="col-4">
+                    <label class="col-form-label"> Handover to (location) </label>
+                </div>
+                <div class="col-8">
+                    <InputSelect class="form-control" @bind-Value="equipmentHandover.ToLocationId">
+                        <option value="0"> ...location... </option>
+                        @foreach (var location in locations)
+                        {
+                            <option value="@location.LocationId">@location.City @location.Street</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="row col-6 mt-3">
+            <div class="row">
+                <div class="col-4">
+                    <label class="col-form-label"> Handover for (employee) </label>
+                </div>
+                <div class="col-8">
+                    <InputSelect class="form-control" @bind-Value="equipmentHandover.ToEmployeeId">
+                        <option value="0"> ...employee... </option>
+                        @foreach (var employee in employees)
+                        {
+                            <option value="@employee.EmployeeId">@employee.FirstName @employee.LastName</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="row col-6 mt-3">
+            <div class="row">
+                <div class="col-4">
+                    <label class="col-form-label"> Comment </label>
+                </div>
+                <div class="col-8">
+                    <InputTextArea class="form-control" rows="3" maxlength="500" @bind-Value="equipmentHandover.Comment"></InputTextArea>
+                </div>
+            </div>
+        </div>
+
+    </EditForm>
+}
 
 @code {
+    List<EmployeeDto>? employees;
+    List<LocationDto>? locations;
+    List<EquipmentDto>? equipments;
 
+    private EditContext? EditContext;
+
+    EquipmentHandoverDto equipmentHandover = new EquipmentHandoverDto
+    {
+        HandoverDocumentNumber = $"{DateTime.Now.Year}\\{DateTime.Now.Month}\\0001",
+        FromLocationId = 0,
+        FromEmployeeId = 0,
+        ToLocationId = 0,
+        ToEmployeeId = 0,
+        Comment = string.Empty,
+        HandoverDate = DateTime.Now
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await AddEquipmentHandoverUseCase.GetEmployeesAsync(a => a.IsActive == true);
+        locations = await AddEquipmentHandoverUseCase.GetLocationsAsync(a => a.IsActive == true);
+        equipments = await AddEquipmentHandoverUseCase.GetEquipmentAsync(a => a.IsActive == true);
+
+        EditContext = new EditContext(equipmentHandover);
+    }
 }

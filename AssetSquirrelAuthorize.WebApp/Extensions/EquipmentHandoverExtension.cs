@@ -11,7 +11,8 @@ namespace AssetSquirrelAuthorize.WebApp.Extensions
         {
             services.AddScoped<IEquipmentHandoverRepository, EquipmentHandoverRepository>();
 
-            services.AddScoped<IViewEquipmentHandover, ViewEquipmentHandover>();
+            services.AddScoped<IViewEquipmentHandoverUseCase, ViewEquipmentHandoverUseCase>();
+            services.AddScoped<IAddEquipmentHandoverUseCase, AddEquipmentHandoverUseCase>();
 
             return services;
         }
