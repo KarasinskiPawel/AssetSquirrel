@@ -60,6 +60,13 @@
             </div>
         </div>
 
+    @if (equipmentHandover.ToLocationId != 0 || equipmentHandover.ToEmployeeId != 0)
+        {
+            <div class="row col-6 text-center mt-3">
+                <p> <b> Pozycje do przekazania: </b> </p>
+            </div>
+        }
+
     </EditForm>
 }
 

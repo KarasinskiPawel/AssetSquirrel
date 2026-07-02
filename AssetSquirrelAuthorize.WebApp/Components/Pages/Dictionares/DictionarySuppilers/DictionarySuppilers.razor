@@ -122,7 +122,7 @@ Title="Edycja danych dostawcy">
     {
         suppiler.IsActive = !suppiler.IsActive;
 
-        if(await ViewSuppilersUseCase.UpdateSuppiler(suppiler))
+        if((await ViewSuppilersUseCase.UpdateSuppiler(suppiler)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             StateHasChanged();
@@ -181,7 +181,7 @@ Title="Edycja danych dostawcy">
 
     public async Task DeleteSuppiler(SuppilerDto suppiler)
     {
-       if(await ViewSuppilersUseCase.DeleteSuppiler(suppiler)){
+       if((await ViewSuppilersUseCase.DeleteSuppiler(suppiler)).Success){
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchSuppiler();
             StateHasChanged();

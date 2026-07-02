@@ -1,5 +1,5 @@
-﻿using AssetsSquirrel.Plugins.InMemory.Files;
-using AssetsSquirrel.Plugins.InMemory.Files.Interfaces;
+﻿using AssetSquirrel.UseCases.PluginInterfaces;
+using AssetsSquirrel.Plugins.InMemory.Files;
 
 namespace AssetSquirrelAuthorize.WebApp.Extensions
 {

@@ -21,7 +21,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             this.errorsRepository = errorsRepository;
         }
 
-        public async Task<bool> AddHardwareTypeAsync(HardwareType hardwareType)
+        public async Task<Result<HardwareType>> AddHardwareTypeAsync(HardwareType hardwareType)
         {
             try
             {
@@ -33,18 +33,18 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 }
                 else
                 {
-                    return false;
+                    return Result<HardwareType>.Fail("HardwareType cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "HardwareTypeRepository", "AddHardwareTypeAsync", e);
-                return false;
+                return Result<HardwareType>.Fail(e.Message);
             }
-            return true;
+            return Result<HardwareType>.Ok(hardwareType);
         }
 
-        public async Task<bool> DeleteHardwareTypeAsync(HardwareType hardwareType)
+        public async Task<Result<HardwareType>> DeleteHardwareTypeAsync(HardwareType hardwareType)
         {
             try
             {
@@ -54,17 +54,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 {
                     dbContext.HardwareTypes.Remove(hardwareType);
                     dbContext.SaveChanges();
-                    return true;
+                    return Result<HardwareType>.Ok(hardwareType);
                 }
                 else
                 {
-                    return false;
+                    return Result<HardwareType>.Fail("HardwareType cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "HardwareTypeRepository", "DeleteHardwareTypeAsync", e);
-                return false;
+                return Result<HardwareType>.Fail(e.Message);
             }
         }
 
@@ -80,7 +80,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             return output;
         }
 
-        public async Task<bool> UpdateHardwareTypeAsync(HardwareType hardwareType)
+        public async Task<Result<HardwareType>> UpdateHardwareTypeAsync(HardwareType hardwareType)
         {
             try
             {
@@ -90,17 +90,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
 
                     dbContext.HardwareTypes.Update(hardwareType);
                     dbContext.SaveChanges();
-                    return true;
+                    return Result<HardwareType>.Ok(hardwareType);
                 }
                 else
                 {
-                    return false;
+                    return Result<HardwareType>.Fail("HardwareType cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "HardwareTypeRepository", "UpdateHardwareTypeAsync", e);
-                return false;
+                return Result<HardwareType>.Fail(e.Message);
             }
         }
     }

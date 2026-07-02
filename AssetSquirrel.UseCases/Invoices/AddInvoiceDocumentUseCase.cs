@@ -1,8 +1,7 @@
-﻿using AssetSquirrel.CoreBusiness.Dto;
+﻿using AssetSquirrel.CoreBusiness;
+using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.Invoices.Interfaces;
 using AssetSquirrel.UseCases.PluginInterfaces;
-using AssetsSquirrel.Plugins.InMemory.Files;
-using AssetsSquirrel.Plugins.InMemory.Files.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +30,7 @@ namespace AssetSquirrel.UseCases.Invoices
             this.editInvoiceUseCase = editInvoiceUseCase;
         }
 
-        public async Task<bool> AddInvoiceDocumentAsync(InvoiceDto invoice, string fileName, string contentType, Stream fileStream)
+        public async Task<Result<InvoiceDto>> AddInvoiceDocumentAsync(InvoiceDto invoice, string fileName, string contentType, Stream fileStream)
         {
             if(await fileManagementRepository.AddNewFile(invoice.InvoiceId, fileName, contentType, fileStream))
             {
@@ -41,7 +40,7 @@ namespace AssetSquirrel.UseCases.Invoices
                 return await editInvoiceUseCase.UpdateInvoice(invoice);
             }
 
-            return false;
+            return Result<InvoiceDto>.Fail("Failed to save the invoice document file.");
         }
     }
 }

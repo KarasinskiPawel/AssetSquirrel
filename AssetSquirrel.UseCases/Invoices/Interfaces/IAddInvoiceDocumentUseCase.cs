@@ -1,9 +1,10 @@
-﻿using AssetSquirrel.CoreBusiness.Dto;
+﻿using AssetSquirrel.CoreBusiness;
+using AssetSquirrel.CoreBusiness.Dto;
 
 namespace AssetSquirrel.UseCases.Invoices.Interfaces
 {
     public interface IAddInvoiceDocumentUseCase
     {
-        Task<bool> AddInvoiceDocumentAsync(InvoiceDto invoice, string fileName, string contentType, Stream fileStream);
+        Task<Result<InvoiceDto>> AddInvoiceDocumentAsync(InvoiceDto invoice, string fileName, string contentType, Stream fileStream);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.HardwareType.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,23 +23,21 @@ namespace AssetSquirrel.UseCases.HardwareType
 
         public async Task<List<HardwareTypeDto>> GetHardwareTypesAsync(Expression<Func<AssetSquirrel.CoreBusiness.HardwareType, bool>> where)
         {
-            return [.. new GenericMapper<HardwareTypeDto, AssetSquirrel.CoreBusiness.HardwareType>().Map(
-                await hardwareTypeRepository.GetHardwareTypesAsync(where)
-                )];
+            return (await hardwareTypeRepository.GetHardwareTypesAsync(where)).Adapt<List<HardwareTypeDto>>();
         }
 
-        public async Task<bool> UpdateHardwareType(HardwareTypeDto hardwareType)
+        public async Task<Result<HardwareTypeDto>> UpdateHardwareType(HardwareTypeDto hardwareType)
         {
-            return await hardwareTypeRepository.UpdateHardwareTypeAsync(
-                new GenericMapper<AssetSquirrel.CoreBusiness.HardwareType, HardwareTypeDto>().Map(hardwareType)
-                );
+            var result = await hardwareTypeRepository.UpdateHardwareTypeAsync(hardwareType.Adapt<AssetSquirrel.CoreBusiness.HardwareType>());
+
+            return result.Select(ht => ht.Adapt<HardwareTypeDto>());
         }
 
-        public async Task<bool> DeleteHardwareTypeAsync(HardwareTypeDto hardwareType)
+        public async Task<Result<HardwareTypeDto>> DeleteHardwareTypeAsync(HardwareTypeDto hardwareType)
         {
-            return await hardwareTypeRepository.DeleteHardwareTypeAsync(
-                new GenericMapper<AssetSquirrel.CoreBusiness.HardwareType, HardwareTypeDto>().Map(hardwareType)
-                );
+            var result = await hardwareTypeRepository.DeleteHardwareTypeAsync(hardwareType.Adapt<AssetSquirrel.CoreBusiness.HardwareType>());
+
+            return result.Select(ht => ht.Adapt<HardwareTypeDto>());
         }
     }
 }

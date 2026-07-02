@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.Invoices.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +20,11 @@ namespace AssetSquirrel.UseCases.Invoices
             this.invoiceRepository = invoiceRepository;
         }
 
-        public async Task<bool> UpdateInvoice(InvoiceDto invoice)
+        public async Task<Result<InvoiceDto>> UpdateInvoice(InvoiceDto invoice)
         {
-            return await invoiceRepository.UpdateInvoiceAsync(
-                new GenericMapper<Invoice, InvoiceDto>().Map(invoice)
-                );
+            var result = await invoiceRepository.UpdateInvoiceAsync(invoice.Adapt<Invoice>());
+
+            return result.Select(i => i.Adapt<InvoiceDto>());
         }
     }
 }

@@ -12,7 +12,7 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
     public interface IInvoiceRepository
     {
         Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where);
-        Task<bool> UpdateInvoiceAsync(Invoice invoice);
-        Task<bool> DeleteInvoiceAsync(Invoice invoiceId);
+        Task<Result<Invoice>> UpdateInvoiceAsync(Invoice invoice);
+        Task<Result<Invoice>> DeleteInvoiceAsync(Invoice invoiceId);
     }
 }

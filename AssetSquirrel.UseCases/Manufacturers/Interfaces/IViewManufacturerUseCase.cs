@@ -6,8 +6,8 @@ namespace AssetSquirrel.UseCases.Manufacturers.Interfaces
 {
     public interface IViewManufacturerUseCase
     {
-        Task<bool> Deletemanufacturer(ManufacturerDto manufacturer);
+        Task<Result<ManufacturerDto>> Deletemanufacturer(ManufacturerDto manufacturer);
         Task<List<ManufacturerDto>> GetManufacturersAsync(Expression<Func<Manufacturer, bool>> where);
-        Task<bool> UpdateManufacturer(ManufacturerDto manufacturer);
+        Task<Result<ManufacturerDto>> UpdateManufacturer(ManufacturerDto manufacturer);
     }
 }

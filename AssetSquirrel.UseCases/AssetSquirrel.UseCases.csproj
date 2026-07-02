@@ -7,14 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Mapster" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AssetSquirrel.CoreBusiness\AssetSquirrel.CoreBusiness.csproj" />
-    <ProjectReference Include="..\AssetsSquirrel.Plugins\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory\AssetsSquirrel.Plugins.InMemory.csproj" />
   </ItemGroup>
 
 </Project>

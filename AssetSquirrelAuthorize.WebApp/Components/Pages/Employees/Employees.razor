@@ -184,7 +184,7 @@ Title="Edit employee">
     {
         employee.IsActive = !employee.IsActive;
 
-        if(await ViewEmployeesUseCase.UpdateEmployee(employee))
+        if((await ViewEmployeesUseCase.UpdateEmployee(employee)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Employee status has been changed.");
             StateHasChanged();
@@ -197,7 +197,7 @@ Title="Edit employee">
 
     public async Task DeleteEmployee(EmployeeDto employee)
     {
-        if(await ViewEmployeesUseCase.DeleteEmployeeAsync(employee))
+        if((await ViewEmployeesUseCase.DeleteEmployeeAsync(employee)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
             await SearchEmployees();

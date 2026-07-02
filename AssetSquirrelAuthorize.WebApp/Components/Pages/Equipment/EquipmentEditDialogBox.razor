@@ -239,7 +239,7 @@ else
         if (EditContext is not null && EditContext!.Validate())
         {
             await OnSave.InvokeAsync(
-                await EditEquipmentUseCase.UpdateEquipmentAsync(Equipment)
+                (await EditEquipmentUseCase.UpdateEquipmentAsync(Equipment)).Success
         );
         }
         else

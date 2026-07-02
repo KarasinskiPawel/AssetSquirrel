@@ -6,8 +6,8 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
 {
     public interface IViewEquipmentUseCase
     {
-        Task<bool> DeleteEquipmentAsync(EquipmentDto equipment);
+        Task<Result<EquipmentDto>> DeleteEquipmentAsync(EquipmentDto equipment);
         Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where);
-        Task<bool> UpdateEquipmentAsync(EquipmentDto equipment);
+        Task<Result<EquipmentDto>> UpdateEquipmentAsync(EquipmentDto equipment);
     }
 }

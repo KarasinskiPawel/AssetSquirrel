@@ -83,7 +83,7 @@ else
     {
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync(await EditInvoiceUseCase.UpdateInvoice(Invoice));
+            await OnSave.InvokeAsync((await EditInvoiceUseCase.UpdateInvoice(Invoice)).Success);
         }
         else
         {

@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
 using AssetSquirrel.UseCases.Suppilers.Interfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +20,11 @@ namespace AssetSquirrel.UseCases.Suppilers
             this.suppilersRepository = suppilersRepository;
         }
 
-        public async Task<bool> AddSuppilerAsync(SuppilerDto suppiler)
+        public async Task<Result<SuppilerDto>> AddSuppilerAsync(SuppilerDto suppiler)
         {
-            return await suppilersRepository.AddSuppilerAsync(
-                new GenericMapper<Suppiler, SuppilerDto>().Map(suppiler)
-                );
+            var result = await suppilersRepository.AddSuppilerAsync(suppiler.Adapt<Suppiler>());
+
+            return result.Select(s => s.Adapt<SuppilerDto>());
         }
     }
 }

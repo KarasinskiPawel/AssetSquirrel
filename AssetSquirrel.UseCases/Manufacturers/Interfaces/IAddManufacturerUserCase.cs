@@ -1,9 +1,10 @@
-﻿using AssetSquirrel.CoreBusiness.Dto;
+﻿using AssetSquirrel.CoreBusiness;
+using AssetSquirrel.CoreBusiness.Dto;
 
 namespace AssetSquirrel.UseCases.Manufacturers.Interfaces
 {
     public interface IAddManufacturerUserCase
     {
-        Task<bool> AddManufacturerAsync(ManufacturerDto manufacturer);
+        Task<Result<ManufacturerDto>> AddManufacturerAsync(ManufacturerDto manufacturer);
     }
 }

@@ -28,6 +28,7 @@ namespace AssetSquirrel.CoreBusiness
         public string? Description { get; set; }
         public DateTime DateAdd { get; set; } = DateTime.Now;
         public DateTime? DateRemoved { get; set; }
+        public bool IsAddedToWarehouse { get; set; } = false;
         public bool IsActive { get; set; } = true;
 
         //Navigation

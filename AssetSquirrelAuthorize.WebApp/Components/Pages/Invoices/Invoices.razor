@@ -194,7 +194,7 @@ Title="Add invoice">
 
     public async Task DeleteInvoice(InvoiceDto invoice)
     {
-        if (await ViewInvoicesUseCase.DeleteInvoice(invoice))
+        if ((await ViewInvoicesUseCase.DeleteInvoice(invoice)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice removed.");
             await SearchInvoices();

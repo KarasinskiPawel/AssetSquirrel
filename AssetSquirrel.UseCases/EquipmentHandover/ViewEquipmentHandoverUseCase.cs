@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.EquipmentHandover.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +25,7 @@ namespace AssetSquirrel.UseCases.EquipmentHandover
 
         public async Task<List<EquipmentHandoverDto>> GetEquipmentHandoverAsync(Expression<Func<AssetSquirrel.CoreBusiness.EquipmentHandover, bool>> where)
         {
-            return new GenericMapper<EquipmentHandoverDto, AssetSquirrel.CoreBusiness.EquipmentHandover>().Map(
-                await equipmentHandoverRepository.GetEquipmentHandoversAsync(where)
-                ).ToList();
+            return (await equipmentHandoverRepository.GetEquipmentHandoversAsync(where)).Adapt<List<EquipmentHandoverDto>>();
         }
     }
 }

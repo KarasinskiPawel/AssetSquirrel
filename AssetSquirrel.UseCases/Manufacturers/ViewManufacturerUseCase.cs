@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.Manufacturers.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
-using AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories;
+using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,23 +23,21 @@ namespace AssetSquirrel.UseCases.Manufacturers
 
         public async Task<List<ManufacturerDto>> GetManufacturersAsync(Expression<Func<Manufacturer, bool>> where)
         {
-            return [.. new GenericMapper<ManufacturerDto, Manufacturer>().Map(
-                await manufacturersRepository.GetManufacturersAsync(where)
-                )];
+            return (await manufacturersRepository.GetManufacturersAsync(where)).Adapt<List<ManufacturerDto>>();
         }
 
-        public async Task<bool> UpdateManufacturer(ManufacturerDto manufacturer)
+        public async Task<Result<ManufacturerDto>> UpdateManufacturer(ManufacturerDto manufacturer)
         {
-            return await manufacturersRepository.UpdateManufacturerAsync(
-                new GenericMapper<Manufacturer, ManufacturerDto>().Map(manufacturer)
-                );
+            var result = await manufacturersRepository.UpdateManufacturerAsync(manufacturer.Adapt<Manufacturer>());
+
+            return result.Select(m => m.Adapt<ManufacturerDto>());
         }
 
-        public async Task<bool> Deletemanufacturer(ManufacturerDto manufacturer)
+        public async Task<Result<ManufacturerDto>> Deletemanufacturer(ManufacturerDto manufacturer)
         {
-            return await manufacturersRepository.DeleteManufacturerAsync(
-                new GenericMapper<Manufacturer, ManufacturerDto>().Map(manufacturer)
-                );
+            var result = await manufacturersRepository.DeleteManufacturerAsync(manufacturer.Adapt<Manufacturer>());
+
+            return result.Select(m => m.Adapt<ManufacturerDto>());
         }
     }
 }

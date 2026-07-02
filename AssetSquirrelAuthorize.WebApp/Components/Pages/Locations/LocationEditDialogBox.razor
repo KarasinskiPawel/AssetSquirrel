@@ -106,7 +106,7 @@
         if (EditContext is not null && EditContext.Validate())
         {
             // Walidacja przeszła – kontynuuj zapis
-            await OnSave.InvokeAsync(await EditLocationUseCase.UpdateLocationAsync(Location));
+            await OnSave.InvokeAsync((await EditLocationUseCase.UpdateLocationAsync(Location)).Success);
         }
         else
         {

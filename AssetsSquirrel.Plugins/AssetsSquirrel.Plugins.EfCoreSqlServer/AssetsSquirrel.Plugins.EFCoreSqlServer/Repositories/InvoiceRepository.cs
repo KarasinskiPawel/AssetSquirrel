@@ -21,7 +21,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             this.dbContextFactory = dbContextFactory;
             this.errorsRepository = errorsRepository;
         }
-        public async Task<bool> DeleteInvoiceAsync(Invoice invoice)
+        public async Task<Result<Invoice>> DeleteInvoiceAsync(Invoice invoice)
         {
             try
             {
@@ -30,17 +30,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     var dbContext = dbContextFactory.CreateDbContext();
                     dbContext.Invoices.Remove(invoice);
                     await dbContext.SaveChangesAsync();
-                    return true;
+                    return Result<Invoice>.Ok(invoice);
                 }
                 else
                 {
-                    return false;
+                    return Result<Invoice>.Fail("Invoice cannot be null.");
                 }
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "InvoiceRepository", "DeleteInvoiceAsync", e);
-                return false;
+                return Result<Invoice>.Fail(e.Message);
             }
         }
 
@@ -67,7 +67,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             return output;
         }
 
-        public async Task<bool> UpdateInvoiceAsync(Invoice invoice)
+        public async Task<Result<Invoice>> UpdateInvoiceAsync(Invoice invoice)
         {
             try
             {
@@ -76,17 +76,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     var dbContext = dbContextFactory.CreateDbContext();
                     dbContext.Invoices.Update(invoice);
                     await dbContext.SaveChangesAsync();
-                    return true;
+                    return Result<Invoice>.Ok(invoice);
                 }
                 else
                 {
-                    return false;
+                    return Result<Invoice>.Fail("Invoice cannot be null.");
                 }
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "InvoiceRepository", "UpdateInvoiceAsync", e);
-                return false;
+                return Result<Invoice>.Fail(e.Message);
             }
         }
     }

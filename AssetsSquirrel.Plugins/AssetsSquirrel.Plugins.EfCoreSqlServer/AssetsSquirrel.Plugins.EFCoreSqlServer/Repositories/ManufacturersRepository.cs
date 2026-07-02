@@ -32,7 +32,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             return output;
         }
 
-        public async Task<bool> AddManufacturerAsync(Manufacturer manufacturer)
+        public async Task<Result<Manufacturer>> AddManufacturerAsync(Manufacturer manufacturer)
         {
             try
             {
@@ -43,21 +43,21 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Manufacturers.Add(manufacturer);
                     dbContext.SaveChanges();
 
-                    return true;
+                    return Result<Manufacturer>.Ok(manufacturer);
                 }
                 else
                 {
-                    return false;
+                    return Result<Manufacturer>.Fail("Manufacturer cannot be null.");
                 }
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "ManufacturersRepository", "AddManufacturerAsync", e);
-                return false;
+                return Result<Manufacturer>.Fail(e.Message);
             }
         }
 
-        public async Task<bool> DeleteManufacturerAsync(Manufacturer manufacturer)
+        public async Task<Result<Manufacturer>> DeleteManufacturerAsync(Manufacturer manufacturer)
         {
             try
             {
@@ -68,21 +68,21 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Manufacturers.Remove(manufacturer);
                     dbContext.SaveChanges();
 
-                    return true;
+                    return Result<Manufacturer>.Ok(manufacturer);
                 }
                 else
                 {
-                    return false;
+                    return Result<Manufacturer>.Fail("Manufacturer cannot be null.");
                 }
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "ManufacturersRepository", "DeleteManufacturerAsync", e);
-                return false;
+                return Result<Manufacturer>.Fail(e.Message);
             }
         }
 
-        public async Task<bool> UpdateManufacturerAsync(Manufacturer manufacturer)
+        public async Task<Result<Manufacturer>> UpdateManufacturerAsync(Manufacturer manufacturer)
         {
             try
             {
@@ -93,17 +93,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Manufacturers.Update(manufacturer);
                     dbContext.SaveChanges();
 
-                    return true;
+                    return Result<Manufacturer>.Ok(manufacturer);
                 }
                 else
                 {
-                    return false;
+                    return Result<Manufacturer>.Fail("Manufacturer cannot be null.");
                 }
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "ManufacturersRepository", "UpdateManufacturerAsync", e);
-                return false;
+                return Result<Manufacturer>.Fail(e.Message);
             }
         }
     }

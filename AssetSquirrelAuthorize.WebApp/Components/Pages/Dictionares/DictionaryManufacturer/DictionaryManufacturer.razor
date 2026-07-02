@@ -157,7 +157,7 @@
     {
         manufacturer.IsActive = !manufacturer.IsActive;
 
-        if (await ViewManufacturerUseCase.UpdateManufacturer(manufacturer))
+        if ((await ViewManufacturerUseCase.UpdateManufacturer(manufacturer)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchManufacturers();
@@ -171,7 +171,7 @@
 
     public async Task DeleteManufacturer(ManufacturerDto manufacturer)
     {
-        if(await ViewManufacturerUseCase.Deletemanufacturer(manufacturer))
+        if((await ViewManufacturerUseCase.Deletemanufacturer(manufacturer)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchManufacturers();

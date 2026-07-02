@@ -64,7 +64,7 @@
     {
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync(await EditManufactureruseCase.UpdateManufacturerAsync(Manufacturer));
+            await OnSave.InvokeAsync((await EditManufactureruseCase.UpdateManufacturerAsync(Manufacturer)).Success);
         }
     }
 }

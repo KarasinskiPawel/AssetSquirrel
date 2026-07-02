@@ -22,6 +22,7 @@ namespace AssetSquirrel.CoreBusiness
         public Employee? ToEmployee { get; set; }
         public DateTime HandoverDate { get; set; }
         public string? Comment { get; set; }
+        public bool IsPosted { get; set; }
         public bool IsActive { get; set; } = true;
 
         public ICollection<EquipmentHandoverDetail> EquipmentHandoverDetails { get; set; } = new List<EquipmentHandoverDetail>();
