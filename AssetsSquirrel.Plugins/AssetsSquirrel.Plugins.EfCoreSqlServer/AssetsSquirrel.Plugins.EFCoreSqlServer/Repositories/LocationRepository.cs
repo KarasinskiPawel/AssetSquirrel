@@ -33,7 +33,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
 
             return output;
         }
-        public async Task<bool> AddLocationAsync(Location location)
+        public async Task<Result<Location>> AddLocationAsync(Location location)
         {
             try
             {
@@ -46,19 +46,19 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 }
                 else
                 {
-                    return false;
+                    return Result<Location>.Fail("Location cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "LocationRepository", "AddLocationAsync", e);
-                return false;
+                return Result<Location>.Fail(e.Message);
             }
 
-            return true;
+            return Result<Location>.Ok(location);
         }
 
-        public async Task<bool> DeleteLocationAsync(Location location)
+        public async Task<Result<Location>> DeleteLocationAsync(Location location)
         {
             try
             {
@@ -70,16 +70,16 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     await dbContext.SaveChangesAsync();
                 }
 
-                return true;
+                return Result<Location>.Ok(location);
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "LocationRepository", "DeleteLocationAsync", e);
-                return false;
+                return Result<Location>.Fail(e.Message);
             }
         }
 
-        public async Task<bool> UpdateLocationAsync(Location location)
+        public async Task<Result<Location>> UpdateLocationAsync(Location location)
         {
             try
             {
@@ -94,10 +94,10 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "LocationRepository", "UpdateLocationAsync", e);
-                return false;
+                return Result<Location>.Fail(e.Message);
             }
 
-            return true;
+            return Result<Location>.Ok(location);
         }
     }
 }

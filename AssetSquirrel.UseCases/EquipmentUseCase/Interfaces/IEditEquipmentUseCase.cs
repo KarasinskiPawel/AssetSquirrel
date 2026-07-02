@@ -10,6 +10,6 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
         Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where);
         Task<List<ManufacturerDto>> GetManufacturersAsync(Expression<Func<Manufacturer, bool>> where);
         Task<List<SuppilerDto>> GetSuppilersAsync(Expression<Func<Suppiler, bool>> where);
-        Task<bool> UpdateEquipmentAsync(EquipmentDto equipment);
+        Task<Result<EquipmentDto>> UpdateEquipmentAsync(EquipmentDto equipment);
     }
 }

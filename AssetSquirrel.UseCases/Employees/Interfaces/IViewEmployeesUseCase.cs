@@ -1,4 +1,5 @@
-﻿using AssetSquirrel.CoreBusiness.Dto;
+﻿using AssetSquirrel.CoreBusiness;
+using AssetSquirrel.CoreBusiness.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace AssetSquirrel.UseCases.Employees.Interfaces
 {
     public interface IViewEmployeesUseCase
     {
-        Task<bool> DeleteEmployeeAsync(EmployeeDto employee);
+        Task<Result<EmployeeDto>> DeleteEmployeeAsync(EmployeeDto employee);
         Task<List<EmployeeDto>> GetEmployeesAsync(Expression<Func<CoreBusiness.Employee, bool>> where);
-        Task<bool> UpdateEmployee(EmployeeDto employee);
+        Task<Result<EmployeeDto>> UpdateEmployee(EmployeeDto employee);
     }
 }

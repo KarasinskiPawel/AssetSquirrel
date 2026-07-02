@@ -1,7 +1,7 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.UseCases.Locations.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +19,11 @@ namespace AssetSquirrel.UseCases.Locations
             this.locationRepository = locationRepository;
         }
 
-        public async Task<bool> UpdateLocationAsync(LocationDto location)
+        public async Task<Result<LocationDto>> UpdateLocationAsync(LocationDto location)
         {
-            return await locationRepository.UpdateLocationAsync(
-                new GenericMapper<Location, LocationDto>().Map(location)
-                );
+            var result = await locationRepository.UpdateLocationAsync(location.Adapt<Location>());
+
+            return result.Select(l => l.Adapt<LocationDto>());
         }
     }
 }

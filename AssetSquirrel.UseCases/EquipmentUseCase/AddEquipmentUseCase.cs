@@ -1,9 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
-using AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,29 +34,29 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
             this.invoiceRepository = invoiceRepository;
         }
 
-        public async Task<bool> AddEquipmentAsync(EquipmentDto equipment)
+        public async Task<Result<EquipmentDto>> AddEquipmentAsync(EquipmentDto equipment)
         {
-            return await equipmentRepository.AddEquipmentAsync(
-                new GenericMapper<Equipment, EquipmentDto>().Map(equipment)
-                );
+            var result = await equipmentRepository.AddEquipmentAsync(equipment.Adapt<Equipment>());
+
+            return result.Select(e => e.Adapt<EquipmentDto>());
         }
 
         public Task<List<HardwareTypeDto>> GetHardwareTypesAsync(Expression<Func<CoreBusiness.HardwareType, bool>> where)
         {
             return hardwareTypeRepository.GetHardwareTypesAsync(where)
-                .ContinueWith(task => task.Result.Select(ht => new GenericMapper<CoreBusiness.HardwareType, HardwareTypeDto>().Map(ht)).ToList());
+                .ContinueWith(task => task.Result.Adapt<List<HardwareTypeDto>>());
         }
 
         public Task<List<ManufacturerDto>> GetManufacturersAsync(Expression<Func<Manufacturer, bool>> where)
         {
             return manufacturersRepository.GetManufacturersAsync(where)
-                .ContinueWith(task => task.Result.Select(m => new GenericMapper<Manufacturer, ManufacturerDto>().Map(m)).ToList());
+                .ContinueWith(task => task.Result.Adapt<List<ManufacturerDto>>());
         }
 
         public Task<List<SuppilerDto>> GetSuppilersAsync(Expression<Func<Suppiler, bool>> where)
         {
             return suppilersRepository.GetSuppilersAsync(where)
-                .ContinueWith(task => task.Result.Select(s => new GenericMapper<Suppiler, SuppilerDto>().Map(s)).ToList());
+                .ContinueWith(task => task.Result.Adapt<List<SuppilerDto>>());
         }
 
         public async Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where)

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 
 namespace AssetSquirrel.UseCases.EquipmentUseCase
 {
@@ -26,18 +26,18 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
             return await equipmentRepository.GetEquipmentAsync(where);
         }
 
-        public async Task<bool> DeleteEquipmentAsync(EquipmentDto equipment)
+        public async Task<Result<EquipmentDto>> DeleteEquipmentAsync(EquipmentDto equipment)
         {
-            return await equipmentRepository.DeleteEquipmentAsync(
-                new GenericMapper<Equipment, EquipmentDto>().Map(equipment)
-                );
+            var result = await equipmentRepository.DeleteEquipmentAsync(equipment.Adapt<Equipment>());
+
+            return result.Select(e => e.Adapt<EquipmentDto>());
         }
 
-        public async Task<bool> UpdateEquipmentAsync(EquipmentDto equipment)
+        public async Task<Result<EquipmentDto>> UpdateEquipmentAsync(EquipmentDto equipment)
         {
-            return await equipmentRepository.UpdateEquipmentAsync(
-                new GenericMapper<Equipment, EquipmentDto>().Map(equipment)
-                );
+            var result = await equipmentRepository.UpdateEquipmentAsync(equipment.Adapt<Equipment>());
+
+            return result.Select(e => e.Adapt<EquipmentDto>());
         }
     }
 }

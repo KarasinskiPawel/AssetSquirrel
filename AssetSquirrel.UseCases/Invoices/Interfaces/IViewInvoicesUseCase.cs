@@ -6,7 +6,7 @@ namespace AssetSquirrel.UseCases.Invoices.Interfaces
 {
     public interface IViewInvoicesUseCase
     {
-        Task<bool> DeleteInvoice(InvoiceDto invoice);
+        Task<Result<InvoiceDto>> DeleteInvoice(InvoiceDto invoice);
         Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where);
     }
 }

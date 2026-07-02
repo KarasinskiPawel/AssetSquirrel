@@ -11,8 +11,8 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
     public interface ILocationRepository
     {
         Task<IEnumerable<Location>> GetLocationsAsync(Expression<Func<Location, bool>> where);
-        Task<bool> UpdateLocationAsync(Location location);
-        Task<bool> DeleteLocationAsync(Location location);
-        Task<bool> AddLocationAsync(Location location);
+        Task<Result<Location>> UpdateLocationAsync(Location location);
+        Task<Result<Location>> DeleteLocationAsync(Location location);
+        Task<Result<Location>> AddLocationAsync(Location location);
     }
 }

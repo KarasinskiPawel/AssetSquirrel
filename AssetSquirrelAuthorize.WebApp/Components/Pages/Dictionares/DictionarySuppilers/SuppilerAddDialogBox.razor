@@ -58,7 +58,7 @@
     {
         if(EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync(await AddSuppilerUseCase.AddSuppilerAsync(Suppiler));
+            await OnSave.InvokeAsync((await AddSuppilerUseCase.AddSuppilerAsync(Suppiler)).Success);
         }
     }
 }

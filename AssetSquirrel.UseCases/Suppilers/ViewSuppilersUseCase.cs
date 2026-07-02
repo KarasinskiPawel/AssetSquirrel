@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
 using AssetSquirrel.UseCases.Suppilers.Interfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,23 +23,21 @@ namespace AssetSquirrel.UseCases.Suppilers
 
         public async Task<List<SuppilerDto>> GetSuppilersAsync(Expression<Func<Suppiler, bool>> where)
         {
-            return new GenericMapper<SuppilerDto, Suppiler>().Map(
-                await suppilersRepository.GetSuppilersAsync(where)
-                ).ToList();
+            return (await suppilersRepository.GetSuppilersAsync(where)).Adapt<List<SuppilerDto>>();
         }
 
-        public async Task<bool> UpdateSuppiler(SuppilerDto suppiler)
+        public async Task<Result<SuppilerDto>> UpdateSuppiler(SuppilerDto suppiler)
         {
-            return await suppilersRepository.UpdateSuppilerAsync(
-                new GenericMapper<Suppiler, SuppilerDto>().Map(suppiler)
-                );
+            var result = await suppilersRepository.UpdateSuppilerAsync(suppiler.Adapt<Suppiler>());
+
+            return result.Select(s => s.Adapt<SuppilerDto>());
         }
 
-        public async Task<bool> DeleteSuppiler(SuppilerDto suppiler)
+        public async Task<Result<SuppilerDto>> DeleteSuppiler(SuppilerDto suppiler)
         {
-            return await suppilersRepository.DeleteSuppilerAsync(
-                new GenericMapper<Suppiler, SuppilerDto>().Map(suppiler)
-                );
+            var result = await suppilersRepository.DeleteSuppilerAsync(suppiler.Adapt<Suppiler>());
+
+            return result.Select(s => s.Adapt<SuppilerDto>());
         }
     }
 }

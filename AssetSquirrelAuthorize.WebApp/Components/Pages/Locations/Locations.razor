@@ -3,7 +3,6 @@
 @using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.UseCases.Locations.Interfaces
 @using AssetSquirrel.UseCases.PluginInterfaces
-@using AssetSquirrel.UseCases.Mapper
 @using System.Diagnostics
 
 @inject IViewLocationsUseCase ViewLocationsUseCase
@@ -138,7 +137,7 @@ Title="Edit location">
     public async Task ChangeLocationIsActive(LocationDto location){
         location.IsActive = !location.IsActive;
 
-        if (await ViewLocationsUseCase.UpdateLocationAsync(location))
+        if ((await ViewLocationsUseCase.UpdateLocationAsync(location)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             StateHasChanged();
@@ -171,7 +170,7 @@ Title="Edit location">
     }
 
     public async void DeleteLocation(LocationDto location){
-        if(await ViewLocationsUseCase.DeleteLocationAync(location)){
+        if((await ViewLocationsUseCase.DeleteLocationAync(location)).Success){
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
             await SearchLocations();
             StateHasChanged();

@@ -57,7 +57,7 @@
     {
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync(await AddHardwareTypeUseCase.AddHardwareTypeAsync(HardwareType));
+            await OnSave.InvokeAsync((await AddHardwareTypeUseCase.AddHardwareTypeAsync(HardwareType)).Success);
         }
 
         return false;

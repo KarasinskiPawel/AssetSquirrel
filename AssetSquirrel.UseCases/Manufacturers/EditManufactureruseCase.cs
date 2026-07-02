@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.Manufacturers.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
-using AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories;
+using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +20,11 @@ namespace AssetSquirrel.UseCases.Manufacturers
             this.manufacturersRepository = manufacturersRepository;
         }
 
-        public async Task<bool> UpdateManufacturerAsync(ManufacturerDto manufacturer)
+        public async Task<Result<ManufacturerDto>> UpdateManufacturerAsync(ManufacturerDto manufacturer)
         {
-            return await manufacturersRepository.UpdateManufacturerAsync(
-                new GenericMapper<Manufacturer, ManufacturerDto>().Map(manufacturer)
-                );
+            var result = await manufacturersRepository.UpdateManufacturerAsync(manufacturer.Adapt<Manufacturer>());
+
+            return result.Select(m => m.Adapt<ManufacturerDto>());
         }
     }
 }

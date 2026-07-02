@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.HardwareType.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +20,11 @@ namespace AssetSquirrel.UseCases.HardwareType
             this.hardwareTypeRepository = hardwareTypeRepository;
         }
 
-        public async Task<bool> AddHardwareTypeAsync(HardwareTypeDto hardwareType)
+        public async Task<Result<HardwareTypeDto>> AddHardwareTypeAsync(HardwareTypeDto hardwareType)
         {
-            return await hardwareTypeRepository.AddHardwareTypeAsync(
-                new GenericMapper<CoreBusiness.HardwareType, HardwareTypeDto>().Map(hardwareType)
-                );
+            var result = await hardwareTypeRepository.AddHardwareTypeAsync(hardwareType.Adapt<CoreBusiness.HardwareType>());
+
+            return result.Select(ht => ht.Adapt<HardwareTypeDto>());
         }
     }
 }

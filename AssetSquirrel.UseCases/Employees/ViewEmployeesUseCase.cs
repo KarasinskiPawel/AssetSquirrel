@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.Employees.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,25 +20,23 @@ namespace AssetSquirrel.UseCases.Employees
         {
             this.employeesRepository = employeesRepository;
         }
-        public async Task<bool> DeleteEmployeeAsync(EmployeeDto employee)
+        public async Task<Result<EmployeeDto>> DeleteEmployeeAsync(EmployeeDto employee)
         {
-            return await employeesRepository.DeleteEmployeeAsync(
-                new GenericMapper<Employee, EmployeeDto>().Map(employee)
-                );
+            var result = await employeesRepository.DeleteEmployeeAsync(employee.Adapt<Employee>());
+
+            return result.Select(e => e.Adapt<EmployeeDto>());
         }
 
         public async Task<List<EmployeeDto>> GetEmployeesAsync(Expression<Func<Employee, bool>> where)
         {
-            return new GenericMapper<EmployeeDto, Employee>().Map(
-                await employeesRepository.GetEmployeesAsync(where)
-                ).ToList();
+            return (await employeesRepository.GetEmployeesAsync(where)).Adapt<List<EmployeeDto>>();
         }
 
-        public async Task<bool> UpdateEmployee(EmployeeDto employee)
+        public async Task<Result<EmployeeDto>> UpdateEmployee(EmployeeDto employee)
         {
-            return await employeesRepository.UpdateEmployeeAsync(
-                new GenericMapper<Employee, EmployeeDto>().Map(employee)
-                );
+            var result = await employeesRepository.UpdateEmployeeAsync(employee.Adapt<Employee>());
+
+            return result.Select(e => e.Adapt<EmployeeDto>());
         }
     }
 }

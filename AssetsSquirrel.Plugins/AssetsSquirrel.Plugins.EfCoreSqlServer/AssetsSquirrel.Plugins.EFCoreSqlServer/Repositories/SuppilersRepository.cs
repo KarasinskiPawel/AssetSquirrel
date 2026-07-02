@@ -32,7 +32,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             return output;
         }
 
-        public async Task<bool> AddSuppilerAsync(Suppiler suppiler)
+        public async Task<Result<Suppiler>> AddSuppilerAsync(Suppiler suppiler)
         {
             try
             {
@@ -44,16 +44,16 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     await dbContext.SaveChangesAsync();
                 }
 
-                return true;
+                return Result<Suppiler>.Ok(suppiler);
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "SuppilersRepository", "AddSuppilerAsync", e);
-                return false;
+                return Result<Suppiler>.Fail(e.Message);
             }
         }
 
-        public async Task<bool> DeleteSuppilerAsync(Suppiler suppiler)
+        public async Task<Result<Suppiler>> DeleteSuppilerAsync(Suppiler suppiler)
         {
             try
             {
@@ -65,16 +65,16 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     await dbContext.SaveChangesAsync();
                 }
 
-                return true;
+                return Result<Suppiler>.Ok(suppiler);
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "SuppilersRepository", "DeleteSuppilerAsync", e);
-                return false;
+                return Result<Suppiler>.Fail(e.Message);
             }
         }
 
-        public async Task<bool> UpdateSuppilerAsync(Suppiler suppiler)
+        public async Task<Result<Suppiler>> UpdateSuppilerAsync(Suppiler suppiler)
         {
             try
             {
@@ -86,12 +86,12 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     await dbContext.SaveChangesAsync();
                 }
 
-                return true;
+                return Result<Suppiler>.Ok(suppiler);
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "SuppilersRepository", "UpdateLocationAsync", e);
-                return false;
+                return Result<Suppiler>.Fail(e.Message);
             }
         }
     }

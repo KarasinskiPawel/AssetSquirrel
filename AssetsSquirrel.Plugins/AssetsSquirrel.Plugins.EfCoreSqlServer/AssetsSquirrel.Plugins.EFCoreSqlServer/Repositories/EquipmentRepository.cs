@@ -22,7 +22,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             this.errorsRepository = errorsRepository;
         }
 
-        public async Task<bool> AddEquipmentAsync(Equipment equipment)
+        public async Task<Result<Equipment>> AddEquipmentAsync(Equipment equipment)
         {
             try
             {
@@ -33,21 +33,21 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Equipments.Add(equipment);
                     dbContext.SaveChanges();
 
-                    return true;
+                    return Result<Equipment>.Ok(equipment);
                 }
                 else
                 {
-                    return false;
+                    return Result<Equipment>.Fail("Equipment cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentRepository", "AddEquipmentAsync", e);
-                return false;
+                return Result<Equipment>.Fail(e.Message);
             }
         }
 
-        public async Task<bool> DeleteEquipmentAsync(Equipment equipment)
+        public async Task<Result<Equipment>> DeleteEquipmentAsync(Equipment equipment)
         {
             try
             {
@@ -58,17 +58,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Equipments.Remove(equipment);
                     await dbContext.SaveChangesAsync();
 
-                    return true;
+                    return Result<Equipment>.Ok(equipment);
                 }
                 else
                 {
-                    return false;
+                    return Result<Equipment>.Fail("Equipment cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentRepository", "DeleteEquipmentAsync", e);
-                return false;
+                return Result<Equipment>.Fail(e.Message);
             }
         }
 
@@ -104,7 +104,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             return output;
         }
 
-        public async Task<bool> UpdateEquipmentAsync(Equipment equipment)
+        public async Task<Result<Equipment>> UpdateEquipmentAsync(Equipment equipment)
         {
             try
             {
@@ -115,17 +115,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Equipments.Update(equipment);
                     dbContext.SaveChanges();
 
-                    return true;
+                    return Result<Equipment>.Ok(equipment);
                 }
                 else
                 {
-                    return false;
+                    return Result<Equipment>.Fail("Equipment cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentRepository", "UpdateEquipmentAsync", e);
-                return false;
+                return Result<Equipment>.Fail(e.Message);
             }
         }
     }

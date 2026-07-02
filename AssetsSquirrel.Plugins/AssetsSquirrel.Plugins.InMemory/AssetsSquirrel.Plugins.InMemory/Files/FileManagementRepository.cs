@@ -1,4 +1,4 @@
-﻿using AssetsSquirrel.Plugins.InMemory.Files.Interfaces;
+﻿using AssetSquirrel.UseCases.PluginInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

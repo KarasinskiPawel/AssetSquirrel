@@ -104,7 +104,7 @@ else
     {
         if (EditContext is not null && EditContext!.Validate())
         {
-            await OnSave.InvokeAsync(await EditEmployeeUseCase.EditEmployeeAsync(Employee));
+            await OnSave.InvokeAsync((await EditEmployeeUseCase.EditEmployeeAsync(Employee)).Success);
         }
         else
         {

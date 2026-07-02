@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.EquipmentHandover.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,16 +36,12 @@ namespace AssetSquirrel.UseCases.EquipmentHandover
 
         public async Task<List<LocationDto>> GetLocationsAsync(Expression<Func<Location, bool>> where)
         {
-            return (new GenericMapper<LocationDto, Location>().Map(
-                await locationRepository.GetLocationsAsync(where)).ToList()
-                );
+            return (await locationRepository.GetLocationsAsync(where)).Adapt<List<LocationDto>>();
         }
 
         public async Task<List<EmployeeDto>> GetEmployeesAsync(Expression<Func<Employee, bool>> where)
         {
-            return (new GenericMapper<EmployeeDto, Employee>().Map(
-                await employeesRepository.GetEmployeesAsync(where)).ToList()
-                );
+            return (await employeesRepository.GetEmployeesAsync(where)).Adapt<List<EmployeeDto>>();
         }
     }
 }

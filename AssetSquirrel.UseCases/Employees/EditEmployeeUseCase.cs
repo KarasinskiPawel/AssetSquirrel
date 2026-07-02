@@ -1,8 +1,8 @@
 ﻿using AssetSquirrel.CoreBusiness;
 using AssetSquirrel.CoreBusiness.Dto;
 using AssetSquirrel.UseCases.Employees.Interfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetSquirrel.UseCases.PluginInterfaces;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +20,11 @@ namespace AssetSquirrel.UseCases.Employees
             this.employeesRepository = employeesRepository;
         }
 
-        public async Task<bool> EditEmployeeAsync(EmployeeDto employee)
+        public async Task<Result<EmployeeDto>> EditEmployeeAsync(EmployeeDto employee)
         {
-            return await employeesRepository.UpdateEmployeeAsync(
-                new GenericMapper<Employee, EmployeeDto>().Map(employee)
-                );
+            var result = await employeesRepository.UpdateEmployeeAsync(employee.Adapt<Employee>());
+
+            return result.Select(e => e.Adapt<EmployeeDto>());
         }
     }
 }

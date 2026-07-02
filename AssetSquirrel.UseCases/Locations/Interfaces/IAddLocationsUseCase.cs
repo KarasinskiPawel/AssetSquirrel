@@ -4,6 +4,6 @@ namespace AssetSquirrel.UseCases.Locations.Interfaces
 {
     public interface IAddLocationsUseCase
     {
-        Task<bool> AddLocationAsync(LocationDto location);
+        Task<Result<LocationDto>> AddLocationAsync(LocationDto location);
     }
 }

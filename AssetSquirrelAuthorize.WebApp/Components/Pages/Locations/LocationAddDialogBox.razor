@@ -1,7 +1,6 @@
 ﻿@using AssetSquirrel.CoreBusiness
 @using System.Diagnostics
 @using AssetSquirrel.UseCases.Locations.Interfaces
-@using AssetSquirrel.UseCases.Mapper
 @using Microsoft.AspNetCore.Identity
 
 @inject IAddLocationsUseCase AddLocationsUseCase
@@ -99,7 +98,7 @@
     {
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync(await AddLocationsUseCase.AddLocationAsync(Location));
+            await OnSave.InvokeAsync((await AddLocationsUseCase.AddLocationAsync(Location)).Success);
         }
         else
         {

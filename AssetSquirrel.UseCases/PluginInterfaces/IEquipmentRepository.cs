@@ -13,10 +13,10 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
     {
         Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where);
 
-        Task<bool> DeleteEquipmentAsync(Equipment equipment);
+        Task<Result<Equipment>> DeleteEquipmentAsync(Equipment equipment);
 
-        Task<bool> UpdateEquipmentAsync(Equipment equipment);
+        Task<Result<Equipment>> UpdateEquipmentAsync(Equipment equipment);
 
-        Task<bool> AddEquipmentAsync(Equipment equipment);
+        Task<Result<Equipment>> AddEquipmentAsync(Equipment equipment);
     }
 }

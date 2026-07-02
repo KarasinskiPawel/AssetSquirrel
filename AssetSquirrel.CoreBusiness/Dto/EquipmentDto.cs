@@ -29,6 +29,7 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public string? Description { get; set; }
         public DateTime DateAdd { get; set; } = DateTime.Now;
         public DateTime? DateRemoved { get; set; }
+        public bool IsAddedToWarehouse { get; set; } = false;
         public bool IsActive { get; set; } = true;
 
         public string? UserId { get; set; } // Foreign key to ApplicationUser

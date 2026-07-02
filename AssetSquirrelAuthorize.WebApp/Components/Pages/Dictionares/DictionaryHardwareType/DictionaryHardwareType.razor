@@ -170,7 +170,7 @@
     {
         hardwareType.IsActive = !hardwareType.IsActive;
 
-        if(await ViewHardwareTypeUseCase.UpdateHardwareType(hardwareType))
+        if((await ViewHardwareTypeUseCase.UpdateHardwareType(hardwareType)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchHardwareTypes();
@@ -184,7 +184,7 @@
 
     private async Task DeleteHardwareType(HardwareTypeDto hardwareType)
     {
-        if (await ViewHardwareTypeUseCase.DeleteHardwareTypeAsync(hardwareType))
+        if ((await ViewHardwareTypeUseCase.DeleteHardwareTypeAsync(hardwareType)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchHardwareTypes();

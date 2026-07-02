@@ -6,8 +6,8 @@ namespace AssetSquirrel.UseCases.Suppilers.Interfaces
 {
     public interface IViewSuppilersUseCase
     {
-        Task<bool> DeleteSuppiler(SuppilerDto suppiler);
+        Task<Result<SuppilerDto>> DeleteSuppiler(SuppilerDto suppiler);
         Task<List<SuppilerDto>> GetSuppilersAsync(Expression<Func<Suppiler, bool>> where);
-        Task<bool> UpdateSuppiler(SuppilerDto suppiler);
+        Task<Result<SuppilerDto>> UpdateSuppiler(SuppilerDto suppiler);
     }
 }

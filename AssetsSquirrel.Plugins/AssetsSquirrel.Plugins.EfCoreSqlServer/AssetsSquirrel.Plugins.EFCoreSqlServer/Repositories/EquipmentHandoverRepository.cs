@@ -36,7 +36,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             }
         }
 
-        public async Task<bool> AddEquipmentHandoverAsync(EquipmentHandover equipmentHandover)
+        public async Task<Result<EquipmentHandover>> AddEquipmentHandoverAsync(EquipmentHandover equipmentHandover)
         {
             try
             {
@@ -48,18 +48,18 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 }
                 else
                 {
-                    return false;
+                    return Result<EquipmentHandover>.Fail("EquipmentHandover cannot be null.");
                 }
             }
             catch (Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentHandoverRepository", "AddEquipmentHandoverAsync", e);
-                return false;
+                return Result<EquipmentHandover>.Fail(e.Message);
             }
-            return true;
+            return Result<EquipmentHandover>.Ok(equipmentHandover);
         }
 
-        public async Task<bool> UpdateEquipmentHandoverAsync(EquipmentHandover equipmentHandover)
+        public async Task<Result<EquipmentHandover>> UpdateEquipmentHandoverAsync(EquipmentHandover equipmentHandover)
         {
             try
             {
@@ -71,19 +71,19 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 }
                 else
                 {
-                    return false;
+                    return Result<EquipmentHandover>.Fail("EquipmentHandover cannot be null.");
                 }
             }
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentHandoverRepository", "UpdateEquipmentHandover", e);
-                return false;
+                return Result<EquipmentHandover>.Fail(e.Message);
             }
 
-            return true;
+            return Result<EquipmentHandover>.Ok(equipmentHandover);
         }
 
-        public async Task<bool> DeleteEquipmentHandoverAsync(EquipmentHandover equipmentHandover)
+        public async Task<Result<EquipmentHandover>> DeleteEquipmentHandoverAsync(EquipmentHandover equipmentHandover)
         {
             try
             {
@@ -94,10 +94,10 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             catch(Exception e)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentHandoverRepository", "DeleteEquipmentHandoverAsync", e);
-                return false;
+                return Result<EquipmentHandover>.Fail(e.Message);
             }
 
-            return true;
+            return Result<EquipmentHandover>.Ok(equipmentHandover);
         }
     }
 }

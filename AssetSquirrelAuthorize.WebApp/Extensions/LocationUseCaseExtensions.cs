@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AssetSquirrel.UseCases.Locations;
 using AssetSquirrel.UseCases.Locations.Interfaces;
 using AssetSquirrel.UseCases.PluginInterfaces;
-using AssetSquirrel.UseCases.Mapper;
 using AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AssetSquirrel.CoreBusiness;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,8 +11,8 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
     public interface IHardwareTypeRepository
     {
         Task<IEnumerable<CoreBusiness.HardwareType>> GetHardwareTypesAsync(Expression<Func<CoreBusiness.HardwareType, bool>> where);
-        Task<bool> DeleteHardwareTypeAsync(CoreBusiness.HardwareType hardwareType);
-        Task<bool> UpdateHardwareTypeAsync(CoreBusiness.HardwareType hardwareType);
-        Task<bool> AddHardwareTypeAsync(CoreBusiness.HardwareType hardwareType);
+        Task<Result<CoreBusiness.HardwareType>> DeleteHardwareTypeAsync(CoreBusiness.HardwareType hardwareType);
+        Task<Result<CoreBusiness.HardwareType>> UpdateHardwareTypeAsync(CoreBusiness.HardwareType hardwareType);
+        Task<Result<CoreBusiness.HardwareType>> AddHardwareTypeAsync(CoreBusiness.HardwareType hardwareType);
     }
 }

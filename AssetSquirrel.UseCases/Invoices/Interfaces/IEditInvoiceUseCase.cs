@@ -1,9 +1,10 @@
-﻿using AssetSquirrel.CoreBusiness.Dto;
+﻿using AssetSquirrel.CoreBusiness;
+using AssetSquirrel.CoreBusiness.Dto;
 
 namespace AssetSquirrel.UseCases.Invoices.Interfaces
 {
     public interface IEditInvoiceUseCase
     {
-        Task<bool> UpdateInvoice(InvoiceDto invoice);
+        Task<Result<InvoiceDto>> UpdateInvoice(InvoiceDto invoice);
     }
 }

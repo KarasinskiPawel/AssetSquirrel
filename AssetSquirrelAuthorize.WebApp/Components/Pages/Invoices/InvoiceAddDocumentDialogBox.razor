@@ -93,11 +93,11 @@ else
     public async Task AddDocument(){
         if (uploadedFile is not null)
         {
-            if (await AddInvoiceDocumentUseCase.AddInvoiceDocumentAsync(
+            if ((await AddInvoiceDocumentUseCase.AddInvoiceDocumentAsync(
                 this.Invoice
                 ,this.uploadedFile.Name
                 ,this.uploadedFile.ContentType
-                ,uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))
+                ,uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))).Success
             )
             {
                 await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been added.");

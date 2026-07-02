@@ -1,9 +1,10 @@
-﻿using AssetSquirrel.CoreBusiness.Dto;
+﻿using AssetSquirrel.CoreBusiness;
+using AssetSquirrel.CoreBusiness.Dto;
 
 namespace AssetSquirrel.UseCases.HardwareType.Interfaces
 {
     public interface IAddHardwareTypeUseCase
     {
-        Task<bool> AddHardwareTypeAsync(HardwareTypeDto hardwareType);
+        Task<Result<HardwareTypeDto>> AddHardwareTypeAsync(HardwareTypeDto hardwareType);
     }
 }

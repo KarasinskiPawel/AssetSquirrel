@@ -20,7 +20,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
             this.dbContextFactory = dbContextFactory;
             this.errorsRepository = errorsRepository;
         }
-        public async Task<bool> AddEmployeeAsync(Employee employee)
+        public async Task<Result<Employee>> AddEmployeeAsync(Employee employee)
         {
             try
             {
@@ -29,21 +29,21 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     var dbContext = dbContextFactory.CreateDbContext();
                     await dbContext.Employees.AddAsync(employee);
                     await dbContext.SaveChangesAsync();
-                    return true;
+                    return Result<Employee>.Ok(employee);
                 }
                 else
                 {
-                    return false;
+                    return Result<Employee>.Fail("Employee cannot be null.");
                 }
             }
             catch (Exception ex)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EmployeesRepository", "AddEmployeeAsync", ex);
-                return false;
+                return Result<Employee>.Fail(ex.Message);
             }
         }
 
-        public async Task<bool> DeleteEmployeeAsync(Employee employee)
+        public async Task<Result<Employee>> DeleteEmployeeAsync(Employee employee)
         {
             try
             {
@@ -54,17 +54,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Employees.Remove(employee);
                     await dbContext.SaveChangesAsync();
 
-                    return true;
+                    return Result<Employee>.Ok(employee);
                 }
                 else
                 {
-                    return false;
+                    return Result<Employee>.Fail("Employee cannot be null.");
                 }
             }
             catch (Exception ex)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EmployeesRepository", "DeleteEmployeeAsync", ex);
-                return false;
+                return Result<Employee>.Fail(ex.Message);
             }
         }
 
@@ -78,7 +78,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> UpdateEmployeeAsync(Employee employee)
+        public async Task<Result<Employee>> UpdateEmployeeAsync(Employee employee)
         {
             try
             {
@@ -89,17 +89,17 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     dbContext.Employees.Update(employee);
                     dbContext.SaveChanges();
 
-                    return true;
+                    return Result<Employee>.Ok(employee);
                 }
                 else
                 {
-                    return false;
+                    return Result<Employee>.Fail("Employee cannot be null.");
                 }
             }
             catch (Exception ex)
             {
                 await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EmployeesRepository", "UpdateEmployeeAsync", ex);
-                return false;
+                return Result<Employee>.Fail(ex.Message);
             }
         }
     }
