@@ -36,6 +36,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
             builder.HasOne(e => e.RegisteredByUser)
                    .WithMany(u => u.Equipments)
                    .HasForeignKey(e => e.RegisteredByUserId);
+
+            builder.HasOne(e => e.Location)
+                   .WithMany()
+                   .HasForeignKey(e => e.LocationId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

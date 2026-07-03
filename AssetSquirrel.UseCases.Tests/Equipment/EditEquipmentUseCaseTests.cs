@@ -24,12 +24,15 @@ namespace AssetSquirrel.UseCases.Tests.Equipment
             var suppilersRepository = new Mock<ISuppilersRepository>();
             var invoiceRepository = new Mock<IInvoiceRepository>();
 
+            var locationRepository = new Mock<ILocationRepository>();
+
             var useCase = new EditEquipmentUseCase(
                 equipmentRepository.Object,
                 hardwareTypeRepository.Object,
                 manufacturersRepository.Object,
                 suppilersRepository.Object,
-                invoiceRepository.Object);
+                invoiceRepository.Object,
+                locationRepository.Object);
 
             var dto = new EquipmentDto
             {
@@ -64,12 +67,15 @@ namespace AssetSquirrel.UseCases.Tests.Equipment
             var suppilersRepository = new Mock<ISuppilersRepository>();
             var invoiceRepository = new Mock<IInvoiceRepository>();
 
+            var locationRepository = new Mock<ILocationRepository>();
+
             var useCase = new EditEquipmentUseCase(
                 equipmentRepository.Object,
                 hardwareTypeRepository.Object,
                 manufacturersRepository.Object,
                 suppilersRepository.Object,
-                invoiceRepository.Object);
+                invoiceRepository.Object,
+                locationRepository.Object);
 
             var dto = new EquipmentDto { EquipmentId = 10, ModelName = "Dell OptiPlex", SerialNumber = "SN-54321" };
 
@@ -97,12 +103,15 @@ namespace AssetSquirrel.UseCases.Tests.Equipment
             var suppilersRepository = new Mock<ISuppilersRepository>();
             var invoiceRepository = new Mock<IInvoiceRepository>();
 
+            var locationRepository = new Mock<ILocationRepository>();
+
             var useCase = new EditEquipmentUseCase(
                 equipmentRepository.Object,
                 hardwareTypeRepository.Object,
                 manufacturersRepository.Object,
                 suppilersRepository.Object,
-                invoiceRepository.Object);
+                invoiceRepository.Object,
+                locationRepository.Object);
 
             var result = await useCase.GetHardwareTypesAsync(h => h.IsActive);
 
@@ -129,12 +138,15 @@ namespace AssetSquirrel.UseCases.Tests.Equipment
             var suppilersRepository = new Mock<ISuppilersRepository>();
             var invoiceRepository = new Mock<IInvoiceRepository>();
 
+            var locationRepository = new Mock<ILocationRepository>();
+
             var useCase = new EditEquipmentUseCase(
                 equipmentRepository.Object,
                 hardwareTypeRepository.Object,
                 manufacturersRepository.Object,
                 suppilersRepository.Object,
-                invoiceRepository.Object);
+                invoiceRepository.Object,
+                locationRepository.Object);
 
             var result = await useCase.GetManufacturersAsync(m => m.IsActive);
 
@@ -161,12 +173,15 @@ namespace AssetSquirrel.UseCases.Tests.Equipment
                 .ReturnsAsync(suppilers);
             var invoiceRepository = new Mock<IInvoiceRepository>();
 
+            var locationRepository = new Mock<ILocationRepository>();
+
             var useCase = new EditEquipmentUseCase(
                 equipmentRepository.Object,
                 hardwareTypeRepository.Object,
                 manufacturersRepository.Object,
                 suppilersRepository.Object,
-                invoiceRepository.Object);
+                invoiceRepository.Object,
+                locationRepository.Object);
 
             var result = await useCase.GetSuppilersAsync(s => s.IsActive);
 
@@ -193,18 +208,55 @@ namespace AssetSquirrel.UseCases.Tests.Equipment
                 .Setup(r => r.GetInvoicesAsync(It.IsAny<Expression<Func<Invoice, bool>>>()))
                 .ReturnsAsync(invoices);
 
+            var locationRepository = new Mock<ILocationRepository>();
+
             var useCase = new EditEquipmentUseCase(
                 equipmentRepository.Object,
                 hardwareTypeRepository.Object,
                 manufacturersRepository.Object,
                 suppilersRepository.Object,
-                invoiceRepository.Object);
+                invoiceRepository.Object,
+                locationRepository.Object);
 
             var result = await useCase.GetInvoicesAsync(i => i.InvoiceId > 0);
 
             Assert.Equal(2, result.Count);
             Assert.Contains(result, dto => dto.InvoiceId == 1 && dto.InvoiceNumber == "FV/2025/001");
             Assert.Contains(result, dto => dto.InvoiceId == 2 && dto.InvoiceNumber == "FV/2025/002");
+        }
+
+        [Fact]
+        public async Task GetLocationsAsync_ReturnsMappedDtos()
+        {
+            var locations = new List<Location>
+            {
+                new() { LocationId = 1, City = "Stryków", Street = "Magazyn Centralny", EquipmentStorage = true, IsActive = true },
+                new() { LocationId = 2, City = "Łódź", Street = "Biuro - Srebrzyńska 14", EquipmentStorage = false, IsActive = true }
+            };
+
+            var equipmentRepository = new Mock<IEquipmentRepository>();
+            var hardwareTypeRepository = new Mock<IHardwareTypeRepository>();
+            var manufacturersRepository = new Mock<IManufacturersRepository>();
+            var suppilersRepository = new Mock<ISuppilersRepository>();
+            var invoiceRepository = new Mock<IInvoiceRepository>();
+            var locationRepository = new Mock<ILocationRepository>();
+            locationRepository
+                .Setup(r => r.GetLocationsAsync(It.IsAny<Expression<Func<Location, bool>>>()))
+                .ReturnsAsync(locations);
+
+            var useCase = new EditEquipmentUseCase(
+                equipmentRepository.Object,
+                hardwareTypeRepository.Object,
+                manufacturersRepository.Object,
+                suppilersRepository.Object,
+                invoiceRepository.Object,
+                locationRepository.Object);
+
+            var result = await useCase.GetLocationsAsync(l => l.EquipmentStorage);
+
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, dto => dto.LocationId == 1 && dto.EquipmentStorage);
+            Assert.Contains(result, dto => dto.LocationId == 2 && !dto.EquipmentStorage);
         }
     }
 }

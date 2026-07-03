@@ -19,19 +19,22 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
         private readonly IManufacturersRepository manufacturersRepository;
         private readonly ISuppilersRepository suppilersRepository;
         private readonly IInvoiceRepository invoiceRepository;
+        private readonly ILocationRepository locationRepository;
 
         public AddEquipmentUseCase(
             IEquipmentRepository equipmentRepository,
             IHardwareTypeRepository hardwareTypeRepository,
             IManufacturersRepository manufacturersRepository,
             ISuppilersRepository suppilersRepository,
-            IInvoiceRepository invoiceRepository)
+            IInvoiceRepository invoiceRepository,
+            ILocationRepository locationRepository)
         {
             this.equipmentRepository = equipmentRepository;
             this.hardwareTypeRepository = hardwareTypeRepository;
             this.manufacturersRepository = manufacturersRepository;
             this.suppilersRepository = suppilersRepository;
             this.invoiceRepository = invoiceRepository;
+            this.locationRepository = locationRepository;
         }
 
         public async Task<Result<EquipmentDto>> AddEquipmentAsync(EquipmentDto equipment)
@@ -62,6 +65,11 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
         public async Task<List<InvoiceDto>> GetInvoicesAsync(Expression<Func<Invoice, bool>> where)
         {
             return await invoiceRepository.GetInvoicesAsync(where);
+        }
+
+        public async Task<List<LocationDto>> GetLocationsAsync(Expression<Func<Location, bool>> where)
+        {
+            return (await locationRepository.GetLocationsAsync(where)).Adapt<List<LocationDto>>();
         }
     }
 }

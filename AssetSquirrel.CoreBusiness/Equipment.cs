@@ -31,6 +31,11 @@ namespace AssetSquirrel.CoreBusiness
         public bool IsAddedToWarehouse { get; set; } = false;
         public bool IsActive { get; set; } = true;
 
+        // Warehouse location the equipment was received into -- restricted
+        // to locations flagged as Location.EquipmentStorage in the UI.
+        public int? LocationId { get; set; }
+        public Location? Location { get; set; }
+
         //Navigation
         public Suppiler? Suppiler { get; set; }
         public Manufacturer? Manufacturer { get; set; }
