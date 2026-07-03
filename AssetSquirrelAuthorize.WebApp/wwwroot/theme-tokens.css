@@ -1,0 +1,100 @@
+/*
+  Design tokens for the AssetSquirrel sci-fi theme system.
+  This file defines CSS custom properties only — no element selectors.
+  Light values live on :root; dark overrides live under html[data-theme="dark"].
+  Theme is switched by toggling the data-theme attribute on <html> (see theme.js).
+*/
+
+:root {
+    /* Surfaces */
+    --as-bg-primary: #eef1f5;
+    --as-bg-surface: #ffffff;
+    --as-bg-elevated: #f4f6fa;
+    --as-text-primary: #10151c;
+    --as-text-muted: #4b5563;
+    --as-border: rgba(15, 23, 42, 0.14);
+
+    /* Accents */
+    --as-accent-cyan: #0891b2;
+    --as-accent-amber: #b45309;
+    --as-accent-violet: #7c3aed;
+    --as-glow-cyan: rgba(8, 145, 178, 0.30);
+    --as-glow-amber: rgba(180, 83, 9, 0.25);
+    --as-glow-violet: rgba(124, 58, 237, 0.25);
+
+    /* Typography */
+    --as-font-display: 'Orbitron', 'Segoe UI', sans-serif;
+    --as-font-body: 'Rajdhani', 'Segoe UI', Arial, sans-serif;
+    --as-letter-spacing-wide: 0.05em;
+
+    /* Shape */
+    --as-radius-sm: 2px;
+    --as-radius: 4px;
+    --as-radius-lg: 8px;
+
+    /* Layout shell */
+    --as-sidebar-bg: linear-gradient(180deg, #e7edf6 0%, #d7e2f0 100%);
+    --as-sidebar-text: #1f2937;
+    --as-sidebar-active-bg: rgba(8, 145, 178, 0.14);
+    --as-sidebar-hover-bg: rgba(8, 145, 178, 0.08);
+    --as-sidebar-border: rgba(8, 145, 178, 0.35);
+    --as-topbar-bg: var(--as-bg-surface);
+    --as-topbar-border: var(--as-border);
+
+    /* Tables */
+    --as-table-header-bg: #0f4c68;
+    --as-table-header-text: #f4faff;
+    --as-table-row-hover: rgba(8, 145, 178, 0.08);
+    --as-table-border: var(--as-border);
+
+    /* Dialogs / modals */
+    --as-dialog-bg: var(--as-bg-surface);
+    --as-dialog-header-bg: #0f4c68;
+    --as-dialog-header-text: #f4faff;
+    --as-dialog-border: var(--as-accent-cyan);
+    --as-dialog-glow: 0 0 0 1px var(--as-border), 0 8px 28px rgba(15, 23, 42, 0.18);
+
+    /* Interactive states */
+    --as-focus-ring: 0 0 0 0.2rem var(--as-glow-cyan);
+    --as-link-color: var(--as-accent-cyan);
+    --as-btn-primary-bg: var(--as-accent-cyan);
+    --as-btn-primary-text: #ffffff;
+    --as-btn-primary-border: var(--as-accent-cyan);
+}
+
+html[data-theme="dark"] {
+    /* Surfaces */
+    --as-bg-primary: #0a0e14;
+    --as-bg-surface: #10161f;
+    --as-bg-elevated: #161d29;
+    --as-text-primary: #e6f1ff;
+    --as-text-muted: #8b9bb0;
+    --as-border: rgba(148, 197, 255, 0.18);
+
+    /* Accents */
+    --as-accent-cyan: #22d3ee;
+    --as-accent-amber: #f5b942;
+    --as-accent-violet: #b06bff;
+    --as-glow-cyan: rgba(34, 211, 238, 0.55);
+    --as-glow-amber: rgba(245, 185, 66, 0.45);
+    --as-glow-violet: rgba(176, 107, 255, 0.45);
+
+    /* Layout shell */
+    --as-sidebar-bg: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    --as-sidebar-text: #d7e3f5;
+    --as-sidebar-active-bg: rgba(34, 211, 238, 0.22);
+    --as-sidebar-hover-bg: rgba(34, 211, 238, 0.10);
+    --as-sidebar-border: rgba(34, 211, 238, 0.45);
+    --as-topbar-bg: #0d1420;
+    --as-topbar-border: rgba(34, 211, 238, 0.25);
+
+    /* Tables */
+    --as-table-header-bg: #0d2b3d;
+    --as-table-header-text: #baf3ff;
+    --as-table-row-hover: rgba(34, 211, 238, 0.10);
+
+    /* Dialogs / modals */
+    --as-dialog-header-bg: #0d2b3d;
+    --as-dialog-header-text: #baf3ff;
+    --as-dialog-glow: 0 0 0 1px var(--as-border), 0 0 24px var(--as-glow-cyan), 0 12px 32px rgba(0, 0, 0, 0.55);
+}
