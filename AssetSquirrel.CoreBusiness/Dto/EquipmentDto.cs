@@ -32,6 +32,9 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public bool IsAddedToWarehouse { get; set; } = false;
         public bool IsActive { get; set; } = true;
 
+        public int? LocationId { get; set; }
+        public string? LocationName { get; set; }
+
         // Person who registered/last changed this record — NOT who the equipment
         // is assigned to/possessed by. See Equipment.RegisteredByUserId.
         public string? RegisteredByUserId { get; set; }

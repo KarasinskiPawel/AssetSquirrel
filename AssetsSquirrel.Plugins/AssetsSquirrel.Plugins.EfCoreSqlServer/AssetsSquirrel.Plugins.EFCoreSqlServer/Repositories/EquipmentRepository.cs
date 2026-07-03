@@ -117,7 +117,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     InvoiceNumber = a.Invoice != null ? a.Invoice.InvoiceNumber : null,
                     SerialNumber = a.SerialNumber,
                     RegisteredByUserId = a.RegisteredByUserId,
-                    RegisteredByUserName = a.RegisteredByUser != null ? a.RegisteredByUser.UserName : null
+                    RegisteredByUserName = a.RegisteredByUser != null ? a.RegisteredByUser.UserName : null,
+                    LocationId = a.LocationId,
+                    LocationName = a.Location != null ? (a.Location.City + " " + a.Location.Street) : null
                 })
                 .OrderBy(a => a.ModelName)
                 .ThenBy(a => a.SerialNumber)

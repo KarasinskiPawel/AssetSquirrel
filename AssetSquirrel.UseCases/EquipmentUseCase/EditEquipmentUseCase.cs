@@ -19,19 +19,22 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
         private readonly IManufacturersRepository manufacturersRepository;
         private readonly ISuppilersRepository suppilersRepository;
         private readonly IInvoiceRepository invoiceRepository;
+        private readonly ILocationRepository locationRepository;
 
         public EditEquipmentUseCase(
             IEquipmentRepository equipmentRepository,
             IHardwareTypeRepository hardwareTypeRepository,
             IManufacturersRepository manufacturersRepository,
             ISuppilersRepository suppilersRepository,
-            IInvoiceRepository invoiceRepository)
+            IInvoiceRepository invoiceRepository,
+            ILocationRepository locationRepository)
         {
             this.equipmentRepository = equipmentRepository;
             this.hardwareTypeRepository = hardwareTypeRepository;
             this.manufacturersRepository = manufacturersRepository;
             this.suppilersRepository = suppilersRepository;
             this.invoiceRepository = invoiceRepository;
+            this.locationRepository = locationRepository;
         }
 
         public async Task<Result<EquipmentDto>> UpdateEquipmentAsync(EquipmentDto equipment)
@@ -39,6 +42,11 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
             var result = await equipmentRepository.UpdateEquipmentAsync(equipment.Adapt<Equipment>());
 
             return result.Select(e => e.Adapt<EquipmentDto>());
+        }
+
+        public async Task<List<LocationDto>> GetLocationsAsync(Expression<Func<Location, bool>> where)
+        {
+            return (await locationRepository.GetLocationsAsync(where)).Adapt<List<LocationDto>>();
         }
 
         public Task<List<HardwareTypeDto>> GetHardwareTypesAsync(Expression<Func<CoreBusiness.HardwareType, bool>> where)

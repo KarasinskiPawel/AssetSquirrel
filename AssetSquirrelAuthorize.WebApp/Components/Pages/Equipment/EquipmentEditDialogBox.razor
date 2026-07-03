@@ -190,6 +190,23 @@
 
                 <div class="row mt-3 mb-3">
                     <div class="offset-1 col-3">
+                        <label class="col-form-label"> Warehouse location </label>
+                    </div>
+                    <div class="col-6">
+                        <InputSelect TValue="int?" class="form-control" Value="Equipment.LocationId" ValueChanged="OnLocationChanged" ValueExpression="() => Equipment.LocationId">
+                            <option value=""> ...location... </option>
+                            @foreach (var location in storageLocations)
+                            {
+                                <option value="@location.LocationId"> @location.City @location.Street </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-1">
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-3">
                         <label class="col-form-label"> Added to warehouse? </label>
                     </div>
                     <div class="col-6 text-center">
@@ -229,6 +246,7 @@ else
     List<ManufacturerDto> manufacturers;
     List<HardwareTypeDto> hardwareTypes;
     List<InvoiceDto> invoices;
+    List<LocationDto> storageLocations;
 
     bool isLoading = true;
 
@@ -240,6 +258,7 @@ else
         manufacturers = await EditEquipmentUseCase.GetManufacturersAsync(a => a.IsActive == true);
         hardwareTypes = await EditEquipmentUseCase.GetHardwareTypesAsync(a => a.IsActive == true);
         invoices = await EditEquipmentUseCase.GetInvoicesAsync(a => true);
+        storageLocations = await EditEquipmentUseCase.GetLocationsAsync(a => a.EquipmentStorage && a.IsActive);
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -252,6 +271,16 @@ else
         isLoading = false;
 
         base.OnInitialized();
+    }
+
+    private void OnLocationChanged(int? value)
+    {
+        Equipment.LocationId = value;
+
+        if (value is not null)
+        {
+            Equipment.IsAddedToWarehouse = true;
+        }
     }
 
     public async Task EditEquipment()
