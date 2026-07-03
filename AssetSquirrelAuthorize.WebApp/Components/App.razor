@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 @* <head>
     <meta charset="utf-8" />
@@ -24,14 +24,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
 
+@* Blocking theme-init script: must run before any stylesheet to avoid a flash of the wrong theme. *@
+    <script>
+        (function () {
+            var stored = localStorage.getItem('as-theme');
+            document.documentElement.setAttribute('data-theme', stored || 'dark');
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="theme-tokens.css" />
 
     <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="theme-components.css" />
     <link rel="stylesheet" href="AssetSquirrelAuthorize.WebApp.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
 
     <link href="bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
 
 @* Powiadomienia popup *@
     <link href="izitoast/css/izitoast.min.css" rel="stylesheet" />
@@ -39,8 +52,9 @@
 
     <script src="iziToast/izitoastreadyfunction.js"></script>
 
- @* JS files *@ 
+ @* JS files *@
     <script src="Scripts/fileManager.js"></script>
+    <script src="Scripts/theme.js"></script>
 
     <HeadOutlet @rendermode="InteractiveServer" />
     </head>

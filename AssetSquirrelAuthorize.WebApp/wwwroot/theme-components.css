@@ -1,0 +1,76 @@
+/*
+  Cross-cutting component overrides that consume the tokens defined in
+  theme-tokens.css. Loaded after app.css so it can override Bootstrap
+  defaults that app.css doesn't already touch.
+*/
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: var(--as-font-display);
+    letter-spacing: var(--as-letter-spacing-wide);
+}
+
+/* Form controls: Bootstrap defaults to a white input background regardless
+   of theme — must be overridden explicitly for dark mode to be usable. */
+.form-control,
+.form-select {
+    background-color: var(--as-bg-surface);
+    color: var(--as-text-primary);
+    border-color: var(--as-border);
+}
+
+    .form-control::placeholder {
+        color: var(--as-text-muted);
+    }
+
+    .form-control:disabled,
+    .form-select:disabled {
+        background-color: var(--as-bg-elevated);
+        color: var(--as-text-muted);
+    }
+
+/* Outline buttons compute color from Bootstrap's fixed palette, not our
+   tokens — restyle the variants actually used in this app (edit/delete/add
+   actions) so they stay legible and on-theme. */
+.btn-outline-dark {
+    color: var(--as-text-primary);
+    border-color: var(--as-border);
+}
+
+    .btn-outline-dark:hover {
+        background-color: var(--as-bg-elevated);
+        border-color: var(--as-accent-cyan);
+        color: var(--as-text-primary);
+    }
+
+.btn-outline-warning:hover {
+    box-shadow: 0 0 10px var(--as-glow-amber);
+}
+
+.btn-outline-danger:hover {
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.45);
+}
+
+.btn-outline-success:hover {
+    box-shadow: 0 0 10px rgba(25, 135, 84, 0.45);
+}
+
+/* Scrollbars — small sci-fi touch, WebKit/Blink only, harmless no-op elsewhere. */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--as-bg-elevated);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--as-accent-cyan);
+    border-radius: var(--as-radius);
+    opacity: 0.6;
+}
+
+/* iziToast: only override colors via its own classes, never edit the vendored CSS file. */
+.iziToast {
+    font-family: var(--as-font-body);
+}

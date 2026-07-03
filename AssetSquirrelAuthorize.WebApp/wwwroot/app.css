@@ -3,21 +3,23 @@
 @import url('width.css');
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: var(--as-font-body);
+    background-color: var(--as-bg-primary);
+    color: var(--as-text-primary);
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: var(--as-link-color);
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    color: var(--as-btn-primary-text);
+    background-color: var(--as-btn-primary-bg);
+    border-color: var(--as-btn-primary-border);
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: var(--as-focus-ring);
 }
 
 .content {

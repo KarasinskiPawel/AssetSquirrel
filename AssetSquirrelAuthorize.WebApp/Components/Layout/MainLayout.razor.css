@@ -2,6 +2,10 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    background-color: var(--as-bg-primary);
+    color: var(--as-text-primary);
+    font-family: var(--as-font-body);
+    min-height: 100vh;
 }
 
 main {
@@ -9,17 +13,42 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: var(--as-sidebar-bg);
+    box-shadow: 1px 0 0 var(--as-sidebar-border);
 }
 
 .top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+    background-color: var(--as-topbar-bg);
+    border-bottom: 1px solid var(--as-topbar-border);
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
+
+    .top-row ::deep a {
+        color: var(--as-link-color);
+    }
+
+.theme-toggle-btn {
+    appearance: none;
+    cursor: pointer;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1px solid var(--as-border);
+    background-color: var(--as-bg-elevated);
+    color: var(--as-accent-cyan);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+    .theme-toggle-btn:hover {
+        box-shadow: 0 0 10px var(--as-glow-cyan);
+    }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
         white-space: nowrap;
@@ -77,9 +106,10 @@ main {
 }
 
 #blazor-error-ui {
-    background: lightyellow;
+    background: var(--as-accent-amber);
+    color: #1a1400;
     bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2), 0 0 16px var(--as-glow-amber);
     display: none;
     left: 0;
     padding: 0.6rem 1.25rem 0.7rem 1.25rem;
