@@ -1,10 +1,15 @@
 ﻿@page "/equipment"
+@using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
 @using AssetSquirrelAuthorize.WebApp.Components.ViewModels
+@using AssetsSquirrel.CoreBusiness
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 
 @inject IJSRuntime JSRuntime
 @inject IViewEquipmentUseCase ViewEquipmentUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @rendermode InteractiveServer
 
@@ -42,7 +47,7 @@
                     <th scope="col"> Date add </th>
                     <th scope="col"> Date removed </th>
                     <th scope="col"> Is active? </th>
-                    <th scope="col"> User </th>
+                    <th scope="col"> Added by </th>
                     <th scope="col">
                         <i class="bi bi-gear"></i>
                     </th>
@@ -74,12 +79,12 @@
                                     <i class="bi bi-shield-x form-control as-bg-red"></i>
                                 }
                             </td>
-                            <td> @equipment.UserName </td>
+                            <td> @equipment.RegisteredByUserName </td>
                             <td>
                                 <button class="btn btn-sm btn-outline-warning" title="Edit" @onclick="(() => ShowModalEditEquipment(equipment))">
                                     <i class="bi bi-pen"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" title="Remove" @onclick="(() => RemoveEquipment(equipment))">
+                                <button class="btn btn-sm btn-outline-danger" title="Dezaktywuj sprzęt." @onclick="(() => RemoveEquipment(equipment))">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </td>
@@ -128,9 +133,9 @@ Title="Add equipment">
         modalEditEquipment = false;
     }
 
-    public async Task OnSaveHideModalEditEquipment(bool result)
+    public async Task OnSaveHideModalEditEquipment(Result<EquipmentDto> result)
     {
-        if (result)
+        if (result.Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been edited.");
             await SearchEquipments();
@@ -138,7 +143,7 @@ Title="Add equipment">
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
+            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
 
         modalEditEquipment = false;
@@ -160,9 +165,9 @@ Title="Add equipment">
         modalAddEquipment = false;
     }
 
-    private async Task OnSaveHideModalAddEquipment(bool result)
+    private async Task OnSaveHideModalAddEquipment(Result<EquipmentDto> result)
     {
-        if (result)
+        if (result.Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been added.");
             await SearchEquipments();
@@ -170,7 +175,7 @@ Title="Add equipment">
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
+            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
 
         modalAddEquipment = false;
@@ -195,17 +200,26 @@ Title="Add equipment">
 
     public async Task RemoveEquipment(EquipmentDto equipment)
     {
-        await Task.Delay(100); // Simulate some delay for the operation
+        // Equipment is never hard-deleted from the database — "remove" means
+        // deactivating it (IsActive = false), so history/audit trail is preserved.
+        equipment.IsActive = false;
 
-        // if (await ViewEquipmentUseCase.RemoveEquipmentAsync(equipment))
-        // {
-        //     await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been removed.");
-        //     await SearchEquipments();
-        //     StateHasChanged();
-        // }
-        // else
-        // {
-        //     await JSRuntime.InvokeVoidAsync("OperationAborted", "Removing error.");
-        // }
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            equipment.RegisteredByUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        if ((await ViewEquipmentUseCase.UpdateEquipmentAsync(equipment)).Success)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been deactivated.");
+            await SearchEquipments();
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Removing error.");
+        }
     }
 }
