@@ -72,6 +72,15 @@
                     <InputText class="form-control" @bind-Value="Location.PhoneNumber"></InputText>
                 </div>
             </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-2">
+                    <label class="col-form-label"> Equipment storage? </label>
+                </div>
+                <div class="col-7 text-start">
+                    <InputCheckbox class="form-check-input" @bind-Value="Location.EquipmentStorage"></InputCheckbox>
+                </div>
+            </div>
         </EditForm>
     </div>
     <div class="dialog-footer">

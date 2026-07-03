@@ -37,6 +37,7 @@
                     <th scope="col"> Email </th>
                     <th scope="col"> Phone number </th>
                     <th scope="col"> Is active? </th>
+                    <th scope="col"> Equipment storage? </th>
                     <th scope="col">
                         <i class="bi bi-gear"></i>
                     </th>
@@ -68,6 +69,22 @@
                                 <td>
                                     <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationIsActive(location))" title="Aktywuj lokalizację.">
                                         <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            @if (location.EquipmentStorage)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationEquipmentStorage(location))" title="Oznaczona jako magazyn sprzętu. Kliknij, aby odznaczyć.">
+                                        <i class="bi bi-box-seam-fill"></i>
+                                    </button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="(() => ChangeLocationEquipmentStorage(location))" title="Oznacz jako magazyn sprzętu.">
+                                        <i class="bi bi-box-seam"></i>
                                     </button>
                                 </td>
                             }
@@ -136,6 +153,20 @@ Title="Edit location">
 
     public async Task ChangeLocationIsActive(LocationDto location){
         location.IsActive = !location.IsActive;
+
+        if ((await ViewLocationsUseCase.UpdateLocationAsync(location)).Success)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+    }
+
+    public async Task ChangeLocationEquipmentStorage(LocationDto location){
+        location.EquipmentStorage = !location.EquipmentStorage;
 
         if ((await ViewLocationsUseCase.UpdateLocationAsync(location)).Success)
         {
