@@ -2,6 +2,7 @@ using AssetSquirrelAuthorize.UseCases.Extensions;
 using AssetSquirrelAuthorize.WebApp.Components;
 using AssetSquirrelAuthorize.WebApp.Components.Account;
 using AssetSquirrelAuthorize.WebApp.Extensions;
+using AssetSquirrel.UseCases.EquipmentHandover.Interfaces;
 using AssetsSquirrel.CoreBusiness;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -86,5 +87,21 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+app.MapGet("/api/equipmenthandover/{id:int}/pdf", async (int id, IViewEquipmentHandoverUseCase viewEquipmentHandoverUseCase, IEquipmentHandoverPdfGenerator pdfGenerator) =>
+{
+    var handover = (await viewEquipmentHandoverUseCase.GetEquipmentHandoverAsync(h => h.EquipmentHandoverId == id)).FirstOrDefault();
+
+    if (handover is null)
+    {
+        return Results.NotFound();
+    }
+
+    var pdfBytes = pdfGenerator.Generate(handover);
+    var downloadName = $"{handover.HandoverDocumentNumber.Replace('/', '-')}.pdf";
+
+    return Results.File(pdfBytes, "application/pdf", downloadName);
+})
+.RequireAuthorization();
 
 app.Run();

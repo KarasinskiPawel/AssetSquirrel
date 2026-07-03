@@ -1,0 +1,100 @@
+@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentHandover.Interfaces
+
+@inject IAddEquipmentHandoverDocumentUseCase AddEquipmentHandoverDocumentUseCase
+@inject IJSRuntime JSRuntime
+
+@if (Handover is not null)
+{
+    <div class="dialog-body">
+        <EditForm FormName="AddEquipmentHandoverDocument"
+                  EditContext="EditContext">
+
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Document number </label>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="Handover.HandoverDocumentNumber" readonly></InputText>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Handover date </label>
+                </div>
+                <div class="col-6">
+                    <InputDate class="form-control" @bind-Value="Handover.HandoverDate" readonly></InputDate>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Signed document </label>
+                </div>
+                <div class="col-6">
+                    <InputFile class="form-control" OnChange="HandleFileSelected" accept="application/pdf"></InputFile>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+    <div class="dialog-footer">
+        <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Close </button>
+
+        <button class="btn btn-sm btn-primary w-25" @onclick="AddDocument"> Save & Close </button>
+    </div>
+}
+else
+{
+    <div class="dialog-body">
+        <p>Loading...</p>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<EquipmentHandoverDto>> OnSave { get; set; }
+    [Parameter, EditorRequired] public EquipmentHandoverDto Handover { get; set; }
+
+    private EditContext? EditContext;
+
+    private IBrowserFile? uploadedFile;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(Handover);
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+    }
+
+    public async Task AddDocument()
+    {
+        if (uploadedFile is not null)
+        {
+            var result = await AddEquipmentHandoverDocumentUseCase.AddEquipmentHandoverDocumentAsync(
+                Handover,
+                uploadedFile.Name,
+                uploadedFile.ContentType,
+                uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024));
+
+            await OnSave.InvokeAsync(result);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "No file selected!");
+        }
+    }
+}

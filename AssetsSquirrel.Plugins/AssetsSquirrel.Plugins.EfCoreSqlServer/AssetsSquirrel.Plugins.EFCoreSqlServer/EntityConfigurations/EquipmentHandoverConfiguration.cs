@@ -20,6 +20,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(12);
 
+            builder.HasIndex(e => e.HandoverDocumentNumber)
+                .IsUnique();
+
             builder.Property(e => e.HandoverDate)
                 .IsRequired();
 
@@ -49,6 +52,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
             builder.HasOne(a => a.ToEmployee)
                 .WithMany()
                 .HasForeignKey(a => a.ToEmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(a => a.PreparedByUser)
+                .WithMany()
+                .HasForeignKey(a => a.PreparedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

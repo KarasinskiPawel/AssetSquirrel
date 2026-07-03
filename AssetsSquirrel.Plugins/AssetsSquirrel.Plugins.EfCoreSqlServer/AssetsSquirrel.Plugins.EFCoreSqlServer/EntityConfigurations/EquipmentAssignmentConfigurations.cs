@@ -39,6 +39,18 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
                      .WithMany()
                      .HasForeignKey(ea => ea.UserId)
                      .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(ea => ea.EquipmentHandover)
+                     .WithMany()
+                     .HasForeignKey(ea => ea.EquipmentHandoverId)
+                     .OnDelete(DeleteBehavior.Restrict);
+
+            // At most one open (not-yet-returned) assignment per equipment
+            // unit at a time -- the DB-level guarantee against double
+            // handover, independent of any application-layer check.
+            builder.HasIndex(ea => ea.EquipmentId)
+                     .IsUnique()
+                     .HasFilter("[DateOfReturn] IS NULL");
         }
     }
 }

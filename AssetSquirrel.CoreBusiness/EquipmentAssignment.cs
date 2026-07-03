@@ -21,6 +21,11 @@ namespace AssetSquirrel.CoreBusiness
         public DateTime? DateOfHandover { get; set; }
         public DateTime? DateOfReturn { get; set; }
 
+        // Handover document that created this assignment, if any -- lets a
+        // document cancellation close exactly the assignments it created.
+        public int? EquipmentHandoverId { get; set; }
+        public EquipmentHandover? EquipmentHandover { get; set; }
+
         //Navigation
         public string? UserId { get; set; } // Foreign key to ApplicationUser
         public ApplicationUser? User { get; set; }

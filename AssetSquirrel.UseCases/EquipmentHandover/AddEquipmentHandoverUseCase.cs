@@ -17,21 +17,43 @@ namespace AssetSquirrel.UseCases.EquipmentHandover
         private readonly IEquipmentRepository equipmentRepository;
         private readonly ILocationRepository locationRepository;
         private readonly IEmployeesRepository employeesRepository;
+        private readonly IEquipmentAssignmentRepository equipmentAssignmentRepository;
+        private readonly IEquipmentHandoverRepository equipmentHandoverRepository;
 
         public AddEquipmentHandoverUseCase(
             IEquipmentRepository equipmentRepository,
             ILocationRepository locationRepository,
-            IEmployeesRepository employeesRepository
+            IEmployeesRepository employeesRepository,
+            IEquipmentAssignmentRepository equipmentAssignmentRepository,
+            IEquipmentHandoverRepository equipmentHandoverRepository
             )
         {
             this.equipmentRepository = equipmentRepository;
             this.locationRepository = locationRepository;
             this.employeesRepository = employeesRepository;
+            this.equipmentAssignmentRepository = equipmentAssignmentRepository;
+            this.equipmentHandoverRepository = equipmentHandoverRepository;
         }
 
         public async Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where)
         {
-            return await equipmentRepository.GetEquipmentAsync(where);
+            var equipment = await equipmentRepository.GetEquipmentAsync(where);
+            var assignedEquipmentIds = await equipmentAssignmentRepository.GetAssignedEquipmentIdsAsync();
+
+            return equipment.Where(e => !assignedEquipmentIds.Contains(e.EquipmentId)).ToList();
+        }
+
+        public async Task<Result<EquipmentHandoverDto>> SaveHandoverAsync(EquipmentHandoverDto handover, List<int> equipmentIds, string preparedByUserId)
+        {
+            var entity = handover.Adapt<AssetSquirrel.CoreBusiness.EquipmentHandover>();
+
+            entity.EquipmentHandoverDetails = equipmentIds
+                .Select(id => new EquipmentHandoverDetail { EquipmentId = id })
+                .ToList();
+
+            var result = await equipmentHandoverRepository.PostEquipmentHandoverAsync(entity, preparedByUserId);
+
+            return result.Select(e => e.Adapt<EquipmentHandoverDto>());
         }
 
         public async Task<List<LocationDto>> GetLocationsAsync(Expression<Func<Location, bool>> where)
