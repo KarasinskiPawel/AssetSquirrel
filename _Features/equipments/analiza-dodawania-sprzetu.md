@@ -112,17 +112,15 @@ dezaktywowany, zgodnie z pkt 2).
 
 ### 🟠 Ważne
 
-**4. Pole "Manufacturer" ma etykietę "Suppiler" (kopiuj-wklej), w obu dialogach
-Add i Edit.** Funkcjonalnie dropdown jest poprawnie spięty z
-`Equipment.ManufacturerId`, ale użytkownik widzi dwa pola nazwane "Suppiler" pod
-rząd — myląca literówka, nie literówka nazewnicza projektu (jak "Suppiler" jako
-zamierzona pisownia), tylko realny błąd kopiuj-wklej etykiety.
+**4. ✅ Naprawione — pole "Manufacturer" miało etykietę "Suppiler" (kopiuj-wklej),
+w obu dialogach Add i Edit.** Dropdown był funkcjonalnie poprawnie spięty z
+`Equipment.ManufacturerId`, ale użytkownik widział dwa pola nazwane "Suppiler"
+pod rząd. Etykieta zmieniona na "Manufacturer" w obu dialogach.
 
-**5. Ikona walidacji przy "Invoice number" sprawdza `HardwareTypeId`, nie
-`InvoiceId`** (kopiuj-wklej), w obu dialogach. Efekt: podpowiedź ✓/⚠ przy
-fakturze zmienia się w zależności od tego, czy wybrano typ sprzętu, a nie
-fakturę — myląca, choć niegroźna (Invoice i tak nie jest wymagany, `InvoiceId`
-jest `int?`).
+**5. ✅ Naprawione — ikona walidacji przy "Invoice number" sprawdzała
+`HardwareTypeId`, nie `InvoiceId`** (kopiuj-wklej), w obu dialogach. Zmieniona
+na sprawdzanie `Equipment.InvoiceId` — podpowiedź ✓/⚠ przy fakturze reaguje
+teraz na wybór faktury, nie typu sprzętu.
 
 **6. Brak zabezpieczenia przed duplikatem numeru seryjnego.** Ani UI, ani
 `AddEquipmentUseCase`, ani baza (brak unique index na `SerialNumber` w
@@ -186,8 +184,10 @@ restrykcyjna niż faktyczna walidacja zapisu.
 4. ✅ **Zrobione** — `AddEquipmentAsync`/`UpdateEquipmentAsync` zapisują teraz
    snapshot każdej zmiany do `EquipmentHistories` (patrz pkt 3 w sekcji
    Krytyczne). `DeleteEquipmentAsync` też, z zastrzeżeniem opisanym tam.
-5. Poprawić etykietę "Suppiler" → "Manufacturer" przy drugim dropdownie (Add i Edit).
-6. Poprawić ikonę walidacji faktury, żeby sprawdzała `InvoiceId`, nie `HardwareTypeId`.
+5. ✅ **Zrobione** — etykieta "Suppiler" przy drugim dropdownie zmieniona na
+   "Manufacturer" (Add i Edit).
+6. ✅ **Zrobione** — ikona walidacji faktury sprawdza teraz `InvoiceId`, nie
+   `HardwareTypeId` (Add i Edit).
 7. Rozważyć unikalność `SerialNumber` — walidacja w UseCase (sprawdzenie przed
    zapisem) i/lub unique index w bazie, jeśli biznesowo numer seryjny ma być unikalny.
 8. Zdecydować, czy `IsAddedToWarehouse` jest używane gdziekolwiek w aplikacji —

@@ -47,7 +47,7 @@
 
                 <div class="row mt-3 mb-3">
                     <div class="offset-1 col-3">
-                        <label class="col-form-label"> Suppiler </label>
+                        <label class="col-form-label"> Manufacturer </label>
                     </div>
                     <div class="col-6">
                         <InputSelect class="form-control" @bind-Value="Equipment.ManufacturerId">
@@ -109,7 +109,7 @@
                         </InputSelect>
                     </div>
                     <div class="col-1">
-                        @if (Equipment.HardwareTypeId == 0)
+                        @if (Equipment.InvoiceId == 0)
                         {
                             <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
                         }
