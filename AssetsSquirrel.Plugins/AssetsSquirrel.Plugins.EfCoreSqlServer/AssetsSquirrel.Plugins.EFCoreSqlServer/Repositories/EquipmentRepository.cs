@@ -30,6 +30,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
 
+                    if (await dbContext.Equipments.AnyAsync(e => e.SerialNumber == equipment.SerialNumber))
+                    {
+                        return Result<Equipment>.Fail($"Equipment with serial number '{equipment.SerialNumber}' already exists.");
+                    }
+
                     dbContext.Equipments.Add(equipment);
 
                     var history = BuildHistorySnapshot(equipment);
@@ -128,6 +133,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 if(equipment is not null)
                 {
                     var dbContext = dbContextFactory.CreateDbContext();
+
+                    if (await dbContext.Equipments.AnyAsync(e => e.SerialNumber == equipment.SerialNumber && e.EquipmentId != equipment.EquipmentId))
+                    {
+                        return Result<Equipment>.Fail($"Equipment with serial number '{equipment.SerialNumber}' already exists.");
+                    }
 
                     dbContext.Equipments.Update(equipment);
 

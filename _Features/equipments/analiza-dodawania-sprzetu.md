@@ -122,17 +122,27 @@ pod rząd. Etykieta zmieniona na "Manufacturer" w obu dialogach.
 na sprawdzanie `Equipment.InvoiceId` — podpowiedź ✓/⚠ przy fakturze reaguje
 teraz na wybór faktury, nie typu sprzętu.
 
-**6. Brak zabezpieczenia przed duplikatem numeru seryjnego.** Ani UI, ani
-`AddEquipmentUseCase`, ani baza (brak unique index na `SerialNumber` w
-konfiguracji EF) nie chronią przed dodaniem dwóch sztuk sprzętu z tym samym
-numerem seryjnym — mimo że pole jest logicznie unikalnym identyfikatorem
-fizycznego urządzenia.
+**6. ✅ Naprawione — brak zabezpieczenia przed duplikatem numeru seryjnego.**
+Ani UI, ani `AddEquipmentUseCase`, ani baza nie chroniły przed dodaniem dwóch
+sztuk sprzętu z tym samym numerem seryjnym. Naprawione na poziomie
+`EquipmentRepository` (wspólny punkt dla Add/Edit/dezaktywacji, bo wszystkie
+trzy przechodzą przez `AddEquipmentAsync`/`UpdateEquipmentAsync`):
+`AddEquipmentAsync` odrzuca zapis, jeśli `SerialNumber` już istnieje w bazie;
+`UpdateEquipmentAsync` robi to samo, ale wyklucza z porównania edytowany
+rekord (`EquipmentId != equipment.EquipmentId`), żeby zapis bez zmiany numeru
+seryjnego nie kolidował sam ze sobą. Komunikat trafia do `Result.Fail(...)` i
+jest teraz widoczny w UI (patrz pkt 1 wyżej). **Celowo pominięty** unique index
+w bazie danych — wymagałby migracji na żywej bazie bez uprzedniego
+sprawdzenia, czy nie ma już w niej duplikatów `SerialNumber`; sam check w
+repozytorium wystarcza dla realnego profilu ryzyka tej aplikacji (wewnętrzne
+narzędzie administracyjne, brak współbieżnych zapisów). Do rozważenia jako
+osobny krok, jeśli kiedyś zajdzie potrzeba twardej gwarancji na poziomie bazy.
 
-**7. Pole `IsAddedToWarehouse` (na encji `Equipment`) nie jest w ogóle wystawione
-w formularzu Add** — zawsze zapisywane jako `false` (wartość domyślna DTO),
-niezależnie od rzeczywistego stanu. Jeśli to pole ma jakiekolwiek znaczenie
-biznesowe (śledzenie "fizycznie w magazynie"), obecnie jest martwe od momentu
-dodania sprzętu.
+**7. ✅ Naprawione — pole `IsAddedToWarehouse` (na encji `Equipment`) nie było
+w ogóle wystawione w formularzu.** Zawsze zapisywane jako `false` (wartość
+domyślna DTO), niezależnie od rzeczywistego stanu. Dodano checkbox "Added to
+warehouse?" w obu dialogach (Add i Edit), analogicznie do istniejącego
+checkboxa "Is active?" w Edit.
 
 ### 🟡 Drobne
 
@@ -145,22 +155,23 @@ liście zmieniony z "User" na "Added by". Zaktualizowano wszystkie miejsca
 odwołujące się do starej nazwy: `EquipmentRepository`, `EquipmentConfiguration`,
 `Equipment.razor`, `EquipmentAddDialogBox.razor`, `EquipmentEditDialogBox.razor`.
 
-**9. Myląca nazwa zmiennej `isLoading` w `EquipmentEditDialogBox` — semantyka
-odwrócona względem `EquipmentAddDialogBox`.** W Add: `isLoading = true`
-na starcie, `false` po załadowaniu danych, formularz renderuje się gdy
-`!isLoading`-owe `else` (czyli gdy `isLoading == false`). W Edit: `isLoading = false`
-na starcie, `true` po załadowaniu, a formularz renderuje się `@if (isLoading)`.
-Działa poprawnie w obu przypadkach, ale nazwa w Edit znaczy dosłownie odwrotność
-tego, co robi — myli przy czytaniu/utrzymaniu kodu.
+**9. ✅ Naprawione — myląca nazwa zmiennej `isLoading` w `EquipmentEditDialogBox`,
+semantyka odwrócona względem `EquipmentAddDialogBox`.** Ujednolicone: `isLoading`
+w obu dialogach ma teraz identyczne znaczenie i strukturę — `true` na starcie
+("trwa ładowanie"), `false` po załadowaniu list Suppiler/Manufacturer/
+HardwareType/Invoice, formularz renderuje się w gałęzi `else` (`@if (isLoading)
+{ spinner } else { formularz }`).
 
 **10. `dbContext.SaveChanges()` (synchroniczne) zamiast `SaveChangesAsync()` w
 `AddEquipmentAsync`/`UpdateEquipmentAsync`.** ✅ Naprawione przy okazji dodawania
 zapisu do `EquipmentHistories` (pkt 3) — obie metody używają teraz
 `await dbContext.SaveChangesAsync()`, spójnie z `DeleteEquipmentAsync`.
 
-**11. Brak wskaźnika ładowania w `EquipmentAddDialogBox`.** `isLoading` steruje
-tym, czy formularz się w ogóle renderuje, ale blok `if(isLoading) { }` jest pusty
-— przez chwilę użytkownik widzi całkowicie pusty dialog zamiast np. spinnera.
+**11. ✅ Naprawione — brak wskaźnika ładowania w `EquipmentAddDialogBox`.**
+Pusty blok `if(isLoading) { }` zastąpiony spinnerem Bootstrapa
+(`spinner-border`, wyśrodkowany). Ten sam spinner dodany też do
+`EquipmentEditDialogBox` przy okazji ujednolicania `isLoading` (pkt 9) —
+wcześniej Edit też pokazywał pusty dialog podczas ładowania list.
 
 **12. Niespójność walidacji "Model name" między DataAnnotation a ikoną
 podpowiedzi.** `[MinLength(5)]` na `ModelName` oznacza, że długość **5** jest
@@ -188,15 +199,18 @@ restrykcyjna niż faktyczna walidacja zapisu.
    "Manufacturer" (Add i Edit).
 6. ✅ **Zrobione** — ikona walidacji faktury sprawdza teraz `InvoiceId`, nie
    `HardwareTypeId` (Add i Edit).
-7. Rozważyć unikalność `SerialNumber` — walidacja w UseCase (sprawdzenie przed
-   zapisem) i/lub unique index w bazie, jeśli biznesowo numer seryjny ma być unikalny.
-8. Zdecydować, czy `IsAddedToWarehouse` jest używane gdziekolwiek w aplikacji —
-   jeśli tak, dodać pole w formularzu; jeśli nie, rozważyć usunięcie jako martwy kod.
-9. Doprecyzować/ujednolicić `isLoading` w obu dialogach (ta sama semantyka,
-   ta sama nazwa znaczenia) — czysto porządkowe.
+7. ✅ **Zrobione** — dodano sprawdzenie unikalności `SerialNumber` w
+   `EquipmentRepository` (Add odrzuca duplikat, Update wyklucza edytowany
+   rekord z porównania). Unique index w bazie celowo pominięty (patrz pkt 6 w
+   sekcji Ważne).
+8. ✅ **Zrobione** — `IsAddedToWarehouse` dodane jako checkbox "Added to
+   warehouse?" w obu dialogach (Add i Edit).
+9. ✅ **Zrobione** — `isLoading` ujednolicone w obu dialogach (ta sama
+   semantyka: `true` = trwa ładowanie, formularz w gałęzi `else`).
 10. ✅ **Zrobione** — `SaveChanges()` zamienione na `await SaveChangesAsync()`
     w `AddEquipmentAsync`/`UpdateEquipmentAsync` przy okazji pkt 4.
-11. Dodać faktyczny spinner/placeholder na czas ładowania dropdownów w Add dialog.
+11. ✅ **Zrobione** — dodano spinner (Bootstrap `spinner-border`) na czas
+    ładowania list w obu dialogach (Add i Edit).
 
 ## ⚠️ Odkryty przy okazji: dryf schematu bazy danych (niezwiązany z powyższym)
 
