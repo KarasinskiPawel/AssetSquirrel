@@ -137,7 +137,7 @@ else
                     <InputText class="form-control" @bind-Value="Equipment.ModelName"></InputText>
                 </div>
                 <div class="col-1">
-                    @if (Equipment.ModelName.Length <= 5)
+                    @if (Equipment.ModelName.Length < 5)
                     {
                         <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
                     }

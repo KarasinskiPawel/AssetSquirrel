@@ -173,11 +173,12 @@ Pusty blok `if(isLoading) { }` zastąpiony spinnerem Bootstrapa
 `EquipmentEditDialogBox` przy okazji ujednolicania `isLoading` (pkt 9) —
 wcześniej Edit też pokazywał pusty dialog podczas ładowania list.
 
-**12. Niespójność walidacji "Model name" między DataAnnotation a ikoną
-podpowiedzi.** `[MinLength(5)]` na `ModelName` oznacza, że długość **5** jest
-już poprawna, ale ikona w UI sprawdza `ModelName.Length <= 5` (czyli traktuje
-5 znaków jako wciąż niepoprawne) — podpowiedź wizualna jest bardziej
-restrykcyjna niż faktyczna walidacja zapisu.
+**12. ✅ Naprawione — niespójność walidacji "Model name" między DataAnnotation
+a ikoną podpowiedzi.** `[MinLength(5)]` na `ModelName` oznacza, że długość
+**5** jest już poprawna, ale ikona w UI sprawdzała `ModelName.Length <= 5`
+(czyli traktowała 5 znaków jako wciąż niepoprawne). Zmienione na
+`ModelName.Length < 5` w obu dialogach — podpowiedź wizualna zgadza się
+teraz z faktyczną walidacją zapisu.
 
 ## Sugestie (priorytet malejący)
 
@@ -211,6 +212,11 @@ restrykcyjna niż faktyczna walidacja zapisu.
     w `AddEquipmentAsync`/`UpdateEquipmentAsync` przy okazji pkt 4.
 11. ✅ **Zrobione** — dodano spinner (Bootstrap `spinner-border`) na czas
     ładowania list w obu dialogach (Add i Edit).
+12. ✅ **Zrobione** — ikona walidacji "Model name" sprawdza teraz
+    `ModelName.Length < 5`, zgodnie z `[MinLength(5)]` (patrz pkt 12 w sekcji
+    Drobne).
+
+Wszystkie znalezione problemy z tej analizy zostały naprawione.
 
 ## ⚠️ Odkryty przy okazji: dryf schematu bazy danych (niezwiązany z powyższym)
 
