@@ -36,8 +36,13 @@ namespace AssetSquirrel.CoreBusiness
         public Manufacturer? Manufacturer { get; set; }
         public HardwareType? HardwareType { get; set; }
         public Invoice? Invoice { get; set; }
-        public string? UserId { get; set; } // Foreign key to ApplicationUser
-        public ApplicationUser? User { get; set; }
+        // Person who registered/last changed this record in the system — NOT who
+        // the equipment is assigned to/possessed by (that's a separate, not yet
+        // implemented concept; see /equipmentassignment). Column name kept as
+        // "UserId" so this rename doesn't require a migration.
+        [Column("UserId")]
+        public string? RegisteredByUserId { get; set; }
+        public ApplicationUser? RegisteredByUser { get; set; }
 
         // Relation 1:N
         public ICollection<EquipmentHistory>? EquipmentHistories { get; set; }

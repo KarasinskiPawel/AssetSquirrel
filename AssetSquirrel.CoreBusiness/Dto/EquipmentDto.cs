@@ -11,13 +11,13 @@ namespace AssetSquirrel.CoreBusiness.Dto
     {
         public int EquipmentId { get; set; }
         [Required]
-        public int SuppilerId { get; set; }
+        public int? SuppilerId { get; set; }
         public string? SuppilerName { get; set; }
         [Required]
-        public int ManufacturerId { get; set; }
+        public int? ManufacturerId { get; set; }
         public string? ManufacturerName { get; set; }
         [Required]
-        public int HardwareTypeId { get; set; }
+        public int? HardwareTypeId { get; set; }
         public string? HardwareTypeName { get; set; }   
         public int? InvoiceId { get; set; }
         public string? InvoiceNumber { get; set; }
@@ -32,7 +32,9 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public bool IsAddedToWarehouse { get; set; } = false;
         public bool IsActive { get; set; } = true;
 
-        public string? UserId { get; set; } // Foreign key to ApplicationUser
-        public string? UserName { get; set; }
+        // Person who registered/last changed this record — NOT who the equipment
+        // is assigned to/possessed by. See Equipment.RegisteredByUserId.
+        public string? RegisteredByUserId { get; set; }
+        public string? RegisteredByUserName { get; set; }
     }
 }

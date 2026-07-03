@@ -1,4 +1,5 @@
-﻿@using AssetSquirrel.CoreBusiness.Dto
+﻿@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.EquipmentUseCase
 @using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
 @using AssetsSquirrel.CoreBusiness
@@ -30,7 +31,7 @@ else
                 </div>
                 <div class="col-6">
                     <InputSelect class="form-control" @bind-Value="Equipment.SuppilerId">
-                        <option value="0"> ...suppiler... </option>
+                        <option value=""> ...suppiler... </option>
                         @foreach (var suppiler in suppilers)
                         {
                             <option value="@suppiler.SuppilerId"> @suppiler.Name </option>
@@ -38,7 +39,7 @@ else
                     </InputSelect>
                 </div>
                 <div class="col-1">
-                    @if (Equipment.SuppilerId == 0)
+                    @if (Equipment.SuppilerId is null)
                     {
                         <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
                     }
@@ -55,7 +56,7 @@ else
                 </div>
                 <div class="col-6">
                     <InputSelect class="form-control" @bind-Value="Equipment.ManufacturerId">
-                        <option value="@(0)"> ...manufacturer... </option>
+                        <option value=""> ...manufacturer... </option>
                         @foreach (var manufacturer in manufacturers)
                         {
                             <option value="@manufacturer.ManufacturerId"> @manufacturer.Name </option>
@@ -63,7 +64,7 @@ else
                     </InputSelect>
                 </div>
                 <div class="col-1">
-                    @if (Equipment.ManufacturerId == 0)
+                    @if (Equipment.ManufacturerId is null)
                     {
                         <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
                     }
@@ -80,7 +81,7 @@ else
                 </div>
                 <div class="col-6">
                     <InputSelect class="form-control" @bind-Value="Equipment.HardwareTypeId">
-                        <option value="@(0)"> ...hardware type... </option>
+                        <option value=""> ...hardware type... </option>
                         @foreach (var hardwareType in hardwareTypes)
                         {
                             <option value="@hardwareType.HardwareTypeId"> @hardwareType.Name </option>
@@ -88,7 +89,7 @@ else
                     </InputSelect>
                 </div>
                 <div class="col-1">
-                    @if (Equipment.HardwareTypeId == 0)
+                    @if (Equipment.HardwareTypeId is null)
                     {
                         <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
                     }
@@ -184,7 +185,7 @@ else
 
 @code {
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<EquipmentDto>> OnSave { get; set; }
 
     EquipmentDto Equipment = new EquipmentDto();
 
@@ -211,7 +212,7 @@ else
 
         if (user.Identity?.IsAuthenticated == true)
         {
-            this.Equipment.UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            this.Equipment.RegisteredByUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
 
         isLoading = false;
@@ -221,7 +222,7 @@ else
     {
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync((await AddEquipmentUseCase.AddEquipmentAsync(Equipment)).Success);
+            await OnSave.InvokeAsync(await AddEquipmentUseCase.AddEquipmentAsync(Equipment));
         }
         else
         {

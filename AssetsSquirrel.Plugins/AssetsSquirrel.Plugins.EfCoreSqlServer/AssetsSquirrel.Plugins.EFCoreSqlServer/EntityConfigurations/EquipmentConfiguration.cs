@@ -32,6 +32,10 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
                    .WithMany(i => i.Equipments)
                    .HasForeignKey(e => e.InvoiceId)
                    .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasOne(e => e.RegisteredByUser)
+                   .WithMany(u => u.Equipments)
+                   .HasForeignKey(e => e.RegisteredByUserId);
         }
     }
 }
