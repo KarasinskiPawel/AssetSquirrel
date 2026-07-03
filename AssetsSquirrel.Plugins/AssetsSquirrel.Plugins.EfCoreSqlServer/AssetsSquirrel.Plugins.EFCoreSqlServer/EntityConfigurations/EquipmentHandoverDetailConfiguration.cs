@@ -20,10 +20,13 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
                 .HasForeignKey(e => e.EquipmentHandoverId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(a => a.HardwareType)
+            builder.HasOne(a => a.Equipment)
                 .WithMany()
-                .HasForeignKey(e => e.HardwareTypeId)
+                .HasForeignKey(e => e.EquipmentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(e => new { e.EquipmentHandoverId, e.EquipmentId })
+                .IsUnique();
 
             builder.Property(e => e.Comment)
                 .HasMaxLength(500);

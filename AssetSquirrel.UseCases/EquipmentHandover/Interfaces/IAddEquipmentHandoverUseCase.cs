@@ -9,5 +9,6 @@ namespace AssetSquirrel.UseCases.EquipmentHandover.Interfaces
         Task<List<EmployeeDto>> GetEmployeesAsync(Expression<Func<Employee, bool>> where);
         Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where);
         Task<List<LocationDto>> GetLocationsAsync(Expression<Func<Location, bool>> where);
+        Task<Result<EquipmentHandoverDto>> SaveHandoverAsync(EquipmentHandoverDto handover, List<int> equipmentIds, string preparedByUserId);
     }
 }

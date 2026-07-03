@@ -10,18 +10,25 @@ namespace AssetSquirrel.CoreBusiness.Dto
     {
         public int EquipmentHandoverId { get; set; }
         public string HandoverDocumentNumber { get; set; } = string.Empty;
-        public int FromLocationId { get; set; }
+        public int? FromLocationId { get; set; }
         public Location? FromLocation { get; set; }
         public int? ToLocationId { get; set; }
         public Location? ToLocation { get; set; }
         public int? FromEmployeeId { get; set; }
         public Employee? FromEmployee { get; set; }
-        public int ToEmployeeId { get; set; }
+        public int? ToEmployeeId { get; set; }
         public Employee? ToEmployee { get; set; }
-        public DateTime HandoverDate { get; set; }
+        public DateTime HandoverDate { get; set; } = DateTime.Now;
         public string? Comment { get; set; }
+        public bool IsPosted { get; set; }
         public bool IsActive { get; set; } = true;
 
-        public IEnumerable<EquipmentHandoverDetail> EquipmentHandoverDetails { get; set; } = new List<EquipmentHandoverDetail>();
+        public string? PreparedByUserId { get; set; }
+        public string? PreparedByUserName { get; set; }
+
+        public string? FilePath { get; set; }
+        public DateTime? UploadDate { get; set; }
+
+        public List<EquipmentHandoverDetailDto> EquipmentHandoverDetails { get; set; } = new List<EquipmentHandoverDetailDto>();
     }
 }

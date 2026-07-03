@@ -1,9 +1,14 @@
-﻿@page "/equipmenthandover"
+@page "/equipmenthandover"
+@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.EquipmentHandover.Interfaces
+@using System.Security.Claims
 
 @inject NavigationManager Navigation
 @inject IViewEquipmentHandoverUseCase ViewEquipmentHandover
+@inject IEditEquipmentHandoverUseCase EditEquipmentHandoverUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @rendermode InteractiveServer
 
@@ -20,16 +25,198 @@
     </div>
 </div>
 
-@code {
-    bool modalAddEquipmenthandover = false;
+<div class="row col-12 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Document number </th>
+                    <th scope="col"> Handover date </th>
+                    <th scope="col"> To </th>
+                    <th scope="col"> Prepared by </th>
+                    <th scope="col"> Posted </th>
+                    <th scope="col"> Active </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (handovers is not null && handovers.Count() > 0)
+                {
+                    @foreach (var handover in handovers)
+                    {
+                        <tr>
+                            <td> @(handovers.IndexOf(handover) + 1) </td>
+                            <td> @handover.HandoverDocumentNumber </td>
+                            <td> @handover.HandoverDate.ToShortDateString() </td>
+                            <td> @Recipient(handover) </td>
+                            <td> @handover.PreparedByUserName </td>
+                            <td>
+                                @if (handover.IsPosted)
+                                {
+                                    <i class="bi bi-check-circle form-control as-bg-green"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-hourglass-split form-control"></i>
+                                }
+                            </td>
+                            <td>
+                                @if (handover.IsActive)
+                                {
+                                    <i class="bi bi-shield-check form-control as-bg-green"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-shield-x form-control as-bg-red"></i>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" title="Print / view PDF" @onclick="(() => PrintHandover(handover))">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </button>
 
-    public void RedirectToAddEquipmentHandover()
+                                @if (handover.FilePath is null)
+                                {
+                                    <button class="btn btn-sm btn-outline-warning" title="Attach signed document" @onclick="(() => ShowModalAddDocument(handover))">
+                                        <i class="bi bi-file-arrow-up"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-outline-success" title="Download attached document" @onclick="(() => DownloadDocument(handover))">
+                                        <i class="bi bi-file-arrow-down"></i>
+                                    </button>
+                                }
+
+                                @if (handover.IsActive)
+                                {
+                                    <button class="btn btn-sm btn-outline-danger" title="Cancel" @onclick="(() => CancelHandover(handover))">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<DialogBox Show="modalAddDocument"
+           Title="Attach signed document">
+    <EquipmentHandoverAddDocumentDialogBox
+        OnCancel="OnCancelHideModalAddDocument"
+        OnSave="OnSaveHideModalAddDocument"
+        Handover="selectedHandover" />
+</DialogBox>
+
+@code {
+    bool modalAddDocument = false;
+
+    List<EquipmentHandoverDto>? handovers;
+    EquipmentHandoverDto? selectedHandover;
+    string searchText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        handovers = await ViewEquipmentHandover.GetEquipmentHandoverAsync(a => true);
+    }
+
+    private void RedirectToAddEquipmentHandover()
     {
         Navigation.NavigateTo("/addequipmenthandover");
     }
 
-    public async void SearchCallback(string searchText)
+    private async Task SearchCallback(string text)
     {
-        await JSRuntime.InvokeVoidAsync("console.log", $"Searching for: {searchText}");
+        searchText = text;
+        await SearchHandovers();
+    }
+
+    private async Task SearchHandovers()
+    {
+        var text = searchText ?? string.Empty;
+        handovers = await ViewEquipmentHandover.GetEquipmentHandoverAsync(h => h.HandoverDocumentNumber.Contains(text));
+
+        StateHasChanged();
+    }
+
+    private static string Recipient(EquipmentHandoverDto handover)
+    {
+        var parts = new List<string>();
+        if (handover.ToEmployee is not null)
+        {
+            parts.Add($"{handover.ToEmployee.FirstName} {handover.ToEmployee.LastName}");
+        }
+        if (handover.ToLocation is not null)
+        {
+            parts.Add($"{handover.ToLocation.City} {handover.ToLocation.Street}");
+        }
+        return parts.Count > 0 ? string.Join(" / ", parts) : "-";
+    }
+
+    private async Task PrintHandover(EquipmentHandoverDto handover)
+    {
+        await JSRuntime.InvokeVoidAsync("openInNewTab", $"/api/equipmenthandover/{handover.EquipmentHandoverId}/pdf");
+    }
+
+    private void ShowModalAddDocument(EquipmentHandoverDto handover)
+    {
+        selectedHandover = handover;
+        modalAddDocument = true;
+    }
+
+    private void OnCancelHideModalAddDocument()
+    {
+        modalAddDocument = false;
+    }
+
+    private async Task OnSaveHideModalAddDocument(Result<EquipmentHandoverDto> result)
+    {
+        if (result.Success)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been attached.");
+            await SearchHandovers();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
+        }
+
+        modalAddDocument = false;
+    }
+
+    private async Task DownloadDocument(EquipmentHandoverDto handover)
+    {
+        if (handover.FilePath is not null)
+        {
+            await JSRuntime.InvokeVoidAsync("openInNewTab", handover.FilePath);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Document unavailable.");
+        }
+    }
+
+    private async Task CancelHandover(EquipmentHandoverDto handover)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var result = await EditEquipmentHandoverUseCase.CancelEquipmentHandoverAsync(handover.EquipmentHandoverId, userId);
+
+        if (result.Success)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment handover has been cancelled.");
+            await SearchHandovers();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Cancelling error.");
+        }
     }
 }

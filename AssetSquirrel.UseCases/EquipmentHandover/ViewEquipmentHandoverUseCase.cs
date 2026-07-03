@@ -25,7 +25,39 @@ namespace AssetSquirrel.UseCases.EquipmentHandover
 
         public async Task<List<EquipmentHandoverDto>> GetEquipmentHandoverAsync(Expression<Func<AssetSquirrel.CoreBusiness.EquipmentHandover, bool>> where)
         {
-            return (await equipmentHandoverRepository.GetEquipmentHandoversAsync(where)).Adapt<List<EquipmentHandoverDto>>();
+            var handovers = await equipmentHandoverRepository.GetEquipmentHandoversAsync(where);
+
+            return handovers.Select(h => new EquipmentHandoverDto
+            {
+                EquipmentHandoverId = h.EquipmentHandoverId,
+                HandoverDocumentNumber = h.HandoverDocumentNumber,
+                FromLocationId = h.FromLocationId,
+                ToLocationId = h.ToLocationId,
+                ToLocation = h.ToLocation,
+                FromEmployeeId = h.FromEmployeeId,
+                ToEmployeeId = h.ToEmployeeId,
+                ToEmployee = h.ToEmployee,
+                HandoverDate = h.HandoverDate,
+                Comment = h.Comment,
+                IsPosted = h.IsPosted,
+                IsActive = h.IsActive,
+                PreparedByUserId = h.PreparedByUserId,
+                PreparedByUserName = h.PreparedByUser != null ? h.PreparedByUser.UserName : null,
+                FilePath = h.FilePath,
+                UploadDate = h.UploadDate,
+                EquipmentHandoverDetails = h.EquipmentHandoverDetails.Select(d => new EquipmentHandoverDetailDto
+                {
+                    EquipmentHandoverDetailId = d.EquipmentHandoverDetailId,
+                    EquipmentHandoverId = d.EquipmentHandoverId,
+                    EquipmentId = d.EquipmentId,
+                    ModelName = d.Equipment != null ? d.Equipment.ModelName : null,
+                    SerialNumber = d.Equipment != null ? d.Equipment.SerialNumber : null,
+                    ManufacturerName = d.Equipment != null && d.Equipment.Manufacturer != null ? d.Equipment.Manufacturer.Name : null,
+                    HardwareTypeName = d.Equipment != null && d.Equipment.HardwareType != null ? d.Equipment.HardwareType.Name : null,
+                    Comment = d.Comment,
+                    IsActive = d.IsActive
+                }).ToList()
+            }).ToList();
         }
     }
 }
