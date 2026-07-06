@@ -37,7 +37,7 @@
                     @foreach (var hardwareType in hardwareTypes)
                     {
                         <tr>
-                            <td> 1 </td>
+                            <td> @(hardwareTypes.IndexOf(hardwareType) + 1) </td>
                             <td> @hardwareType.Name </td>
                             <td> @hardwareType.Description </td>
                             @if (hardwareType.IsActive)
