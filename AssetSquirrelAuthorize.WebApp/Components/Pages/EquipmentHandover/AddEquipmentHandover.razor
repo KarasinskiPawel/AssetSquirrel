@@ -49,7 +49,7 @@
                         <option value=""> ...employee... </option>
                         @foreach (var employee in employees)
                         {
-                            <option value="@employee.EmployeeId">@employee.FirstName @employee.LastName</option>
+                            <option value="@employee.EmployeeId">@employee.LastName @employee.FirstName </option>
                         }
                     </InputSelect>
                 </div>
@@ -117,20 +117,38 @@
             <div class="col-6">
                 <p><b>Pozycje do przekazania:</b></p>
 
-                @if (selectedEquipmentIds.Count > 0)
-                {
-                    <table id="table-color" class="table table-bordered">
-                        <thead>
-                            <tr class="text-center">
-                                <th scope="col">Manufacturer</th>
-                                <th scope="col">Hardware type</th>
-                                <th scope="col">Model</th>
-                                <th scope="col">Serial number</th>
-                                <th scope="col"></th>
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <input class="form-control form-control-sm" placeholder="Filtruj wybrane pozycje" @bind="filterSelectedItems" @bind:event="oninput" />
+                    </div>
+                </div>
+
+                <table id="table-color" class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">Manufacturer</th>
+                            <th scope="col">Hardware type</th>
+                            <th scope="col">Model</th>
+                            <th scope="col">Serial number</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (selectedEquipmentIds.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="text-muted text-center">Brak dodanych pozycji.</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var equipment in availableEquipment.Where(e => selectedEquipmentIds.Contains(e.EquipmentId)))
+                        }
+                        else if (!FilteredSelectedEquipment().Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-muted text-center">Brak pozycji spełniających filtr.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var equipment in FilteredSelectedEquipment())
                             {
                                 <tr>
                                     <td>@equipment.ManufacturerName</td>
@@ -144,13 +162,9 @@
                                     </td>
                                 </tr>
                             }
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <p class="text-muted">Brak dodanych pozycji.</p>
-                }
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -174,6 +188,7 @@
     string filterHardwareType = string.Empty;
     string filterModel = string.Empty;
     string filterSerialNumber = string.Empty;
+    string filterSelectedItems = string.Empty;
 
     private EditContext? EditContext;
 
@@ -200,6 +215,17 @@
             .Where(e => string.IsNullOrWhiteSpace(filterHardwareType) || (e.HardwareTypeName?.Contains(filterHardwareType, StringComparison.OrdinalIgnoreCase) ?? false))
             .Where(e => string.IsNullOrWhiteSpace(filterModel) || (e.ModelName?.Contains(filterModel, StringComparison.OrdinalIgnoreCase) ?? false))
             .Where(e => string.IsNullOrWhiteSpace(filterSerialNumber) || (e.SerialNumber?.Contains(filterSerialNumber, StringComparison.OrdinalIgnoreCase) ?? false));
+    }
+
+    private IEnumerable<EquipmentDto> FilteredSelectedEquipment()
+    {
+        return availableEquipment
+            .Where(e => selectedEquipmentIds.Contains(e.EquipmentId))
+            .Where(e => string.IsNullOrWhiteSpace(filterSelectedItems) ||
+                (e.ManufacturerName?.Contains(filterSelectedItems, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (e.HardwareTypeName?.Contains(filterSelectedItems, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (e.ModelName?.Contains(filterSelectedItems, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (e.SerialNumber?.Contains(filterSelectedItems, StringComparison.OrdinalIgnoreCase) ?? false));
     }
 
     private void AddItem(int equipmentId)
