@@ -248,8 +248,7 @@ Trzymamy się wzorca: jeden folder na obszar funkcjonalny w `UseCases`,
 - **`AddEquipmentHandover.razor`**: dodać brakujący selektor pozycji pod
   "Pozycje do przekazania" — lista/tabela dostępnego sprzętu (już
   przefiltrowana przez `GetEquipmentAsync` o przypisane sztuki), każda
-  pozycja z przyciskiem dodania do roboczej listy `selectedEquipmentIds`
-  (renderowanej niżej jako druga, mała tabela z możliwością usunięcia).
+  pozycja z przyciskiem dodania do roboczej listy `selectedEquipmentIds`.
   Usunąć fałszywy placeholder `HandoverDocumentNumber` — numer jest
   wyłącznie generowany po stronie serwera, nigdy nie pokazywany/edytowalny
   przed zapisem. Dodać brakujący przycisk "Zapisz": walidacja (min. jedna
@@ -259,6 +258,15 @@ Trzymamy się wzorca: jeden folder na obszar funkcjonalny w `UseCases`,
   `ClaimTypes.NameIdentifier`), wywołanie `SaveHandoverAsync`, nawigacja do
   `/equipmenthandover` przy sukcesie, komunikat `result.Message` przy
   błędzie (analogicznie do niedawnej pracy nad `Equipment`).
+  **Aktualizacja (przegląd wizualny po wdrożeniu):** sekcja pozycji ma
+  układ dwukolumnowy (`row` + dwa `col-6`) zamiast dwóch tabel jedna pod
+  drugą — lewa połowa: "Dostępny sprzęt" z czterema polami filtra
+  (Manufacturer/Hardware type/Model/Serial number, filtrowanie lokalne
+  po już wczytanej liście, `@bind:event="oninput"`, bez round-tripu do
+  serwera), prawa połowa: "Pozycje do przekazania" (bez zmian
+  funkcjonalnych, tylko przeniesiona obok). Filtrowana lista wyklucza
+  jednocześnie już wybrane pozycje (`FilteredAvailableEquipment()` łączy
+  filtr tekstowy z wykluczeniem `selectedEquipmentIds`).
 - **Nowy `EquipmentHandoverAddDocumentDialogBox.razor`** — kopia
   `InvoiceAddDocumentDialogBox.razor`: pola tylko do odczytu (numer
   dokumentu, data, odbiorca), `<InputFile accept="application/pdf">`

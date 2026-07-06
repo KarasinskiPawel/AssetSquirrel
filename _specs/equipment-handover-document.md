@@ -52,12 +52,13 @@ W efekcie dział IT nie ma dziś w aplikacji żadnego sposobu na formalne udokum
 1. Użytkownik może rozpocząć tworzenie nowego dokumentu wydania z listy dokumentów wydania.
 2. Użytkownik wskazuje odbiorcę dokumentu: pracownika i/lub lokalizację.
 3. Użytkownik może dodać dowolną liczbę pozycji sprzętu do tworzonego dokumentu, wybierając je z listy dostępnego (aktywnego, niewydanego) sprzętu w systemie.
-4. Użytkownik może usunąć wcześniej dodaną pozycję z dokumentu przed jego zapisaniem.
-5. Użytkownik może wpisać opcjonalny komentarz do całego dokumentu.
-6. Po zapisaniu dokument otrzymuje unikalny numer dokumentu i datę wydania.
-7. Po zapisaniu dokumentu użytkownik może wygenerować/pobrać jego wersję w formacie PDF, zawierającą wszystkie dane dokumentu i listę wydanych pozycji, w formie nadającej się do wydruku i podpisania przez obie strony.
-8. Użytkownik może wyszukać wcześniej utworzone dokumenty wydania po numerze dokumentu z poziomu listy.
-9. Użytkownik może otworzyć/podejrzeć szczegóły wcześniej zapisanego dokumentu wydania, w tym ponownie wygenerować/pobrać jego PDF.
+4. Użytkownik może przefiltrować listę dostępnego sprzętu (po producencie, typie sprzętu, modelu, numerze seryjnym), żeby szybko odnaleźć pozycję do dodania. Lista dostępnego sprzętu (z filtrami, lewa połowa ekranu) i lista już wybranych pozycji dla tworzonego dokumentu (prawa połowa ekranu) są prezentowane obok siebie, żeby ułatwić porównanie i unikać przewijania.
+5. Użytkownik może usunąć wcześniej dodaną pozycję z dokumentu przed jego zapisaniem.
+6. Użytkownik może wpisać opcjonalny komentarz do całego dokumentu.
+7. Po zapisaniu dokument otrzymuje unikalny numer dokumentu i datę wydania.
+8. Po zapisaniu dokumentu użytkownik może wygenerować/pobrać jego wersję w formacie PDF, zawierającą wszystkie dane dokumentu i listę wydanych pozycji, w formie nadającej się do wydruku i podpisania przez obie strony.
+9. Użytkownik może wyszukać wcześniej utworzone dokumenty wydania po numerze dokumentu z poziomu listy.
+10. Użytkownik może otworzyć/podejrzeć szczegóły wcześniej zapisanego dokumentu wydania, w tym ponownie wygenerować/pobrać jego PDF.
 
 ## Kryteria akceptacji
 
@@ -66,6 +67,7 @@ W efekcie dział IT nie ma dziś w aplikacji żadnego sposobu na formalne udokum
 - Dla zapisanego dokumentu można wygenerować plik PDF zawierający kompletne dane nagłówkowe dokumentu oraz pełną listę wydanych pozycji.
 - Nie da się zapisać dokumentu wydania bez wskazania odbiorcy (pracownika i/lub lokalizacji) ani bez żadnej pozycji sprzętu.
 - Sprzęt raz wydany na aktywnym dokumencie jest w jasny sposób odróżnialny od sprzętu dostępnego do wydania (np. nie pojawia się ponownie jako dostępny do wybrania na nowym dokumencie wydania), zgodnie z ustaleniami z etapu planowania.
+- Na formularzu tworzenia dokumentu lista dostępnego sprzętu (z filtrami po producencie/typie/modelu/numerze seryjnym) i lista wybranych pozycji są widoczne jednocześnie, obok siebie, bez konieczności przewijania między nimi.
 
 ## Otwarte pytania
 

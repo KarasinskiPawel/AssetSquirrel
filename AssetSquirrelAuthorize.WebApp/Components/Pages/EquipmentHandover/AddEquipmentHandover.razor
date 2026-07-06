@@ -67,10 +67,24 @@
         </div>
 
         <div class="row col-12 mt-4">
-            <p><b>Pozycje do przekazania:</b></p>
+            <div class="col-6">
+                <p><b>Dostępny sprzęt:</b></p>
 
-            @if (selectedEquipmentIds.Count > 0)
-            {
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <input class="form-control form-control-sm" placeholder="Manufacturer" @bind="filterManufacturer" @bind:event="oninput" />
+                    </div>
+                    <div class="col-3">
+                        <input class="form-control form-control-sm" placeholder="Hardware type" @bind="filterHardwareType" @bind:event="oninput" />
+                    </div>
+                    <div class="col-3">
+                        <input class="form-control form-control-sm" placeholder="Model" @bind="filterModel" @bind:event="oninput" />
+                    </div>
+                    <div class="col-3">
+                        <input class="form-control form-control-sm" placeholder="Serial number" @bind="filterSerialNumber" @bind:event="oninput" />
+                    </div>
+                </div>
+
                 <table id="table-color" class="table table-bordered">
                     <thead>
                         <tr class="text-center">
@@ -82,7 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var equipment in availableEquipment.Where(e => selectedEquipmentIds.Contains(e.EquipmentId)))
+                        @foreach (var equipment in FilteredAvailableEquipment())
                         {
                             <tr>
                                 <td>@equipment.ManufacturerName</td>
@@ -90,49 +104,54 @@
                                 <td>@equipment.ModelName</td>
                                 <td>@equipment.SerialNumber</td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" @onclick="(() => RemoveItem(equipment.EquipmentId))">
-                                        <i class="bi bi-dash-circle"></i>
+                                    <button type="button" class="btn btn-sm btn-outline-success" @onclick="(() => AddItem(equipment.EquipmentId))">
+                                        <i class="bi bi-plus-circle"></i>
                                     </button>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
-            }
-            else
-            {
-                <p class="text-muted">Brak dodanych pozycji.</p>
-            }
+            </div>
 
-            <p class="mt-3"><b>Dostępny sprzęt:</b></p>
+            <div class="col-6">
+                <p><b>Pozycje do przekazania:</b></p>
 
-            <table id="table-color" class="table table-bordered">
-                <thead>
-                    <tr class="text-center">
-                        <th scope="col">Manufacturer</th>
-                        <th scope="col">Hardware type</th>
-                        <th scope="col">Model</th>
-                        <th scope="col">Serial number</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var equipment in availableEquipment.Where(e => !selectedEquipmentIds.Contains(e.EquipmentId)))
-                    {
-                        <tr>
-                            <td>@equipment.ManufacturerName</td>
-                            <td>@equipment.HardwareTypeName</td>
-                            <td>@equipment.ModelName</td>
-                            <td>@equipment.SerialNumber</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-success" @onclick="(() => AddItem(equipment.EquipmentId))">
-                                    <i class="bi bi-plus-circle"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                @if (selectedEquipmentIds.Count > 0)
+                {
+                    <table id="table-color" class="table table-bordered">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col">Manufacturer</th>
+                                <th scope="col">Hardware type</th>
+                                <th scope="col">Model</th>
+                                <th scope="col">Serial number</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var equipment in availableEquipment.Where(e => selectedEquipmentIds.Contains(e.EquipmentId)))
+                            {
+                                <tr>
+                                    <td>@equipment.ManufacturerName</td>
+                                    <td>@equipment.HardwareTypeName</td>
+                                    <td>@equipment.ModelName</td>
+                                    <td>@equipment.SerialNumber</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="(() => RemoveItem(equipment.EquipmentId))">
+                                            <i class="bi bi-dash-circle"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">Brak dodanych pozycji.</p>
+                }
+            </div>
         </div>
 
         <div class="row col-12 mt-3">
@@ -151,6 +170,11 @@
 
     List<int> selectedEquipmentIds = new();
 
+    string filterManufacturer = string.Empty;
+    string filterHardwareType = string.Empty;
+    string filterModel = string.Empty;
+    string filterSerialNumber = string.Empty;
+
     private EditContext? EditContext;
 
     EquipmentHandoverDto equipmentHandover = new EquipmentHandoverDto
@@ -166,6 +190,16 @@
         availableEquipment = await AddEquipmentHandoverUseCase.GetEquipmentAsync(a => a.IsActive == true);
 
         EditContext = new EditContext(equipmentHandover);
+    }
+
+    private IEnumerable<EquipmentDto> FilteredAvailableEquipment()
+    {
+        return availableEquipment
+            .Where(e => !selectedEquipmentIds.Contains(e.EquipmentId))
+            .Where(e => string.IsNullOrWhiteSpace(filterManufacturer) || (e.ManufacturerName?.Contains(filterManufacturer, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Where(e => string.IsNullOrWhiteSpace(filterHardwareType) || (e.HardwareTypeName?.Contains(filterHardwareType, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Where(e => string.IsNullOrWhiteSpace(filterModel) || (e.ModelName?.Contains(filterModel, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Where(e => string.IsNullOrWhiteSpace(filterSerialNumber) || (e.SerialNumber?.Contains(filterSerialNumber, StringComparison.OrdinalIgnoreCase) ?? false));
     }
 
     private void AddItem(int equipmentId)
