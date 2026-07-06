@@ -38,7 +38,7 @@
                     @foreach (var manufacturer in manufacturers)
                     {
                         <tr>
-                            <td> 1 </td>
+                            <td> @(manufacturers.IndexOf(manufacturer) + 1) </td>
                             <td> @manufacturer.Name </td>
                             <td> @manufacturer.Description </td>
                             @if (manufacturer.IsActive)

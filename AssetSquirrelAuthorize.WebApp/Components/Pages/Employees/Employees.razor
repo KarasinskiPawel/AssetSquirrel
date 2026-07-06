@@ -43,7 +43,7 @@
                     @foreach (var employee in employees)
                     {
                         <tr>
-                            <td> 1 </td>
+                            <td> @(employees.IndexOf(employee) + 1) </td>
                             <td> @employee.LastName </td>
                             <td> @employee.FirstName </td>
                             <td> @employee.EmployeeCode </td>

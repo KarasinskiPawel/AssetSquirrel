@@ -38,7 +38,7 @@
                     @foreach(var suppiler in suppilers)
                     {
                         <tr>
-                            <td> 1 </td>
+                            <td> @(suppilers.IndexOf(suppiler) + 1) </td>
                             <td> @suppiler.Name </td>
                             <td> @suppiler.Description </td>
                             @if(suppiler.IsActive)

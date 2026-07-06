@@ -49,7 +49,7 @@
                     @foreach(var location in locations)
                     {
                         <tr>
-                            <td> 1 </td>
+                            <td> @(locations.IndexOf(location) + 1) </td>
                             <td> @location.Code </td>
                             <td> @location.MPK </td>
                             <td> @location.City </td>
