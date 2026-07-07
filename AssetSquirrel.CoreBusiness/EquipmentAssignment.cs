@@ -26,6 +26,10 @@ namespace AssetSquirrel.CoreBusiness
         public int? EquipmentHandoverId { get; set; }
         public EquipmentHandover? EquipmentHandover { get; set; }
 
+        // Return document that closed this assignment, if any.
+        public int? EquipmentReturnId { get; set; }
+        public EquipmentReturn? EquipmentReturn { get; set; }
+
         //Navigation
         public string? UserId { get; set; } // Foreign key to ApplicationUser
         public ApplicationUser? User { get; set; }

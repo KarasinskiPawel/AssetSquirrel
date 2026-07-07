@@ -4,6 +4,7 @@ using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 {
     [DbContext(typeof(AssetsSquirrelContext))]
-    partial class AssetsSquirrelContextModelSnapshot : ModelSnapshot
+    [Migration("20260707133150_AddEquipmentReturn")]
+    partial class AddEquipmentReturn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,9 +66,9 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         {
                             EmployeeId = 1,
                             Email = "pawelka@komfort.pl",
-                            FirstName = "Paweł",
+                            FirstName = "Pawe�",
                             IsActive = true,
-                            LastName = "Karasiński"
+                            LastName = "Karasi�ski"
                         },
                         new
                         {
@@ -73,7 +76,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                             Email = "dariusz.gasiorowski@komfort.pl",
                             FirstName = "Dariusz",
                             IsActive = true,
-                            LastName = "Gąsiorowski"
+                            LastName = "G�siorowski"
                         },
                         new
                         {
@@ -425,9 +428,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                     b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
@@ -444,9 +444,6 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
 
                     b.Property<int>("StorageLocationId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UploadDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("EquipmentReturnId");
 
@@ -665,7 +662,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         new
                         {
                             LocationId = 1,
-                            City = "Stryków",
+                            City = "Stryk�w",
                             Code = "M100",
                             Email = "",
                             EquipmentStorage = false,
@@ -677,26 +674,26 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Migrations
                         new
                         {
                             LocationId = 2,
-                            City = "Łódź",
+                            City = "��d�",
                             Code = "S000",
                             Email = "",
                             EquipmentStorage = false,
                             IsActive = true,
                             MPK = "PL1C001Z",
                             PhoneNumber = "",
-                            Street = "Biuro - Srebrzyńska 14"
+                            Street = "Biuro - Srebrzy�ska 14"
                         },
                         new
                         {
                             LocationId = 3,
-                            City = "Łódź",
+                            City = "��d�",
                             Code = "N001",
                             Email = "",
                             EquipmentStorage = false,
                             IsActive = true,
                             MPK = "PL1N001Z",
                             PhoneNumber = "",
-                            Street = "Magazyn IT - Srebrzyńska 14"
+                            Street = "Magazyn IT - Srebrzy�ska 14"
                         });
                 });
 

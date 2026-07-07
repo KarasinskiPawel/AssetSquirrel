@@ -1,0 +1,47 @@
+@using AssetSquirrel.CoreBusiness.Dto
+
+@if (EquipmentReturn is not null)
+{
+    <div class="dialog-body">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col">Manufacturer</th>
+                    <th scope="col">Hardware type</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Serial number</th>
+                    <th scope="col">Handover date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (EquipmentReturn.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="5" class="text-muted text-center">No items returned on this document.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in EquipmentReturn.Items)
+                    {
+                        <tr>
+                            <td>@item.ManufacturerName</td>
+                            <td>@item.HardwareTypeName</td>
+                            <td>@item.ModelName</td>
+                            <td>@item.SerialNumber</td>
+                            <td>@(item.DateOfHandover?.ToShortDateString())</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="dialog-footer">
+        <button class="btn btn-sm btn-secondary w-25" @onclick="OnClose"> Close </button>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public EquipmentReturnDto EquipmentReturn { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnClose { get; set; }
+}

@@ -20,6 +20,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
         public DbSet<EquipmentAssignmentHistory> EquipmentAssignmentHistories { get; set; }
         public DbSet<EquipmentHandover> EquipmentHandovers { get; set; }
         public DbSet<EquipmentHandoverDetail> EquipmentHandoverDetails { get; set; }
+        public DbSet<EquipmentReturn> EquipmentReturns { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Error> Errors { get; set; }
 
@@ -28,15 +29,15 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Employee>().HasData(
-                new Employee { EmployeeId = 1, FirstName = "Pawe³", LastName = "Karasiñski", Email = "pawelka@komfort.pl", PhoneNumber = null, IsActive = true },
-                new Employee { EmployeeId = 2, FirstName = "Dariusz", LastName = "G¹siorowski", Email = "dariusz.gasiorowski@komfort.pl", PhoneNumber = null, IsActive = true },
+                new Employee { EmployeeId = 1, FirstName = "Paweï¿½", LastName = "Karasiï¿½ski", Email = "pawelka@komfort.pl", PhoneNumber = null, IsActive = true },
+                new Employee { EmployeeId = 2, FirstName = "Dariusz", LastName = "Gï¿½siorowski", Email = "dariusz.gasiorowski@komfort.pl", PhoneNumber = null, IsActive = true },
                 new Employee { EmployeeId = 3, FirstName = "Konrad", LastName = "Wawrzyniak", Email = "Konrad.Wawrzyniak@komfort.pl", PhoneNumber = null, IsActive = true }
                 );
 
             modelBuilder.Entity<Location>().HasData(
-                new Location { LocationId = 1, Code = "M100", MPK = "PL1M100Z", City = "Stryków", Street = "Magazyn Centralny", Email = "", PhoneNumber = "", IsActive = true },
-                new Location { LocationId = 2, Code = "S000", MPK = "PL1C001Z", City = "£ódŸ", Street = "Biuro - Srebrzyñska 14", Email = "", PhoneNumber = "", IsActive = true },
-                new Location { LocationId = 3, Code = "N001", MPK = "PL1N001Z", City = "£ódŸ", Street = "Magazyn IT - Srebrzyñska 14", Email = "", PhoneNumber = "", IsActive = true }
+                new Location { LocationId = 1, Code = "M100", MPK = "PL1M100Z", City = "Strykï¿½w", Street = "Magazyn Centralny", Email = "", PhoneNumber = "", IsActive = true },
+                new Location { LocationId = 2, Code = "S000", MPK = "PL1C001Z", City = "ï¿½ï¿½dï¿½", Street = "Biuro - Srebrzyï¿½ska 14", Email = "", PhoneNumber = "", IsActive = true },
+                new Location { LocationId = 3, Code = "N001", MPK = "PL1N001Z", City = "ï¿½ï¿½dï¿½", Street = "Magazyn IT - Srebrzyï¿½ska 14", Email = "", PhoneNumber = "", IsActive = true }
                 );
 
             modelBuilder.Entity<Suppiler>().HasData(
@@ -71,6 +72,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer
             modelBuilder.ApplyConfiguration(new EquipmentAssignmentHistoryConfigurations());
             modelBuilder.ApplyConfiguration(new EquipmentHandoverConfiguration());
             modelBuilder.ApplyConfiguration(new EquipmentHandoverDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new EquipmentReturnConfigurations());
         }
     }
 }

@@ -11,7 +11,10 @@ namespace AssetSquirrel.CoreBusiness.Dto
     {
         public int EquipmentAssignmentId { get; set; }
         public int EquipmentId { get; set; }
-        public Equipment? Equipment { get; set; }
+        public string? ManufacturerName { get; set; }
+        public string? HardwareTypeName { get; set; }
+        public string? ModelName { get; set; }
+        public string? SerialNumber { get; set; }
         public int? LocationId { get; set; }
         public Location? Location { get; set; }
         public int? EmployeeId { get; set; }

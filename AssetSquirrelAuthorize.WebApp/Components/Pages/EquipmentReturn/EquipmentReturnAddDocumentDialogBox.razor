@@ -1,0 +1,113 @@
+@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentReturn.Interfaces
+
+@inject IAddEquipmentReturnDocumentUseCase AddEquipmentReturnDocumentUseCase
+@inject IJSRuntime JSRuntime
+
+@if (EquipmentReturn is not null)
+{
+    <div class="dialog-body">
+        <EditForm FormName="AddEquipmentReturnDocument"
+                  EditContext="EditContext">
+
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Document number </label>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="EquipmentReturn.ReturnDocumentNumber" readonly></InputText>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Return date </label>
+                </div>
+                <div class="col-6">
+                    <InputDate class="form-control" @bind-Value="EquipmentReturn.ReturnDate" readonly></InputDate>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+            @if (EquipmentReturn.FilePath is not null)
+            {
+                <div class="row mt-3 mb-3">
+                    <div class="offset-1 col-10">
+                        <div class="alert alert-warning py-2 mb-0">
+                            A document is already attached. Uploading a new file will replace it.
+                        </div>
+                    </div>
+                    <div class="col-1">
+                    </div>
+                </div>
+            }
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
+                    <label class="col-form-label"> Signed document </label>
+                </div>
+                <div class="col-6">
+                    <InputFile class="form-control" OnChange="HandleFileSelected" accept="application/pdf"></InputFile>
+                </div>
+                <div class="col-1">
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+    <div class="dialog-footer">
+        <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Close </button>
+
+        <button class="btn btn-sm btn-primary w-25" @onclick="AddDocument"> Save & Close </button>
+    </div>
+}
+else
+{
+    <div class="dialog-body">
+        <p>Loading...</p>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<EquipmentReturnDto>> OnSave { get; set; }
+    [Parameter, EditorRequired] public EquipmentReturnDto EquipmentReturn { get; set; }
+
+    private EditContext? EditContext;
+
+    private IBrowserFile? uploadedFile;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(EquipmentReturn);
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+    }
+
+    public async Task AddDocument()
+    {
+        if (uploadedFile is not null)
+        {
+            var result = await AddEquipmentReturnDocumentUseCase.AddEquipmentReturnDocumentAsync(
+                EquipmentReturn,
+                uploadedFile.Name,
+                uploadedFile.ContentType,
+                uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024));
+
+            await OnSave.InvokeAsync(result);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "No file selected!");
+        }
+    }
+}

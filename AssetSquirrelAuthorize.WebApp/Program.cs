@@ -3,6 +3,7 @@ using AssetSquirrelAuthorize.WebApp.Components;
 using AssetSquirrelAuthorize.WebApp.Components.Account;
 using AssetSquirrelAuthorize.WebApp.Extensions;
 using AssetSquirrel.UseCases.EquipmentHandover.Interfaces;
+using AssetSquirrel.UseCases.EquipmentReturn.Interfaces;
 using AssetsSquirrel.CoreBusiness;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -62,6 +63,7 @@ EquipmentsUseCaseExtensions.AddExtension(builder.Services, builder.Configuration
 ErrorsExtensions.AddExtension(builder.Services, builder.Configuration);
 InvoicesUseCaseExtensions.AddExtension(builder.Services, builder.Configuration);
 EquipmentHandoverExtension.AddExtension(builder.Services, builder.Configuration);
+EquipmentReturnExtension.AddExtension(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
@@ -99,6 +101,21 @@ app.MapGet("/api/equipmenthandover/{id:int}/pdf", async (int id, IViewEquipmentH
 
     var pdfBytes = pdfGenerator.Generate(handover);
     var downloadName = $"{handover.HandoverDocumentNumber.Replace('/', '-')}.pdf";
+
+    return Results.File(pdfBytes, "application/pdf", downloadName);
+});
+
+app.MapGet("/api/equipmentreturn/{id:int}/pdf", async (int id, IViewEquipmentReturnUseCase viewEquipmentReturnUseCase, IEquipmentReturnPdfGenerator pdfGenerator) =>
+{
+    var equipmentReturn = (await viewEquipmentReturnUseCase.GetEquipmentReturnsAsync(r => r.EquipmentReturnId == id)).FirstOrDefault();
+
+    if (equipmentReturn is null)
+    {
+        return Results.NotFound();
+    }
+
+    var pdfBytes = pdfGenerator.Generate(equipmentReturn);
+    var downloadName = $"{equipmentReturn.ReturnDocumentNumber.Replace('/', '-')}.pdf";
 
     return Results.File(pdfBytes, "application/pdf", downloadName);
 });

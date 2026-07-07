@@ -1,0 +1,239 @@
+@page "/addequipmentreturn"
+@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentReturn.Interfaces
+@using System.Security.Claims
+
+@inject NavigationManager Navigation
+@inject IAddEquipmentReturnUseCase AddEquipmentReturnUseCase
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@rendermode InteractiveServer
+
+<div class="row col-12">
+    <p class="text-center fw-bold">Equipment Return Form</p>
+</div>
+
+@if (employees is not null && locations is not null && storageLocations is not null)
+{
+    <EditForm FormName="AddEquipmentReturn" EditContext="EditContext">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+
+        <div class="row col-6">
+            <div class="row">
+                <div class="col-4">
+                    <label class="col-form-label"> Return from (location) </label>
+                </div>
+                <div class="col-8">
+                    <InputSelect class="form-control" @bind-Value="selectedLocationId">
+                        <option value=""> ...location... </option>
+                        @foreach (var location in locations)
+                        {
+                            <option value="@location.LocationId">@location.City @location.Street</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="row col-6 mt-3">
+            <div class="row">
+                <div class="col-4">
+                    <label class="col-form-label"> Return from (employee) </label>
+                </div>
+                <div class="col-8">
+                    <InputSelect class="form-control" @bind-Value="selectedEmployeeId">
+                        <option value=""> ...employee... </option>
+                        @foreach (var employee in employees)
+                        {
+                            <option value="@employee.EmployeeId">@employee.LastName @employee.FirstName </option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="row col-12 mt-3">
+            <div class="col-12">
+                <button type="button" class="btn btn-sm btn-outline-dark" @onclick="ShowAssignedEquipment"> Show assigned equipment </button>
+            </div>
+        </div>
+
+        @if (openAssignments is not null)
+        {
+            <div class="row col-12 mt-4">
+                <div class="col-12">
+                    <table id="table-color" class="table table-bordered">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col"></th>
+                                <th scope="col">Manufacturer</th>
+                                <th scope="col">Hardware type</th>
+                                <th scope="col">Model</th>
+                                <th scope="col">Serial number</th>
+                                <th scope="col">Handover date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (openAssignments.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-muted text-center">No equipment currently assigned.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var assignment in openAssignments)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" checked="@selectedAssignmentIds.Contains(assignment.EquipmentAssignmentId)"
+                                                   @onchange="(e => ToggleSelection(assignment.EquipmentAssignmentId, (bool)(e.Value ?? false)))" />
+                                        </td>
+                                        <td>@assignment.ManufacturerName</td>
+                                        <td>@assignment.HardwareTypeName</td>
+                                        <td>@assignment.ModelName</td>
+                                        <td>@assignment.SerialNumber</td>
+                                        <td>@(assignment.DateOfHandover?.ToShortDateString())</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row col-6 mt-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="col-form-label"> Comment </label>
+                    </div>
+                    <div class="col-8">
+                        <InputTextArea class="form-control" rows="3" maxlength="500" @bind-Value="equipmentReturn.Comment"></InputTextArea>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-6 mt-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="col-form-label"> Return date </label>
+                    </div>
+                    <div class="col-8">
+                        <InputDate class="form-control" @bind-Value="equipmentReturn.ReturnDate"></InputDate>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-6 mt-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="col-form-label"> Storage location </label>
+                    </div>
+                    <div class="col-8">
+                        <InputSelect class="form-control" @bind-Value="equipmentReturn.StorageLocationId">
+                            <option value="0"> ...storage location... </option>
+                            @foreach (var storageLocation in storageLocations)
+                            {
+                                <option value="@storageLocation.LocationId">@storageLocation.City @storageLocation.Street</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row col-12 mt-3">
+                <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-primary" disabled="@(selectedAssignmentIds.Count == 0 || equipmentReturn.StorageLocationId == 0)" @onclick="Save"> Register return </button>
+                </div>
+            </div>
+        }
+
+    </EditForm>
+}
+
+@code {
+    List<EmployeeDto>? employees;
+    List<LocationDto>? locations;
+    List<LocationDto>? storageLocations;
+    List<EquipmentAssignmentDto>? openAssignments;
+
+    List<int> selectedAssignmentIds = new();
+
+    int? selectedEmployeeId;
+    int? selectedLocationId;
+
+    private EditContext? EditContext;
+
+    EquipmentReturnDto equipmentReturn = new EquipmentReturnDto
+    {
+        Comment = string.Empty,
+        ReturnDate = DateTime.Now
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await AddEquipmentReturnUseCase.GetEmployeesAsync(a => a.IsActive == true);
+        locations = await AddEquipmentReturnUseCase.GetLocationsAsync(a => a.IsActive == true);
+        storageLocations = await AddEquipmentReturnUseCase.GetLocationsAsync(a => a.EquipmentStorage && a.IsActive);
+
+        EditContext = new EditContext(equipmentReturn);
+    }
+
+    private async Task ShowAssignedEquipment()
+    {
+        if (selectedEmployeeId is null && selectedLocationId is null)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Please select an employee and/or a location.");
+            return;
+        }
+
+        openAssignments = await AddEquipmentReturnUseCase.GetOpenAssignmentsAsync(selectedEmployeeId, selectedLocationId);
+        selectedAssignmentIds.Clear();
+    }
+
+    private void ToggleSelection(int equipmentAssignmentId, bool isSelected)
+    {
+        if (isSelected)
+        {
+            if (!selectedAssignmentIds.Contains(equipmentAssignmentId))
+            {
+                selectedAssignmentIds.Add(equipmentAssignmentId);
+            }
+        }
+        else
+        {
+            selectedAssignmentIds.Remove(equipmentAssignmentId);
+        }
+    }
+
+    private async Task Save()
+    {
+        if (selectedAssignmentIds.Count == 0)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Please select at least one item to return.");
+            return;
+        }
+
+        if (equipmentReturn.StorageLocationId == 0)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", "Please select a storage location.");
+            return;
+        }
+
+        equipmentReturn.EmployeeId = selectedEmployeeId;
+        equipmentReturn.LocationId = selectedLocationId;
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var result = await AddEquipmentReturnUseCase.SaveReturnAsync(equipmentReturn, selectedAssignmentIds, userId);
+
+        if (result.Success)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been returned.");
+            Navigation.NavigateTo("/equipmentreturn");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
+        }
+    }
+}
