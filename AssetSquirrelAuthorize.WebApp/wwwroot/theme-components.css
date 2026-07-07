@@ -28,6 +28,22 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
         color: var(--as-text-muted);
     }
 
+/* Native file input chrome (the "Choose file" button and the "no file
+   chosen" text) doesn't pick up .form-control's color/background -- style
+   it explicitly so it stays legible in dark mode. */
+.form-control[type="file"]::file-selector-button {
+    margin-inline-end: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--as-border);
+    border-radius: var(--as-radius);
+    background-color: var(--as-bg-elevated);
+    color: var(--as-text-primary);
+}
+
+    .form-control[type="file"]::file-selector-button:hover {
+        background-color: var(--as-bg-surface);
+    }
+
 /* Outline buttons compute color from Bootstrap's fixed palette, not our
    tokens — restyle the variants actually used in this app (edit/delete/add
    actions) so they stay legible and on-theme. */

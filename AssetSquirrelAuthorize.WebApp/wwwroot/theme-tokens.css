@@ -6,6 +6,11 @@
 */
 
 :root {
+    /* Lets native controls (date picker, file chooser, checkboxes) render
+       with the right chrome instead of defaulting to the browser's light
+       theme regardless of our data-theme toggle. */
+    color-scheme: light;
+
     /* Surfaces */
     --as-bg-primary: #eef1f5;
     --as-bg-surface: #ffffff;
@@ -63,6 +68,8 @@
 }
 
 html[data-theme="dark"] {
+    color-scheme: dark;
+
     /* Surfaces */
     --as-bg-primary: #0a0e14;
     --as-bg-surface: #10161f;
