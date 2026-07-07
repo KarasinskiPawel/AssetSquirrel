@@ -101,7 +101,6 @@ app.MapGet("/api/equipmenthandover/{id:int}/pdf", async (int id, IViewEquipmentH
     var downloadName = $"{handover.HandoverDocumentNumber.Replace('/', '-')}.pdf";
 
     return Results.File(pdfBytes, "application/pdf", downloadName);
-})
-.RequireAuthorization();
+});
 
 app.Run();

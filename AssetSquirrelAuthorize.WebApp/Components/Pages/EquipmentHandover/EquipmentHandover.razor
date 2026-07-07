@@ -74,29 +74,35 @@
                                 }
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary" title="Print / view PDF" @onclick="(() => PrintHandover(handover))">
-                                    <i class="bi bi-file-earmark-pdf"></i>
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" title="Print / view PDF" @onclick="(() => PrintHandover(handover))">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </button>
 
-                                @if (handover.FilePath is null)
-                                {
-                                    <button class="btn btn-sm btn-outline-warning" title="Attach signed document" @onclick="(() => ShowModalAddDocument(handover))">
-                                        <i class="bi bi-file-arrow-up"></i>
+                                    <button class="btn btn-sm btn-outline-info" title="View items" @onclick="(() => ShowModalViewItems(handover))">
+                                        <i class="bi bi-list-ul"></i>
                                     </button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-sm btn-outline-success" title="Download attached document" @onclick="(() => DownloadDocument(handover))">
-                                        <i class="bi bi-file-arrow-down"></i>
-                                    </button>
-                                }
 
-                                @if (handover.IsActive)
-                                {
-                                    <button class="btn btn-sm btn-outline-danger" title="Cancel" @onclick="(() => CancelHandover(handover))">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
-                                }
+                                    @if (handover.FilePath is null)
+                                    {
+                                        <button class="btn btn-sm btn-outline-warning" title="Attach signed document" @onclick="(() => ShowModalAddDocument(handover))">
+                                            <i class="bi bi-file-arrow-up"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-success" title="Download attached document" @onclick="(() => DownloadDocument(handover))">
+                                            <i class="bi bi-file-arrow-down"></i>
+                                        </button>
+                                    }
+
+                                    @if (handover.IsActive)
+                                    {
+                                        <button class="btn btn-sm btn-outline-danger" title="Cancel" @onclick="(() => CancelHandover(handover))">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }
@@ -114,11 +120,20 @@
         Handover="selectedHandover" />
 </DialogBox>
 
+<DialogBox Show="modalViewItems"
+           Title="Handover items">
+    <EquipmentHandoverItemsDialogBox
+        Handover="selectedHandoverForItems"
+        OnClose="OnCloseModalViewItems" />
+</DialogBox>
+
 @code {
     bool modalAddDocument = false;
+    bool modalViewItems = false;
 
     List<EquipmentHandoverDto>? handovers;
     EquipmentHandoverDto? selectedHandover;
+    EquipmentHandoverDto? selectedHandoverForItems;
     string searchText = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -168,6 +183,17 @@
     {
         selectedHandover = handover;
         modalAddDocument = true;
+    }
+
+    private void ShowModalViewItems(EquipmentHandoverDto handover)
+    {
+        selectedHandoverForItems = handover;
+        modalViewItems = true;
+    }
+
+    private void OnCloseModalViewItems()
+    {
+        modalViewItems = false;
     }
 
     private void OnCancelHideModalAddDocument()
