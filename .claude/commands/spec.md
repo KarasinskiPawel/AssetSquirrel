@@ -65,4 +65,3 @@ Spec file: specs/<feature_slug>.md
 Title: <feature_title>
 
 Do not repeat the full spec in the chat output unless the user explicitly asks to see it. The main goal is to save the spec file and report where it lives and what branch name to use.
-
