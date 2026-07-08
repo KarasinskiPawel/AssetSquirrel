@@ -22,6 +22,10 @@
         <TextSearchBar placeholderText="Document number"
                        TextSearchBarCallback="SearchCallback">
         </TextSearchBar>
+
+        <TextSearchBar placeholderText="Employee name"
+                       TextSearchBarCallback="SearchEmployeeCallback">
+        </TextSearchBar>
     </div>
 </div>
 
@@ -133,6 +137,7 @@
     EquipmentHandoverDto? selectedHandover;
     EquipmentHandoverDto? selectedHandoverForItems;
     string searchText = string.Empty;
+    string employeeSearchText = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -150,10 +155,20 @@
         await SearchHandovers();
     }
 
+    private async Task SearchEmployeeCallback(string text)
+    {
+        employeeSearchText = text;
+        await SearchHandovers();
+    }
+
     private async Task SearchHandovers()
     {
-        var text = searchText ?? string.Empty;
-        handovers = await ViewEquipmentHandover.GetEquipmentHandoverAsync(h => h.HandoverDocumentNumber.Contains(text));
+        var docText = searchText ?? string.Empty;
+        var empText = employeeSearchText ?? string.Empty;
+
+        handovers = await ViewEquipmentHandover.GetEquipmentHandoverAsync(h =>
+            (string.IsNullOrEmpty(docText) || h.HandoverDocumentNumber.Contains(docText)) &&
+            (string.IsNullOrEmpty(empText) || (h.ToEmployee != null && (h.ToEmployee.FirstName.Contains(empText) || h.ToEmployee.LastName.Contains(empText)))));
 
         StateHasChanged();
     }

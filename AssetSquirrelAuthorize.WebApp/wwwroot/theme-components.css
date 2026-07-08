@@ -23,8 +23,16 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     }
 
     .form-control:disabled,
-    .form-select:disabled {
+    .form-select:disabled,
+    .form-control[readonly] {
         background-color: var(--as-bg-elevated);
+        color: var(--as-text-muted);
+    }
+
+    /* Bootstrap sets color:#212529 on :focus regardless of the readonly
+       attribute -- re-assert our text color so a focused readonly field
+       doesn't flip to dark-on-dark. */
+    .form-control[readonly]:focus {
         color: var(--as-text-muted);
     }
 
