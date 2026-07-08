@@ -124,17 +124,14 @@ Title="Edit employee">
         modalAddEmployeeVisible = false;
     }
 
-    public async Task OnSaveHideModalAddEmployee(bool result)
+    public async Task OnSaveHideModalAddEmployee(Result<EmployeeDto> result)
     {
-        if(result)
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd zapisu");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchEmployees();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
         modalAddEmployeeVisible = false;
@@ -145,17 +142,14 @@ Title="Edit employee">
         modalEditEmployeeVisible = false;
     }
 
-    public async Task OnSaveHideModalEditEmployee(bool result)
+    public async Task OnSaveHideModalEditEmployee(Result<EmployeeDto> result)
     {
-        if(result)
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd aktualizacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchEmployees();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
         modalEditEmployeeVisible = false;
@@ -195,14 +189,12 @@ Title="Edit employee">
 
         employee.IsActive = !employee.IsActive;
 
-        if((await ViewEmployeesUseCase.UpdateEmployee(employee)).Success)
+        var result = await ViewEmployeesUseCase.UpdateEmployee(employee);
+        await result.ShowToastAsync(JSRuntime, "Employee status has been changed.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Employee status has been changed.");
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 
@@ -210,15 +202,13 @@ Title="Edit employee">
     {
         if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
 
-        if((await ViewEmployeesUseCase.DeleteEmployeeAsync(employee)).Success)
+        var result = await ViewEmployeesUseCase.DeleteEmployeeAsync(employee);
+        await result.ShowToastAsync(JSRuntime, "Employee removed.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
             await SearchEmployees();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Error.");
         }
     }
 }

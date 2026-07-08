@@ -264,15 +264,11 @@
         var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var result = await AddEquipmentHandoverUseCase.SaveHandoverAsync(equipmentHandover, selectedEquipmentIds, userId);
+        await result.ShowToastAsync(JSRuntime, "Equipment handover has been saved.", "Błąd zapisu");
 
         if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment handover has been saved.");
             Navigation.NavigateTo("/equipmenthandover");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
     }
 }

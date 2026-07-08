@@ -139,15 +139,12 @@ Title="Add equipment">
 
     public async Task OnSaveHideModalEditEquipment(Result<EquipmentDto> result)
     {
+        await result.ShowToastAsync(JSRuntime, "Equipment has been edited.", "Błąd aktualizacji");
+
         if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been edited.");
             await SearchEquipments();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
 
         modalEditEquipment = false;
@@ -171,15 +168,12 @@ Title="Add equipment">
 
     private async Task OnSaveHideModalAddEquipment(Result<EquipmentDto> result)
     {
+        await result.ShowToastAsync(JSRuntime, "Equipment has been added.", "Błąd zapisu");
+
         if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been added.");
             await SearchEquipments();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
 
         modalAddEquipment = false;
@@ -217,15 +211,13 @@ Title="Add equipment">
             equipment.RegisteredByUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
 
-        if ((await ViewEquipmentUseCase.UpdateEquipmentAsync(equipment)).Success)
+        var result = await ViewEquipmentUseCase.UpdateEquipmentAsync(equipment);
+        await result.ShowToastAsync(JSRuntime, "Equipment has been deactivated.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been deactivated.");
             await SearchEquipments();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Removing error.");
         }
     }
 }

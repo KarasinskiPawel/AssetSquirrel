@@ -46,7 +46,7 @@
     EditContext? EditContext;
 
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<HardwareTypeDto>> OnSave { get; set; }
 
     protected override void OnInitialized()
     {
@@ -54,15 +54,17 @@
         base.OnInitialized();
     }
 
-    private async Task<bool> CreateAddHardwareType()
+    private async Task CreateAddHardwareType()
     {
-        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return false;
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
 
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync((await AddHardwareTypeUseCase.AddHardwareTypeAsync(HardwareType)).Success);
+            await OnSave.InvokeAsync(await AddHardwareTypeUseCase.AddHardwareTypeAsync(HardwareType));
         }
-
-        return false;
+        else
+        {
+            await OnSave.InvokeAsync(Result<HardwareTypeDto>.Fail("Please fill in all required fields correctly."));
+        }
     }
 }

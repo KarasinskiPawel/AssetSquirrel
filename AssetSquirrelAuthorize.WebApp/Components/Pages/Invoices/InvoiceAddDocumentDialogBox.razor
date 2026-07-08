@@ -2,7 +2,6 @@
 @using AssetSquirrel.UseCases.Invoices.Interfaces
 
 @inject IAddInvoiceDocumentUseCase AddInvoiceDocumentUseCase
-@inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (Invoice is not null)
@@ -74,7 +73,7 @@ else
 
 @code {
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<InvoiceDto>> OnSave { get; set; }
     [Parameter, EditorRequired] public InvoiceDto Invoice { get; set; }
 
     private EditContext? EditContext;
@@ -96,23 +95,15 @@ else
 
         if (uploadedFile is not null)
         {
-            if ((await AddInvoiceDocumentUseCase.AddInvoiceDocumentAsync(
+            await OnSave.InvokeAsync(await AddInvoiceDocumentUseCase.AddInvoiceDocumentAsync(
                 this.Invoice
                 ,this.uploadedFile.Name
                 ,this.uploadedFile.ContentType
-                ,uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))).Success
-            )
-            {
-                await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been added.");
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("OperationAborted", "Failed to add document!");
-            }
+                ,uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024)));
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "No file selected!");
+            await OnSave.InvokeAsync(Result<InvoiceDto>.Fail("No file selected!"));
         }
     }
 }

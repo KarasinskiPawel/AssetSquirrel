@@ -47,7 +47,7 @@
     private EditContext? EditContext;
 
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<SuppilerDto>> OnSave { get; set; }
 
     protected override void OnInitialized()
     {
@@ -61,7 +61,11 @@
 
         if(EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync((await AddSuppilerUseCase.AddSuppilerAsync(Suppiler)).Success);
+            await OnSave.InvokeAsync(await AddSuppilerUseCase.AddSuppilerAsync(Suppiler));
+        }
+        else
+        {
+            await OnSave.InvokeAsync(Result<SuppilerDto>.Fail("Please fill in all required fields correctly."));
         }
     }
 }

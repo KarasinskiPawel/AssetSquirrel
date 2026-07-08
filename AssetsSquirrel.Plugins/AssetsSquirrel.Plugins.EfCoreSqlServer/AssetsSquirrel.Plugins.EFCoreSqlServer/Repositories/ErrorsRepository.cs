@@ -17,7 +17,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
         {
             this.dbContextFactory = dbContextFactory;
         }
-        public async Task<bool> AddErrorAsync(string serviceName, string className, string methodName, Exception exception)
+        public async Task<Result<bool>> AddErrorAsync(string serviceName, string className, string methodName, Exception exception)
         {
             try
             {
@@ -39,11 +39,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 dbContext.Add(error);
                 await dbContext.SaveChangesAsync();
 
-                return true;
+                return Result<bool>.Ok(true);
             }
             catch(Exception e)
             {
-                return false;
+                return Result<bool>.Fail(e.Message);
             }
         }
     }

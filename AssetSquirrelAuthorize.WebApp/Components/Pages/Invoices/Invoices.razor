@@ -144,17 +144,14 @@ Title="Add invoice">
         modalAddInvoiceDocument = false;
     }
 
-    public async Task OnSaveHideModalAddDocument(bool result)
+    public async Task OnSaveHideModalAddDocument(Result<InvoiceDto> result)
     {
-        if (result)
+        await result.ShowToastAsync(JSRuntime, "Document has been added.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been added.");
             await SearchInvoices();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Incorect data!");
         }
 
         modalAddInvoiceDocument = false;
@@ -184,18 +181,16 @@ Title="Add invoice">
         modalEditInvoice = false;
     }
 
-    public async Task OnSaveHideModalEditInvoice(bool result)
+    public async Task OnSaveHideModalEditInvoice(Result<InvoiceDto> result)
     {
-        if (result)
+        await result.ShowToastAsync(JSRuntime, "Invoice has been updated.", "Błąd aktualizacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice has been updated.");
             await SearchInvoices();
             StateHasChanged();
         }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
-        }
+
         modalEditInvoice = false;
     }
 
@@ -203,15 +198,13 @@ Title="Add invoice">
     {
         if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
 
-        if ((await ViewInvoicesUseCase.DeleteInvoice(invoice)).Success)
+        var result = await ViewInvoicesUseCase.DeleteInvoice(invoice);
+        await result.ShowToastAsync(JSRuntime, "Invoice removed.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice removed.");
             await SearchInvoices();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Invoice deletion failed.");
         }
     }
 
@@ -225,17 +218,14 @@ Title="Add invoice">
         modalAddInvoice = false;
     }
 
-    public async Task OnSaveHideModalAddInvoice(bool result)
+    public async Task OnSaveHideModalAddInvoice(Result<InvoiceDto> result)
     {
-        if(result)
+        await result.ShowToastAsync(JSRuntime, "Invoice has been added.", "Błąd zapisu");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice has been added.");
             await SearchInvoices();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Saving error.");
         }
 
         modalAddInvoice = false;

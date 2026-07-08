@@ -21,7 +21,9 @@ namespace AssetSquirrel.UseCases.EquipmentReturn
 
         public async Task<Result<EquipmentReturnDto>> AddEquipmentReturnDocumentAsync(EquipmentReturnDto equipmentReturn, string fileName, string contentType, Stream fileStream)
         {
-            if (await fileManagementRepository.AddNewFile(equipmentReturn.EquipmentReturnId, fileName, contentType, fileStream))
+            var fileResult = await fileManagementRepository.AddNewFile(equipmentReturn.EquipmentReturnId, fileName, contentType, fileStream);
+
+            if (fileResult.Success)
             {
                 equipmentReturn.FilePath = System.IO.Path.Combine("Files", "EquipmentReturns", equipmentReturn.EquipmentReturnId.ToString(), fileName);
                 equipmentReturn.UploadDate = DateTime.Now;
@@ -29,7 +31,7 @@ namespace AssetSquirrel.UseCases.EquipmentReturn
                 return await editEquipmentReturnUseCase.UpdateEquipmentReturnAsync(equipmentReturn);
             }
 
-            return Result<EquipmentReturnDto>.Fail("Failed to save the equipment return document file.");
+            return Result<EquipmentReturnDto>.Fail(fileResult.Message ?? "Failed to save the equipment return document file.");
         }
     }
 }

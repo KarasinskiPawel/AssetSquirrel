@@ -133,14 +133,12 @@ Title="Edycja danych dostawcy">
 
         suppiler.IsActive = !suppiler.IsActive;
 
-        if((await ViewSuppilersUseCase.UpdateSuppiler(suppiler)).Success)
+        var result = await ViewSuppilersUseCase.UpdateSuppiler(suppiler);
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 
@@ -154,15 +152,14 @@ Title="Edycja danych dostawcy">
         addSuppilererModal = false;
     }
 
-    public async Task OnSaveAddModalSuppiler(bool result)
+    public async Task OnSaveAddModalSuppiler(Result<SuppilerDto> result)
     {
-        if(result)
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd zapisu");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchSuppiler();
             StateHasChanged();
-        } else {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
         HideModalAddSuppiler();
@@ -178,13 +175,13 @@ Title="Edycja danych dostawcy">
         editSuppilerModal = false;
     }
 
-    public async Task OnSaveEditModalSuppiler(bool result){
-        if(result) {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+    public async Task OnSaveEditModalSuppiler(Result<SuppilerDto> result){
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd aktualizacji");
+
+        if (result.Success)
+        {
             await SearchSuppiler();
             StateHasChanged();
-        } else {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
         HideModalEditSuppiler();
@@ -194,12 +191,13 @@ Title="Edycja danych dostawcy">
     {
        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
 
-       if((await ViewSuppilersUseCase.DeleteSuppiler(suppiler)).Success){
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+       var result = await ViewSuppilersUseCase.DeleteSuppiler(suppiler);
+       await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+       if (result.Success)
+       {
             await SearchSuppiler();
             StateHasChanged();
-       } else {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
        }
     }
 }

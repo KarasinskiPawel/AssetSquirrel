@@ -126,17 +126,14 @@
         modalAddHardwareType = false;
     }
 
-    public async Task OnSaveAddHardwareType(bool result)
+    public async Task OnSaveAddHardwareType(Result<HardwareTypeDto> result)
     {
-        if (result)
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd zapisu");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchHardwareTypes();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
         HideModalAddHardwareType();
@@ -153,17 +150,14 @@
         modalEditHardwareType = false;
     }
 
-    public async Task OnSaveEditHardwareType(bool result)
+    public async Task OnSaveEditHardwareType(Result<HardwareTypeDto> result)
     {
-        if (result)
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd aktualizacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchHardwareTypes();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
         HideModalEditHardwareType();
@@ -181,15 +175,13 @@
 
         hardwareType.IsActive = !hardwareType.IsActive;
 
-        if((await ViewHardwareTypeUseCase.UpdateHardwareType(hardwareType)).Success)
+        var result = await ViewHardwareTypeUseCase.UpdateHardwareType(hardwareType);
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchHardwareTypes();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 
@@ -197,15 +189,13 @@
     {
         if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
 
-        if ((await ViewHardwareTypeUseCase.DeleteHardwareTypeAsync(hardwareType)).Success)
+        var result = await ViewHardwareTypeUseCase.DeleteHardwareTypeAsync(hardwareType);
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchHardwareTypes();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 }

@@ -19,7 +19,7 @@ namespace AssetSquirrel.UseCases.Tests.Invoices
 
             fileManagementRepository
                 .Setup(f => f.AddNewFile(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Result<bool>.Ok(true));
 
             editInvoiceUseCase
                 .Setup(e => e.UpdateInvoice(It.IsAny<InvoiceDto>()))
@@ -52,7 +52,7 @@ namespace AssetSquirrel.UseCases.Tests.Invoices
 
             fileManagementRepository
                 .Setup(f => f.AddNewFile(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
-                .ReturnsAsync(false);
+                .ReturnsAsync(Result<bool>.Fail("Disk write failed."));
 
             var useCase = new AddInvoiceDocumentUseCase(
                 invoiceRepository.Object,
@@ -65,7 +65,7 @@ namespace AssetSquirrel.UseCases.Tests.Invoices
             var result = await useCase.AddInvoiceDocumentAsync(dto, "invoice.pdf", "application/pdf", Stream.Null);
 
             Assert.False(result.Success);
-            Assert.Equal("Failed to save the invoice document file.", result.Message);
+            Assert.Equal("Disk write failed.", result.Message);
             editInvoiceUseCase.Verify(e => e.UpdateInvoice(It.IsAny<InvoiceDto>()), Times.Never);
         }
 
@@ -79,7 +79,7 @@ namespace AssetSquirrel.UseCases.Tests.Invoices
 
             fileManagementRepository
                 .Setup(f => f.AddNewFile(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Result<bool>.Ok(true));
 
             InvoiceDto? captured = null;
             editInvoiceUseCase

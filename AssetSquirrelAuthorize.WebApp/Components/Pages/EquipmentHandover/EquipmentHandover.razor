@@ -222,14 +222,11 @@
 
     private async Task OnSaveHideModalAddDocument(Result<EquipmentHandoverDto> result)
     {
+        await result.ShowToastAsync(JSRuntime, "Document has been attached.", "Błąd operacji");
+
         if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been attached.");
             await SearchHandovers();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
 
         modalAddDocument = false;
@@ -255,15 +252,11 @@
         var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var result = await EditEquipmentHandoverUseCase.CancelEquipmentHandoverAsync(handover.EquipmentHandoverId, userId);
+        await result.ShowToastAsync(JSRuntime, "Equipment handover has been cancelled.", "Błąd operacji");
 
         if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment handover has been cancelled.");
             await SearchHandovers();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Cancelling error.");
         }
     }
 }

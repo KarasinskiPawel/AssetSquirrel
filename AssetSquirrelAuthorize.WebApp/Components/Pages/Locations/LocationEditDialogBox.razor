@@ -1,5 +1,4 @@
 ﻿@using AssetSquirrel.CoreBusiness
-@using System.Diagnostics
 @using AssetSquirrel.UseCases.Locations.Interfaces
 
 @inject IEditLocationUseCase EditLocationUseCase
@@ -98,7 +97,7 @@
     public EventCallback OnCancel { get; set; }
 
     [Parameter, EditorRequired]
-    public EventCallback<bool> OnSave { get; set; }
+    public EventCallback<Result<LocationDto>> OnSave { get; set; }
 
     [Parameter, EditorRequired]
     public LocationDto Location { get; set; }
@@ -118,11 +117,11 @@
         if (EditContext is not null && EditContext.Validate())
         {
             // Walidacja przeszła – kontynuuj zapis
-            await OnSave.InvokeAsync((await EditLocationUseCase.UpdateLocationAsync(Location)).Success);
+            await OnSave.InvokeAsync(await EditLocationUseCase.UpdateLocationAsync(Location));
         }
         else
         {
-            Debug.WriteLine("Walidacja nieudana.");
+            await OnSave.InvokeAsync(Result<LocationDto>.Fail("Please fill in all required fields correctly."));
         }
     }
 }

@@ -5,10 +5,8 @@
 @using AssetsSquirrel.CoreBusiness
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
-@using System.Diagnostics
 
 @inject IAddEquipmentUseCase AddEquipmentUseCase
-@inject IJSRuntime JSRuntime
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
@@ -272,7 +270,7 @@ else
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Please fill all required fields.");
+            await OnSave.InvokeAsync(Result<EquipmentDto>.Fail("Please fill all required fields."));
         }
     }
 }

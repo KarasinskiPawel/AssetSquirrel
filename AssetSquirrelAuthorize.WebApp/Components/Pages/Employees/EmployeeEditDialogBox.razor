@@ -1,6 +1,5 @@
 ﻿@using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.Employees.Interfaces
-@using System.Diagnostics
 
 @inject IEditEmployeeUseCase EditEmployeeUseCase
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -88,7 +87,7 @@ else
     public EventCallback OnCancel { get; set; }
 
     [Parameter, EditorRequired]
-    public EventCallback<bool> OnSave { get; set; }
+    public EventCallback<Result<EmployeeDto>> OnSave { get; set; }
 
     [Parameter, EditorRequired]
     public EmployeeDto Employee { get; set; }
@@ -107,11 +106,11 @@ else
 
         if (EditContext is not null && EditContext!.Validate())
         {
-            await OnSave.InvokeAsync((await EditEmployeeUseCase.EditEmployeeAsync(Employee)).Success);
+            await OnSave.InvokeAsync(await EditEmployeeUseCase.EditEmployeeAsync(Employee));
         }
         else
         {
-            Debug.WriteLine("Validation failed.");
+            await OnSave.InvokeAsync(Result<EmployeeDto>.Fail("Please fill in all required fields correctly."));
         }
     }
 }
