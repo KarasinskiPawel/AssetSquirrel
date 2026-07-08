@@ -32,16 +32,13 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDbContextFactory<AssetsSquirrelContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("AssetsSquirrelIdentityAccountsDB")
+        ?? throw new InvalidOperationException("Connection string 'AssetsSquirrelIdentityAccountsDB' not found. On production, it must be set in appsettings.Production.json (see docs/deployment-iis.md).")
         , sql => sql.MigrationsAssembly("AssetsSquirrel.Plugins.EFCoreSqlServer"));
 });
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = true;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequiredLength = 8;
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AssetsSquirrelContext>()
@@ -128,6 +125,13 @@ app.MapGet("/api/equipmentreturn/{id:int}/pdf", async (int id, IViewEquipmentRet
 
     return Results.File(pdfBytes, "application/pdf", downloadName);
 });
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AssetsSquirrelContext>>();
+    await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+    await dbContext.Database.MigrateAsync();
+}
 
 // Identity role bootstrap: ensure Admin/View roles exist and grandfather
 // any pre-existing account with no role into Admin (idempotent).
