@@ -32,7 +32,9 @@ namespace AssetSquirrel.UseCases.Invoices
 
         public async Task<Result<InvoiceDto>> AddInvoiceDocumentAsync(InvoiceDto invoice, string fileName, string contentType, Stream fileStream)
         {
-            if(await fileManagementRepository.AddNewFile(invoice.InvoiceId, fileName, contentType, fileStream))
+            var fileResult = await fileManagementRepository.AddNewFile(invoice.InvoiceId, fileName, contentType, fileStream);
+
+            if (fileResult.Success)
             {
                 invoice.FilePath = System.IO.Path.Combine("Files", "Invoices", invoice.InvoiceId.ToString(), fileName);
                 invoice.UploadDate = DateTime.Now;
@@ -40,7 +42,7 @@ namespace AssetSquirrel.UseCases.Invoices
                 return await editInvoiceUseCase.UpdateInvoice(invoice);
             }
 
-            return Result<InvoiceDto>.Fail("Failed to save the invoice document file.");
+            return Result<InvoiceDto>.Fail(fileResult.Message ?? "Failed to save the invoice document file.");
         }
     }
 }

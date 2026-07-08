@@ -1,5 +1,4 @@
 ﻿@using AssetSquirrel.CoreBusiness
-@using System.Diagnostics
 @using AssetSquirrel.UseCases.Locations.Interfaces
 @using Microsoft.AspNetCore.Identity
 
@@ -93,7 +92,7 @@
 
 @code {
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<LocationDto>> OnSave { get; set; }
 
     LocationDto Location = new LocationDto();
     private EditContext? EditContext;
@@ -110,11 +109,11 @@
 
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync((await AddLocationsUseCase.AddLocationAsync(Location)).Success);
+            await OnSave.InvokeAsync(await AddLocationsUseCase.AddLocationAsync(Location));
         }
         else
         {
-            Debug.WriteLine("Walidacja nieudana.");
+            await OnSave.InvokeAsync(Result<LocationDto>.Fail("Please fill in all required fields correctly."));
         }
     }
 }

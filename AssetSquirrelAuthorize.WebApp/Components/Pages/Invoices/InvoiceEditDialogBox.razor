@@ -5,7 +5,6 @@
 @using System.Security.Claims
 
 @inject IEditInvoiceUseCase EditInvoiceUseCase
-@inject IJSRuntime JSRuntime
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
@@ -65,7 +64,7 @@ else
 
 @code {
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<InvoiceDto>> OnSave { get; set; }
     [Parameter, EditorRequired] public InvoiceDto Invoice { get; set; }
 
     private EditContext? EditContext;
@@ -85,11 +84,11 @@ else
 
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync((await EditInvoiceUseCase.UpdateInvoice(Invoice)).Success);
+            await OnSave.InvokeAsync(await EditInvoiceUseCase.UpdateInvoice(Invoice));
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Please fill in all required fields correctly.");
+            await OnSave.InvokeAsync(Result<InvoiceDto>.Fail("Please fill in all required fields correctly."));
         }
     }
 }

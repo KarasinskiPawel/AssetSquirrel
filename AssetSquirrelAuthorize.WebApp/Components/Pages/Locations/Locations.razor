@@ -3,7 +3,6 @@
 @using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.UseCases.Locations.Interfaces
 @using AssetSquirrel.UseCases.PluginInterfaces
-@using System.Diagnostics
 
 @inject IViewLocationsUseCase ViewLocationsUseCase
 @inject IJSRuntime JSRuntime
@@ -169,14 +168,12 @@ Title="Edit location">
 
         location.IsActive = !location.IsActive;
 
-        if ((await ViewLocationsUseCase.UpdateLocationAsync(location)).Success)
+        var result = await ViewLocationsUseCase.UpdateLocationAsync(location);
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 
@@ -185,14 +182,12 @@ Title="Edit location">
 
         location.EquipmentStorage = !location.EquipmentStorage;
 
-        if ((await ViewLocationsUseCase.UpdateLocationAsync(location)).Success)
+        var result = await ViewLocationsUseCase.UpdateLocationAsync(location);
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 
@@ -205,27 +200,28 @@ Title="Edit location">
         modalEditLocation = false;
     }
 
-    public async Task OnSaveHideModalEditLocation(bool result)
+    public async Task OnSaveHideModalEditLocation(Result<LocationDto> result)
     {
-        if(result){
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd aktualizacji");
+
+        if (result.Success)
+        {
             StateHasChanged();
-        } else {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
-        modalEditLocation = false;       
+        modalEditLocation = false;
     }
 
     public async void DeleteLocation(LocationDto location){
         if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
 
-        if((await ViewLocationsUseCase.DeleteLocationAync(location)).Success){
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
+        var result = await ViewLocationsUseCase.DeleteLocationAync(location);
+        await result.ShowToastAsync(JSRuntime, "Location removed.", "Błąd operacji");
+
+        if (result.Success)
+        {
             await SearchLocations();
             StateHasChanged();
-        } else {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Error.");
         }
     }
 
@@ -238,17 +234,14 @@ Title="Edit location">
         modalAddLocation = false;
     }
 
-    public async Task OnSaveHideModalAddLocation(bool result)
+    public async Task OnSaveHideModalAddLocation(Result<LocationDto> result)
     {
-        if (result)
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd zapisu");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchLocations();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
 
         modalAddLocation = false;

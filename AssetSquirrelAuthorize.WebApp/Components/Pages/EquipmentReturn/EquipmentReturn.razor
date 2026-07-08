@@ -190,14 +190,11 @@
 
     private async Task OnSaveHideModalAddDocument(Result<EquipmentReturnDto> result)
     {
+        await result.ShowToastAsync(JSRuntime, "Document has been attached.", "Błąd operacji");
+
         if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Document has been attached.");
             await SearchReturns();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
 
         modalAddDocument = false;

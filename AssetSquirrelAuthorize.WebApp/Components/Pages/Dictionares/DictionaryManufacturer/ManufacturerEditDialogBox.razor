@@ -51,7 +51,7 @@
     public EventCallback OnCancel { get; set; }
 
     [Parameter, EditorRequired]
-    public EventCallback<bool> OnSave { get; set; }
+    public EventCallback<Result<ManufacturerDto>> OnSave { get; set; }
 
     private EditContext? EditContext;
 
@@ -67,7 +67,11 @@
 
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync((await EditManufactureruseCase.UpdateManufacturerAsync(Manufacturer)).Success);
+            await OnSave.InvokeAsync(await EditManufactureruseCase.UpdateManufacturerAsync(Manufacturer));
+        }
+        else
+        {
+            await OnSave.InvokeAsync(Result<ManufacturerDto>.Fail("Please fill in all required fields correctly."));
         }
     }
 }

@@ -1,11 +1,13 @@
+using AssetSquirrel.CoreBusiness;
+
 namespace AssetSquirrel.UseCases.PluginInterfaces
 {
     public interface IFileManagementRepository
     {
-        Task<bool> AddNewFile(int invoiceId, string fileName, string contentType, Stream fileStream);
-        bool CreateFolder(int invoiceId);
-        bool DeleteFiles(int invoiceId);
-        bool IfFilesExist(int invoiceId);
-        bool IfFolderExist(int invoiceId);
+        Task<Result<bool>> AddNewFile(int invoiceId, string fileName, string contentType, Stream fileStream);
+        Task<Result<bool>> CreateFolder(int invoiceId);
+        Task<Result<bool>> DeleteFiles(int invoiceId);
+        Task<Result<bool>> IfFilesExist(int invoiceId);
+        Task<Result<bool>> IfFolderExist(int invoiceId);
     }
 }

@@ -17,7 +17,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentHandover
 
             fileManagementRepository
                 .Setup(f => f.AddNewFile(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Result<bool>.Ok(true));
 
             editEquipmentHandoverUseCase
                 .Setup(e => e.UpdateEquipmentHandoverAsync(It.IsAny<EquipmentHandoverDto>()))
@@ -46,7 +46,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentHandover
 
             fileManagementRepository
                 .Setup(f => f.AddNewFile(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
-                .ReturnsAsync(false);
+                .ReturnsAsync(Result<bool>.Fail("Disk write failed."));
 
             var useCase = new AddEquipmentHandoverDocumentUseCase(
                 fileManagementRepository.Object,
@@ -57,7 +57,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentHandover
             var result = await useCase.AddEquipmentHandoverDocumentAsync(dto, "signed.pdf", "application/pdf", Stream.Null);
 
             Assert.False(result.Success);
-            Assert.Equal("Failed to save the equipment handover document file.", result.Message);
+            Assert.Equal("Disk write failed.", result.Message);
             editEquipmentHandoverUseCase.Verify(e => e.UpdateEquipmentHandoverAsync(It.IsAny<EquipmentHandoverDto>()), Times.Never);
         }
 
@@ -69,7 +69,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentHandover
 
             fileManagementRepository
                 .Setup(f => f.AddNewFile(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Result<bool>.Ok(true));
 
             EquipmentHandoverDto? captured = null;
             editEquipmentHandoverUseCase

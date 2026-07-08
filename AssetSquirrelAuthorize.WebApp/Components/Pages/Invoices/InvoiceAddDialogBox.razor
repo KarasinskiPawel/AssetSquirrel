@@ -5,7 +5,6 @@
 @using System.Security.Claims
 
 @inject IAddInvoiceUseCase AddInvoiceUseCase
-@inject IJSRuntime JSRuntime
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
@@ -58,7 +57,7 @@
 
 @code {
     [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
-    [Parameter, EditorRequired] public EventCallback<bool> OnSave { get; set; }
+    [Parameter, EditorRequired] public EventCallback<Result<InvoiceDto>> OnSave { get; set; }
 
     InvoiceDto Invoice { get; set; } = new InvoiceDto();
     private EditContext? EditContext;
@@ -79,11 +78,11 @@
 
         if (EditContext is not null && EditContext.Validate())
         {
-            await OnSave.InvokeAsync((await AddInvoiceUseCase.AddInvoiceAsync(Invoice)).Success);
+            await OnSave.InvokeAsync(await AddInvoiceUseCase.AddInvoiceAsync(Invoice));
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", "Incorect data!");
+            await OnSave.InvokeAsync(Result<InvoiceDto>.Fail("Incorect data!"));
         }
     }
 }

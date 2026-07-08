@@ -230,15 +230,11 @@
         var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var result = await AddEquipmentReturnUseCase.SaveReturnAsync(equipmentReturn, selectedAssignmentIds, userId);
+        await result.ShowToastAsync(JSRuntime, "Equipment has been returned.", "Błąd zapisu");
 
         if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Equipment has been returned.");
             Navigation.NavigateTo("/equipmentreturn");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationAborted", result.Message ?? "Saving error.");
         }
     }
 }

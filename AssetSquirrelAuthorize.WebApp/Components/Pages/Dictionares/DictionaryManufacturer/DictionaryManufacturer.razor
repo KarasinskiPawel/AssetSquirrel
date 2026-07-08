@@ -94,7 +94,7 @@
            Title="Edit manufacturer">
             <ManufacturerEditDialogBox
                 OnCancel="HideModalEditManufacturer"
-                OnSave="OnSaveAddManufacturer"
+                OnSave="OnSaveEditManufacturer"
                 Manufacturer="Manufacturer">
             </ManufacturerEditDialogBox>
 </DialogBox>
@@ -146,20 +146,30 @@
         modalEditManufacturerVisible = false;
     }
 
-    private async Task OnSaveAddManufacturer(bool result)
+    private async Task OnSaveAddManufacturer(Result<ManufacturerDto> result)
     {
-        if (result)
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd zapisu");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchManufacturers();
             StateHasChanged();
         }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
-        }
 
         HideModalAddManufacturer();
+    }
+
+    private async Task OnSaveEditManufacturer(Result<ManufacturerDto> result)
+    {
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd aktualizacji");
+
+        if (result.Success)
+        {
+            await SearchManufacturers();
+            StateHasChanged();
+        }
+
+        HideModalEditManufacturer();
     }
 
     public async Task ChangeManufacturerIsActive(ManufacturerDto manufacturer)
@@ -168,15 +178,13 @@
 
         manufacturer.IsActive = !manufacturer.IsActive;
 
-        if ((await ViewManufacturerUseCase.UpdateManufacturer(manufacturer)).Success)
+        var result = await ViewManufacturerUseCase.UpdateManufacturer(manufacturer);
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchManufacturers();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 
@@ -184,15 +192,13 @@
     {
         if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
 
-        if((await ViewManufacturerUseCase.Deletemanufacturer(manufacturer)).Success)
+        var result = await ViewManufacturerUseCase.Deletemanufacturer(manufacturer);
+        await result.ShowToastAsync(JSRuntime, "Change saved.", "Błąd operacji");
+
+        if (result.Success)
         {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchManufacturers();
             StateHasChanged();
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
         }
     }
 }
