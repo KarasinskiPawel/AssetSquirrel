@@ -3,13 +3,16 @@
 
 @inject IViewHardwareTypeUseCase ViewHardwareTypeUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddHardwareType())">
-            <i class="bi bi-shop"></i>
-            Add hardware
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddHardwareType())">
+                <i class="bi bi-shop"></i>
+                Add hardware
+            </button>
+        </AdminOnly>
 
         <TextSearchBar placeholderText="hardware name"
                        TextSearchBarCallback="SearchBarCallback">
@@ -43,26 +46,32 @@
                             @if (hardwareType.IsActive)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeHardwareTypeIsActive(hardwareType))" title="Dezaktywuj producenta.">
-                                        <i class="bi bi-check-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeHardwareTypeIsActive(hardwareType))" title="Dezaktywuj producenta.">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeHardwareTypeIsActive(hardwareType))" title="Dezaktywuj producenta.">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeHardwareTypeIsActive(hardwareType))" title="Dezaktywuj producenta.">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditHardwareType(hardwareType))" title="Edytuj dane producenta.">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteHardwareType(hardwareType))" title="Usuń producenta.">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <AdminOnly>
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditHardwareType(hardwareType))" title="Edytuj dane producenta.">
+                                        <i class="bi bi-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteHardwareType(hardwareType))" title="Usuń producenta.">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </AdminOnly>
                             </td>
                         </tr>
                     }
@@ -168,6 +177,8 @@
 
     private async Task ChangeHardwareTypeIsActive(HardwareTypeDto hardwareType)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         hardwareType.IsActive = !hardwareType.IsActive;
 
         if((await ViewHardwareTypeUseCase.UpdateHardwareType(hardwareType)).Success)
@@ -184,6 +195,8 @@
 
     private async Task DeleteHardwareType(HardwareTypeDto hardwareType)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if ((await ViewHardwareTypeUseCase.DeleteHardwareTypeAsync(hardwareType)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");

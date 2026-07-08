@@ -11,10 +11,12 @@
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => RedirectToAddEquipmentReturn())">
-            <i class="bi bi-arrow-return-left"></i>
-            Register return
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => RedirectToAddEquipmentReturn())">
+                <i class="bi bi-arrow-return-left"></i>
+                Register return
+            </button>
+        </AdminOnly>
 
         <TextSearchBar placeholderText="Document number"
                        TextSearchBarCallback="SearchCallback">
@@ -64,9 +66,11 @@
                                         <i class="bi bi-list-ul"></i>
                                     </button>
 
-                                    <button class="btn btn-sm btn-outline-warning" title="Attach / replace signed document" @onclick="(() => ShowModalAddDocument(equipmentReturn))">
-                                        <i class="bi bi-file-arrow-up"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-warning" title="Attach / replace signed document" @onclick="(() => ShowModalAddDocument(equipmentReturn))">
+                                            <i class="bi bi-file-arrow-up"></i>
+                                        </button>
+                                    </AdminOnly>
 
                                     @if (equipmentReturn.FilePath is not null)
                                     {

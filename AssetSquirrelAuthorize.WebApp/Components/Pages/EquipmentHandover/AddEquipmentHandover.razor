@@ -1,4 +1,5 @@
 @page "/addequipmenthandover"
+@attribute [Authorize(Roles = "Admin")]
 @using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.EquipmentHandover.Interfaces
@@ -170,7 +171,9 @@
 
         <div class="row col-12 mt-3">
             <div class="col-12">
-                <button type="button" class="btn btn-sm btn-primary" @onclick="Save"> Zapisz </button>
+                <AdminOnly>
+                    <button type="button" class="btn btn-sm btn-primary" @onclick="Save"> Zapisz </button>
+                </AdminOnly>
             </div>
         </div>
 
@@ -243,6 +246,8 @@
 
     private async Task Save()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (equipmentHandover.ToLocationId is null && equipmentHandover.ToEmployeeId is null)
         {
             await JSRuntime.InvokeVoidAsync("OperationAborted", "Please select a location and/or an employee.");

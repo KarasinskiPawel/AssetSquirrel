@@ -1,4 +1,5 @@
 @page "/addequipmentreturn"
+@attribute [Authorize(Roles = "Admin")]
 @using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.EquipmentReturn.Interfaces
@@ -139,11 +140,13 @@
                 </div>
             </div>
 
-            <div class="row col-12 mt-3">
-                <div class="col-12">
-                    <button type="button" class="btn btn-sm btn-primary" disabled="@(selectedAssignmentIds.Count == 0 || equipmentReturn.StorageLocationId == 0)" @onclick="Save"> Register return </button>
+            <AdminOnly>
+                <div class="row col-12 mt-3">
+                    <div class="col-12">
+                        <button type="button" class="btn btn-sm btn-primary" disabled="@(selectedAssignmentIds.Count == 0 || equipmentReturn.StorageLocationId == 0)" @onclick="Save"> Register return </button>
+                    </div>
                 </div>
-            </div>
+            </AdminOnly>
         }
 
     </EditForm>
@@ -206,6 +209,8 @@
 
     private async Task Save()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (selectedAssignmentIds.Count == 0)
         {
             await JSRuntime.InvokeVoidAsync("OperationAborted", "Please select at least one item to return.");

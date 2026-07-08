@@ -1,0 +1,89 @@
+@using System.Diagnostics
+@using AssetsSquirrel.CoreBusiness
+@using AssetSquirrelAuthorize.WebApp.Components.ViewModels
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (User is not null)
+{
+    <div class="dialog-body">
+        <EditForm FormName="EditUser"
+            EditContext="EditContext">
+
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-2">
+                    <label class="col-form-label"> First name </label>
+                </div>
+                <div class="col-7">
+                    <InputText class="form-control" @bind-Value="User.FirstName"></InputText>
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-2">
+                    <label class="col-form-label"> Last name </label>
+                </div>
+                <div class="col-7">
+                    <InputText class="form-control" @bind-Value="User.LastName"></InputText>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    <div class="dialog-footer">
+        <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Zamknij </button>
+
+        <button class="btn btn-sm btn-primary w-25" @onclick="SaveUser"> Zapisz </button>
+    </div>
+}
+else
+{
+    <p class="text-center"> "Something went wrong..." </p>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<bool> OnSave { get; set; }
+
+    [Parameter, EditorRequired]
+    public UserListItem? User { get; set; }
+
+    private EditContext? EditContext;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(User!);
+
+        base.OnInitialized();
+    }
+
+    private async Task SaveUser()
+    {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
+        if (EditContext is null || !EditContext.Validate() || User is null)
+        {
+            Debug.WriteLine("Walidacja nieudana.");
+            return;
+        }
+
+        var user = await UserManager.FindByIdAsync(User.Id);
+        if (user is null)
+        {
+            await OnSave.InvokeAsync(false);
+            return;
+        }
+
+        user.FirstName = User.FirstName;
+        user.LastName = User.LastName;
+
+        var result = await UserManager.UpdateAsync(user);
+        await OnSave.InvokeAsync(result.Succeeded);
+    }
+}

@@ -4,6 +4,7 @@
 @using AssetSquirrel.UseCases.Employees.Interfaces
 
 @inject IAddEmployeeUseCase AddEmployeeUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="dialog-body">
     <EditForm FormName="AddNewEmployee"
@@ -89,6 +90,8 @@
 
     private async Task CreateNewEmployee()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if(EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await AddEmployeeUseCase.AddEmployeeAsync(Employee)).Success);

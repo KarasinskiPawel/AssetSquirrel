@@ -2,6 +2,7 @@
 @using AssetSquirrel.UseCases.HardwareType.Interfaces
 
 @inject IEditHardwareTypeUseCase EditHardwareTypeUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (HardwareType is not null)
 {
@@ -62,6 +63,8 @@
 
     private async Task EditHardwareType()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await EditHardwareTypeUseCase.UpdateHardwareTypeAsync(HardwareType)).Success);

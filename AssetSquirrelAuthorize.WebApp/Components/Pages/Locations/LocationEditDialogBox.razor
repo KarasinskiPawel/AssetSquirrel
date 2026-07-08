@@ -3,6 +3,7 @@
 @using AssetSquirrel.UseCases.Locations.Interfaces
 
 @inject IEditLocationUseCase EditLocationUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if(Location is not null){
     <div class="dialog-body">
@@ -112,6 +113,8 @@
     }
 
     public async Task EditLocation(){
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (EditContext is not null && EditContext.Validate())
         {
             // Walidacja przeszła – kontynuuj zapis

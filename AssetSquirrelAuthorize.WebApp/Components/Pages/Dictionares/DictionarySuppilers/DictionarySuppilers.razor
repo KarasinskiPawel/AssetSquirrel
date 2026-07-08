@@ -4,13 +4,16 @@
 
 @inject IViewSuppilersUseCase ViewSuppilersUseCase;
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddSuppiler())">
-            <i class="bi bi-shop"></i>
-            Add suppiler
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddSuppiler())">
+                <i class="bi bi-shop"></i>
+                Add suppiler
+            </button>
+        </AdminOnly>
 
         <TextSearchBar placeholderText="suppiler name"
         TextSearchBarCallback="SearchSuppilerCallback">
@@ -44,26 +47,32 @@
                             @if(suppiler.IsActive)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
-                                        <i class="bi bi-check-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeSuppilerIsActive(suppiler))" title="Deactivate location.">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditSuppiler(suppiler))" title="Edit location data.">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteSuppiler(suppiler))" title="Remove location.">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <AdminOnly>
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditSuppiler(suppiler))" title="Edit location data.">
+                                        <i class="bi bi-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteSuppiler(suppiler))" title="Remove location.">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </AdminOnly>
                             </td>
                         </tr>
                     }
@@ -120,6 +129,8 @@ Title="Edycja danych dostawcy">
 
     public async Task ChangeSuppilerIsActive(SuppilerDto suppiler)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         suppiler.IsActive = !suppiler.IsActive;
 
         if((await ViewSuppilersUseCase.UpdateSuppiler(suppiler)).Success)
@@ -181,6 +192,8 @@ Title="Edycja danych dostawcy">
 
     public async Task DeleteSuppiler(SuppilerDto suppiler)
     {
+       if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
        if((await ViewSuppilersUseCase.DeleteSuppiler(suppiler)).Success){
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
             await SearchSuppiler();

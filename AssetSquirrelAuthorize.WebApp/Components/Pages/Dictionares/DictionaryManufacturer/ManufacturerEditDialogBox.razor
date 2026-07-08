@@ -2,6 +2,7 @@
 @using AssetSquirrel.UseCases.Manufacturers.Interfaces
 
 @inject IEditManufactureruseCase EditManufactureruseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if(Manufacturer is not null)
 {
@@ -62,6 +63,8 @@
 
     private async Task EditManufacturer()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await EditManufactureruseCase.UpdateManufacturerAsync(Manufacturer)).Success);

@@ -4,15 +4,18 @@
 
 @inject IViewEmployeesUseCase ViewEmployeesUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @rendermode InteractiveServer
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEmployee())">
-            <i class="bi bi-person-add"></i>
-            Add employee
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEmployee())">
+                <i class="bi bi-person-add"></i>
+                Add employee
+            </button>
+        </AdminOnly>
 
         <TextSearchBar placeholderText="Code, MPK, City, Street"
                        TextSearchBarCallback="SearchLocationCallback">
@@ -52,26 +55,32 @@
                             @if (employee.IsActive)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeEmployeeIsActive(employee))" title="Dezaktywuj lokalizację.">
-                                        <i class="bi bi-check-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeEmployeeIsActive(employee))" title="Dezaktywuj lokalizację.">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeEmployeeIsActive(employee))" title="Aktywuj lokalizację.">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeEmployeeIsActive(employee))" title="Aktywuj lokalizację.">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditEmployee(employee))" title="Edytuj dane lokalizacji.">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteEmployee(employee))" title="Usuń lokalizację.">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <AdminOnly>
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditEmployee(employee))" title="Edytuj dane lokalizacji.">
+                                        <i class="bi bi-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteEmployee(employee))" title="Usuń lokalizację.">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </AdminOnly>
                             </td>
                         </tr>
                     }
@@ -182,6 +191,8 @@ Title="Edit employee">
 
     public async Task ChangeEmployeeIsActive(EmployeeDto employee)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         employee.IsActive = !employee.IsActive;
 
         if((await ViewEmployeesUseCase.UpdateEmployee(employee)).Success)
@@ -197,6 +208,8 @@ Title="Edit employee">
 
     public async Task DeleteEmployee(EmployeeDto employee)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if((await ViewEmployeesUseCase.DeleteEmployeeAsync(employee)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
