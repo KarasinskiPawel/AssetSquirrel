@@ -219,6 +219,12 @@ Title="Edit user">
         var token = await UserManager.GeneratePasswordResetTokenAsync(user);
         var result = await UserManager.ResetPasswordAsync(user, token, "11111111");
 
+        if (result.Succeeded && !user.EmailConfirmed)
+        {
+            user.EmailConfirmed = true;
+            await UserManager.UpdateAsync(user);
+        }
+
         await JSRuntime.InvokeVoidAsync("OperationSuccessful", result.Succeeded ? "Password reset." : "Reset error.");
     }
 }
