@@ -4,13 +4,16 @@
 
 @inject IViewManufacturerUseCase ViewManufacturerUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddManufacturer())">
-            <i class="bi bi-shop"></i>
-            Add manufacturer
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddManufacturer())">
+                <i class="bi bi-shop"></i>
+                Add manufacturer
+            </button>
+        </AdminOnly>
 
         <TextSearchBar placeholderText="suppiler name"
                        TextSearchBarCallback="SearchBarCallback">
@@ -44,26 +47,32 @@
                             @if (manufacturer.IsActive)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeManufacturerIsActive(manufacturer))" title="Dezaktywuj producenta.">
-                                        <i class="bi bi-check-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeManufacturerIsActive(manufacturer))" title="Dezaktywuj producenta.">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeManufacturerIsActive(manufacturer))" title="Dezaktywuj producenta.">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeManufacturerIsActive(manufacturer))" title="Dezaktywuj producenta.">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditManufacturer(manufacturer))" title="Edytuj dane producenta.">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteManufacturer(manufacturer))" title="Usuń producenta.">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <AdminOnly>
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditManufacturer(manufacturer))" title="Edytuj dane producenta.">
+                                        <i class="bi bi-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteManufacturer(manufacturer))" title="Usuń producenta.">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </AdminOnly>
                             </td>
                         </tr>
                     }
@@ -155,6 +164,8 @@
 
     public async Task ChangeManufacturerIsActive(ManufacturerDto manufacturer)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         manufacturer.IsActive = !manufacturer.IsActive;
 
         if ((await ViewManufacturerUseCase.UpdateManufacturer(manufacturer)).Success)
@@ -171,6 +182,8 @@
 
     public async Task DeleteManufacturer(ManufacturerDto manufacturer)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if((await ViewManufacturerUseCase.Deletemanufacturer(manufacturer)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");

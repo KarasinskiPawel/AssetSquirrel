@@ -3,6 +3,7 @@
 
 @inject IAddInvoiceDocumentUseCase AddInvoiceDocumentUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (Invoice is not null)
 {
@@ -91,6 +92,8 @@ else
     }
 
     public async Task AddDocument(){
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (uploadedFile is not null)
         {
             if ((await AddInvoiceDocumentUseCase.AddInvoiceDocumentAsync(

@@ -14,10 +14,12 @@
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => RedirectToAddEquipmentHandover())">
-            <i class="bi bi-feather"></i>
-            Handover
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => RedirectToAddEquipmentHandover())">
+                <i class="bi bi-feather"></i>
+                Handover
+            </button>
+        </AdminOnly>
 
         <TextSearchBar placeholderText="Document number"
                        TextSearchBarCallback="SearchCallback">
@@ -87,9 +89,11 @@
                                         <i class="bi bi-list-ul"></i>
                                     </button>
 
-                                    <button class="btn btn-sm btn-outline-warning" title="Attach / replace signed document" @onclick="(() => ShowModalAddDocument(handover))">
-                                        <i class="bi bi-file-arrow-up"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-warning" title="Attach / replace signed document" @onclick="(() => ShowModalAddDocument(handover))">
+                                            <i class="bi bi-file-arrow-up"></i>
+                                        </button>
+                                    </AdminOnly>
 
                                     @if (handover.FilePath is not null)
                                     {
@@ -100,9 +104,11 @@
 
                                     @if (handover.IsActive)
                                     {
-                                        <button class="btn btn-sm btn-outline-danger" title="Cancel" @onclick="(() => CancelHandover(handover))">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
+                                        <AdminOnly>
+                                            <button class="btn btn-sm btn-outline-danger" title="Cancel" @onclick="(() => CancelHandover(handover))">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </AdminOnly>
                                     }
                                 </div>
                             </td>
@@ -243,6 +249,8 @@
 
     private async Task CancelHandover(EquipmentHandoverDto handover)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

@@ -6,15 +6,18 @@
 @inject NavigationManager NavigationManager
 @inject IViewInvoicesUseCase ViewInvoicesUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @rendermode InteractiveServer
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddInvoice())">
-            <i class="bi bi-house-add"></i>
-            Add invoice
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddInvoice())">
+                <i class="bi bi-house-add"></i>
+                Add invoice
+            </button>
+        </AdminOnly>
 
         <TextSearchBar placeholderText="...invoice number, description..."
                        TextSearchBarCallback="SearchInvoicesCallback">
@@ -54,9 +57,11 @@
                             <td> @invoice.UserName </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-evenly align-items-center w-100">
-                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalAddInvoiceDocument(invoice))" title="Add invoice">
-                                        <i class="bi bi-file-arrow-up"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalAddInvoiceDocument(invoice))" title="Add invoice">
+                                            <i class="bi bi-file-arrow-up"></i>
+                                        </button>
+                                    </AdminOnly>
 
                                     @if (invoice.FilePath is not null)
                                     {
@@ -65,12 +70,14 @@
                                         </button>
                                     }
 
-                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditInvoice(invoice))" title="Edit">
-                                        <i class="bi bi-pen"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteInvoice(invoice))" title="Remove">
-                                        <i class="bi bi-trash3"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditInvoice(invoice))" title="Edit">
+                                            <i class="bi bi-pen"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteInvoice(invoice))" title="Remove">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </div>
                             </td>
                         </tr>
@@ -194,6 +201,8 @@ Title="Add invoice">
 
     public async Task DeleteInvoice(InvoiceDto invoice)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if ((await ViewInvoicesUseCase.DeleteInvoice(invoice)).Success)
         {
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Invoice removed.");

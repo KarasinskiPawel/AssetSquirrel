@@ -3,6 +3,7 @@
 @using AssetSquirrel.UseCases.Manufacturers.Interfaces
 
 @inject IAddManufacturerUserCase AddManufacturerUserCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="dialog-body">
     <EditForm FormName="AddNewManufacturer"
@@ -55,6 +56,8 @@
 
     private async Task<bool> CreateNewManufacturer()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return false;
+
         if (EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await AddManufacturerUserCase.AddManufacturerAsync(Manufacturer)).Success);

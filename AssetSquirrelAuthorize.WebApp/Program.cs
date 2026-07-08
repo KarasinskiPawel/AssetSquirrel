@@ -35,7 +35,15 @@ builder.Services.AddDbContextFactory<AssetsSquirrelContext>(options =>
         , sql => sql.MigrationsAssembly("AssetsSquirrel.Plugins.EFCoreSqlServer"));
 });
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 8;
+    })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AssetsSquirrelContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -120,5 +128,29 @@ app.MapGet("/api/equipmentreturn/{id:int}/pdf", async (int id, IViewEquipmentRet
 
     return Results.File(pdfBytes, "application/pdf", downloadName);
 });
+
+// Identity role bootstrap: ensure Admin/View roles exist and grandfather
+// any pre-existing account with no role into Admin (idempotent).
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    foreach (var role in new[] { "Admin", "View" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    foreach (var user in userManager.Users.ToList())
+    {
+        if ((await userManager.GetRolesAsync(user)).Count == 0)
+        {
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+    }
+}
 
 app.Run();

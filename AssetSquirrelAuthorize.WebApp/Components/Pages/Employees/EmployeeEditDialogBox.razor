@@ -3,6 +3,7 @@
 @using System.Diagnostics
 
 @inject IEditEmployeeUseCase EditEmployeeUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="dialog-body">
     <EditForm FormName="EditEmployee"
@@ -102,6 +103,8 @@ else
 
     public async Task UpdateEmployee()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (EditContext is not null && EditContext!.Validate())
         {
             await OnSave.InvokeAsync((await EditEmployeeUseCase.EditEmployeeAsync(Employee)).Success);

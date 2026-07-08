@@ -2,6 +2,7 @@
 @using AssetSquirrel.UseCases.Suppilers.Interfaces
 
 @inject IEditSuppilerUseCase EditSuppilerUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (Suppiler is not null)
 {
@@ -62,6 +63,8 @@
 
     private async Task EditSuppiler()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if(EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await EditSuppilerUseCase.UpdateSuppilerAsync(Suppiler)).Success);

@@ -3,6 +3,7 @@
 @using AssetSquirrel.UseCases.HardwareType.Interfaces
 
 @inject IAddHardwareTypeUseCase AddHardwareTypeUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="dialog-body">
     <EditForm FormName="AddNewHardwareType"
@@ -55,6 +56,8 @@
 
     private async Task<bool> CreateAddHardwareType()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return false;
+
         if (EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await AddHardwareTypeUseCase.AddHardwareTypeAsync(HardwareType)).Success);

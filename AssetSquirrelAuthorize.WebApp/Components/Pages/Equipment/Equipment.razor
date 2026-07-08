@@ -15,10 +15,12 @@
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEquipment())">
-            <i class="bi bi-motherboard"></i>
-            Add equipment
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEquipment())">
+                <i class="bi bi-motherboard"></i>
+                Add equipment
+            </button>
+        </AdminOnly>
 
         <InputSelect class="form-control-sm w-10" @bind-Value="equipmentRequest.IsActive">
             <option value="true">Active</option>
@@ -81,12 +83,14 @@
                             </td>
                             <td> @equipment.RegisteredByUserName </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" title="Edit" @onclick="(() => ShowModalEditEquipment(equipment))">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" title="Dezaktywuj sprzęt." @onclick="(() => RemoveEquipment(equipment))">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <AdminOnly>
+                                    <button class="btn btn-sm btn-outline-warning" title="Edit" @onclick="(() => ShowModalEditEquipment(equipment))">
+                                        <i class="bi bi-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Dezaktywuj sprzęt." @onclick="(() => RemoveEquipment(equipment))">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </AdminOnly>
                             </td>
                         </tr>
                     }
@@ -200,6 +204,8 @@ Title="Add equipment">
 
     public async Task RemoveEquipment(EquipmentDto equipment)
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         // Equipment is never hard-deleted from the database — "remove" means
         // deactivating it (IsActive = false), so history/audit trail is preserved.
         equipment.IsActive = false;

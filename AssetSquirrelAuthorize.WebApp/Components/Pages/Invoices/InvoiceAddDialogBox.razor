@@ -75,6 +75,8 @@
 
     private async Task CreateNewInvoice()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await AddInvoiceUseCase.AddInvoiceAsync(Invoice)).Success);

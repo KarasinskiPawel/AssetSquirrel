@@ -7,15 +7,18 @@
 
 @inject IViewLocationsUseCase ViewLocationsUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @rendermode InteractiveServer
 
 <div class="row col-12">
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())">
-            <i class="bi bi-house-add"></i>
-            Add location
-        </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddLocation())">
+                <i class="bi bi-house-add"></i>
+                Add location
+            </button>
+        </AdminOnly>
 
         <TextSearchBar 
             placeholderText="Code, MPK, City, Street"
@@ -59,42 +62,52 @@
                             @if (location.IsActive)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeLocationIsActive(location))" title="Dezaktywuj lokalizację.">
-                                        <i class="bi bi-check-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="(() => ChangeLocationIsActive(location))" title="Dezaktywuj lokalizację.">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationIsActive(location))" title="Aktywuj lokalizację.">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationIsActive(location))" title="Aktywuj lokalizację.">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             @if (location.EquipmentStorage)
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationEquipmentStorage(location))" title="Oznaczona jako magazyn sprzętu. Kliknij, aby odznaczyć.">
-                                        <i class="bi bi-box-seam-fill"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-success" @onclick="(() => ChangeLocationEquipmentStorage(location))" title="Oznaczona jako magazyn sprzętu. Kliknij, aby odznaczyć.">
+                                            <i class="bi bi-box-seam-fill"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             else
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-outline-secondary" @onclick="(() => ChangeLocationEquipmentStorage(location))" title="Oznacz jako magazyn sprzętu.">
-                                        <i class="bi bi-box-seam"></i>
-                                    </button>
+                                    <AdminOnly>
+                                        <button class="btn btn-sm btn-outline-secondary" @onclick="(() => ChangeLocationEquipmentStorage(location))" title="Oznacz jako magazyn sprzętu.">
+                                            <i class="bi bi-box-seam"></i>
+                                        </button>
+                                    </AdminOnly>
                                 </td>
                             }
                             <td>
-                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditLocation(location))" title="Edytuj dane lokalizacji.">
-                                    <i class="bi bi-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteLocation(location))" title="Usuń lokalizację.">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <AdminOnly>
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditLocation(location))" title="Edytuj dane lokalizacji.">
+                                        <i class="bi bi-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => DeleteLocation(location))" title="Usuń lokalizację.">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </AdminOnly>
                             </td>
                         </tr>
                     }
@@ -152,6 +165,8 @@ Title="Edit location">
     }
 
     public async Task ChangeLocationIsActive(LocationDto location){
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         location.IsActive = !location.IsActive;
 
         if ((await ViewLocationsUseCase.UpdateLocationAsync(location)).Success)
@@ -166,6 +181,8 @@ Title="Edit location">
     }
 
     public async Task ChangeLocationEquipmentStorage(LocationDto location){
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         location.EquipmentStorage = !location.EquipmentStorage;
 
         if ((await ViewLocationsUseCase.UpdateLocationAsync(location)).Success)
@@ -201,6 +218,8 @@ Title="Edit location">
     }
 
     public async void DeleteLocation(LocationDto location){
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if((await ViewLocationsUseCase.DeleteLocationAync(location)).Success){
             await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Location removed.");
             await SearchLocations();

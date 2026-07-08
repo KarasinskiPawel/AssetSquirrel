@@ -1,0 +1,224 @@
+@page "/users"
+@attribute [Authorize(Roles = "Admin")]
+
+@using System.Security.Claims
+@using AssetsSquirrel.CoreBusiness
+@using AssetSquirrelAuthorize.WebApp.Components.ViewModels
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
+
+<div class="row offset-1 col-10 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col"> Login / email </th>
+                    <th scope="col"> First name </th>
+                    <th scope="col"> Last name </th>
+                    <th scope="col"> Role </th>
+                    <th scope="col"> Locked out? </th>
+                    <th scope="col">
+                        <i class="bi bi-gear"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (users is not null && users.Count > 0)
+                {
+                    @foreach (var user in users)
+                    {
+                        <tr>
+                            <td> @(users.IndexOf(user) + 1) </td>
+                            <td> @(user.UserName ?? user.Email) </td>
+                            <td> @user.FirstName </td>
+                            <td> @user.LastName </td>
+                            <td> @user.Role </td>
+                            <td> @(user.IsLockedOut ? "Yes" : "No") </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning" @onclick="(() => ShowModalEditUser(user))" title="Edytuj dane użytkownika.">
+                                    <i class="bi bi-pen"></i>
+                                </button>
+
+                                @if (user.Role == "Admin")
+                                {
+                                    <button class="btn btn-sm btn-outline-dark" @onclick="(() => ChangeRole(user, RoleView))" title="Ustaw rolę View.">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-outline-dark" @onclick="(() => ChangeRole(user, RoleAdmin))" title="Ustaw rolę Admin.">
+                                        <i class="bi bi-person-gear"></i>
+                                    </button>
+                                }
+
+                                @if (user.IsLockedOut)
+                                {
+                                    <button class="btn btn-sm btn-outline-success" @onclick="(() => ToggleLockout(user))" title="Odblokuj konto.">
+                                        <i class="bi bi-unlock"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="(() => ToggleLockout(user))" title="Zablokuj konto.">
+                                        <i class="bi bi-lock"></i>
+                                    </button>
+                                }
+
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="(() => ResetPassword(user))" title="Resetuj hasło na 11111111.">
+                                    <i class="bi bi-key"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<DialogBox Show="modalEditUser"
+Title="Edit user">
+    <UserEditDialogBox
+    OnCancel="OnCancelHideModalEditUser"
+    OnSave="OnSaveHideModalEditUser"
+    User="editedUser" />
+</DialogBox>
+
+@code {
+    const string RoleAdmin = "Admin";
+    const string RoleView = "View";
+
+    List<UserListItem> users = new();
+    UserListItem? editedUser;
+    bool modalEditUser = false;
+    string? currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        currentUserId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        var loaded = new List<UserListItem>();
+
+        foreach (var user in UserManager.Users.ToList())
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+
+            loaded.Add(new UserListItem
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = roles.FirstOrDefault() ?? "",
+                IsLockedOut = await UserManager.IsLockedOutAsync(user)
+            });
+        }
+
+        users = loaded;
+    }
+
+    private void ShowModalEditUser(UserListItem user)
+    {
+        editedUser = user;
+        modalEditUser = true;
+    }
+
+    private void OnCancelHideModalEditUser()
+    {
+        modalEditUser = false;
+    }
+
+    private async Task OnSaveHideModalEditUser(bool result)
+    {
+        if (result)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+            await LoadUsers();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Saving error.");
+        }
+
+        modalEditUser = false;
+    }
+
+    private async Task ChangeRole(UserListItem item, string newRole)
+    {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
+        if (item.Role == "Admin" && newRole != "Admin" && item.Id == currentUserId)
+        {
+            var admins = await UserManager.GetUsersInRoleAsync("Admin");
+            if (admins.Count <= 1)
+            {
+                await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Nie można zdjąć roli Admin będąc jedynym administratorem.");
+                return;
+            }
+        }
+
+        var user = await UserManager.FindByIdAsync(item.Id);
+        if (user is null) return;
+
+        var currentRoles = await UserManager.GetRolesAsync(user);
+        await UserManager.RemoveFromRolesAsync(user, currentRoles);
+        await UserManager.AddToRoleAsync(user, newRole);
+
+        await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+        await LoadUsers();
+    }
+
+    private async Task ToggleLockout(UserListItem item)
+    {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
+        if (item.Id == currentUserId)
+        {
+            await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Nie można zablokować własnego konta.");
+            return;
+        }
+
+        var user = await UserManager.FindByIdAsync(item.Id);
+        if (user is null) return;
+
+        if (item.IsLockedOut)
+        {
+            await UserManager.SetLockoutEndDateAsync(user, null);
+        }
+        else
+        {
+            await UserManager.SetLockoutEnabledAsync(user, true);
+            await UserManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+        }
+
+        await JSRuntime.InvokeVoidAsync("OperationSuccessful", "Change saved.");
+        await LoadUsers();
+    }
+
+    private async Task ResetPassword(UserListItem item)
+    {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
+        var user = await UserManager.FindByIdAsync(item.Id);
+        if (user is null) return;
+
+        var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+        var result = await UserManager.ResetPasswordAsync(user, token, "11111111");
+
+        await JSRuntime.InvokeVoidAsync("OperationSuccessful", result.Succeeded ? "Password reset." : "Reset error.");
+    }
+}

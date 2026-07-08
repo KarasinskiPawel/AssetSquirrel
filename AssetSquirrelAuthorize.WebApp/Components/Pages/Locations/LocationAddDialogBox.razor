@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IAddLocationsUseCase AddLocationsUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="dialog-body">
     <EditForm FormName="AddNewLocation"
@@ -105,6 +106,8 @@
 
     private async Task CreateNewLocation()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (EditContext is not null && EditContext.Validate())
         {
             await OnSave.InvokeAsync((await AddLocationsUseCase.AddLocationAsync(Location)).Success);

@@ -4,6 +4,7 @@
 
 @inject IAddEquipmentHandoverDocumentUseCase AddEquipmentHandoverDocumentUseCase
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (Handover is not null)
 {
@@ -64,7 +65,9 @@
     <div class="dialog-footer">
         <button class="btn btn-sm btn-danger w-25" @onclick="OnCancel"> Close </button>
 
-        <button class="btn btn-sm btn-primary w-25" @onclick="AddDocument"> Save & Close </button>
+        <AdminOnly>
+            <button class="btn btn-sm btn-primary w-25" @onclick="AddDocument"> Save & Close </button>
+        </AdminOnly>
     </div>
 }
 else
@@ -95,6 +98,8 @@ else
 
     public async Task AddDocument()
     {
+        if (!await AdminGuard.IsAdminAsync(AuthenticationStateProvider)) return;
+
         if (uploadedFile is not null)
         {
             var result = await AddEquipmentHandoverDocumentUseCase.AddEquipmentHandoverDocumentAsync(
