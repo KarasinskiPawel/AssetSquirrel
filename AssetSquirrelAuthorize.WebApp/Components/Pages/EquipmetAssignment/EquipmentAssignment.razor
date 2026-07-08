@@ -1,7 +1,217 @@
-﻿@page "/equipmentassignment"
+@page "/equipmentassignment"
+@using AssetSquirrel.CoreBusiness
+@using AssetSquirrel.CoreBusiness.Dto
+@using AssetSquirrel.UseCases.EquipmentAssignment
+@using AssetSquirrel.UseCases.EquipmentAssignment.Interfaces
+@using AssetSquirrel.UseCases.Locations.Interfaces
+@using AssetSquirrel.UseCases.Employees.Interfaces
+@using AssetSquirrel.UseCases.Manufacturers.Interfaces
+@using AssetSquirrel.UseCases.HardwareType.Interfaces
 
-<h3>Equipment Assignment</h3>
+@inject IViewEquipmentAssignmentUseCase ViewEquipmentAssignmentUseCase
+@inject IViewLocationsUseCase ViewLocationsUseCase
+@inject IViewEmployeesUseCase ViewEmployeesUseCase
+@inject IViewManufacturerUseCase ViewManufacturerUseCase
+@inject IViewHardwareTypeUseCase ViewHardwareTypeUseCase
+
+@rendermode InteractiveServer
+
+<div class="row col-12">
+    <div class="d-flex align-items-center flex-wrap gap-2">
+        <InputSelect class="form-control-sm w-10" @bind-Value="filter.IsActive" @bind-Value:after="Search">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </InputSelect>
+
+        <InputSelect class="form-control-sm" @bind-Value="filter.LocationId" @bind-Value:after="Search">
+            <option value=""> ...location... </option>
+            @if (locations is not null)
+            {
+                @foreach (var location in locations)
+                {
+                    <option value="@location.LocationId">@location.City @location.Street</option>
+                }
+            }
+        </InputSelect>
+
+        <InputSelect class="form-control-sm" @bind-Value="filter.EmployeeId" @bind-Value:after="Search">
+            <option value=""> ...employee... </option>
+            @if (employees is not null)
+            {
+                @foreach (var employee in employees)
+                {
+                    <option value="@employee.EmployeeId">@employee.LastName @employee.FirstName</option>
+                }
+            }
+        </InputSelect>
+
+        <InputSelect class="form-control-sm" @bind-Value="filter.ManufacturerId" @bind-Value:after="Search">
+            <option value=""> ...manufacturer... </option>
+            @if (manufacturers is not null)
+            {
+                @foreach (var manufacturer in manufacturers)
+                {
+                    <option value="@manufacturer.ManufacturerId">@manufacturer.Name</option>
+                }
+            }
+        </InputSelect>
+
+        <InputSelect class="form-control-sm" @bind-Value="filter.HardwareTypeId" @bind-Value:after="Search">
+            <option value=""> ...type... </option>
+            @if (hardwareTypes is not null)
+            {
+                @foreach (var hardwareType in hardwareTypes)
+                {
+                    <option value="@hardwareType.HardwareTypeId">@hardwareType.Name</option>
+                }
+            }
+        </InputSelect>
+
+        <TextSearchBar placeholderText="serial number, invoice number..."
+                       TextSearchBarCallback="SearchCallback">
+        </TextSearchBar>
+    </div>
+</div>
+
+<div class="row col-12 mt-3">
+    <div id="table-container">
+        <table id="table-color" class="table table-bordered">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col"> Lp. </th>
+                    <th scope="col" role="button" @onclick="(() => SortBy(nameof(EquipmentAssignmentOverviewDto.AssignedLocationName)))">
+                        Location <i class="bi @SortIcon(nameof(EquipmentAssignmentOverviewDto.AssignedLocationName))"></i>
+                    </th>
+                    <th scope="col" role="button" @onclick="(() => SortBy(nameof(EquipmentAssignmentOverviewDto.AssignedEmployeeName)))">
+                        Person <i class="bi @SortIcon(nameof(EquipmentAssignmentOverviewDto.AssignedEmployeeName))"></i>
+                    </th>
+                    <th scope="col"> Handover date </th>
+                    <th scope="col"> Suppiler </th>
+                    <th scope="col"> Manufacturer </th>
+                    <th scope="col"> Type </th>
+                    <th scope="col"> Model </th>
+                    <th scope="col"> Serial number </th>
+                    <th scope="col"> Invoice number </th>
+                    <th scope="col"> Status </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (items is not null && items.Count > 0)
+                {
+                    @foreach (var item in items)
+                    {
+                        <tr>
+                            <td> @(items.IndexOf(item) + 1) </td>
+                            <td> @item.AssignedLocationName </td>
+                            <td> @item.AssignedEmployeeName </td>
+                            <td> @item.DateOfHandover?.ToShortDateString() </td>
+                            <td> @item.SuppilerName </td>
+                            <td> @item.ManufacturerName </td>
+                            <td> @item.HardwareTypeName </td>
+                            <td> @item.ModelName </td>
+                            <td> @item.SerialNumber </td>
+                            <td> @item.InvoiceNumber </td>
+                            <td>
+                                @if (item.IsAssigned)
+                                {
+                                    <span class="badge as-bg-green">Assigned</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Available</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" class="text-muted text-center">No equipment matches the current filters.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 @code {
+    EquipmentAssignmentFilter filter = new EquipmentAssignmentFilter();
 
+    List<EquipmentAssignmentOverviewDto>? items;
+    List<LocationDto>? locations;
+    List<EmployeeDto>? employees;
+    List<ManufacturerDto>? manufacturers;
+    List<HardwareTypeDto>? hardwareTypes;
+
+    string? sortColumn;
+    bool sortDescending;
+
+    protected override async Task OnInitializedAsync()
+    {
+        locations = await ViewLocationsUseCase.GetLocationsAsync(l => l.IsActive);
+        employees = await ViewEmployeesUseCase.GetEmployeesAsync(e => e.IsActive);
+        manufacturers = await ViewManufacturerUseCase.GetManufacturersAsync(m => m.IsActive);
+        hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(h => h.IsActive);
+
+        await Search();
+    }
+
+    private async Task SearchCallback(string searchText)
+    {
+        filter.SearchText = searchText;
+        await Search();
+    }
+
+    private async Task Search()
+    {
+        items = await ViewEquipmentAssignmentUseCase.GetEquipmentAssignmentOverviewAsync(filter);
+        ApplySort();
+
+        StateHasChanged();
+    }
+
+    private void SortBy(string column)
+    {
+        if (sortColumn == column)
+        {
+            sortDescending = !sortDescending;
+        }
+        else
+        {
+            sortColumn = column;
+            sortDescending = false;
+        }
+
+        ApplySort();
+    }
+
+    private void ApplySort()
+    {
+        if (items is null || sortColumn is null)
+        {
+            return;
+        }
+
+        Func<EquipmentAssignmentOverviewDto, string?> keySelector = sortColumn switch
+        {
+            nameof(EquipmentAssignmentOverviewDto.AssignedLocationName) => a => a.AssignedLocationName,
+            nameof(EquipmentAssignmentOverviewDto.AssignedEmployeeName) => a => a.AssignedEmployeeName,
+            _ => a => null
+        };
+
+        items = sortDescending
+            ? items.OrderByDescending(keySelector, StringComparer.OrdinalIgnoreCase).ToList()
+            : items.OrderBy(keySelector, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    private string SortIcon(string column)
+    {
+        if (sortColumn != column)
+        {
+            return "bi-arrow-down-up text-muted";
+        }
+
+        return sortDescending ? "bi-sort-alpha-down-alt" : "bi-sort-alpha-down";
+    }
 }

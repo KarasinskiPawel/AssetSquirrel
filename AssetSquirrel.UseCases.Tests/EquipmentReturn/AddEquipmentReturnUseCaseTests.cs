@@ -83,7 +83,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
             var result = await useCase.GetOpenAssignmentsAsync(null, null);
 
             Assert.Empty(result);
-            equipmentAssignmentRepository.Verify(r => r.GetOpenAssignmentsAsync(It.IsAny<Expression<Func<EquipmentAssignment, bool>>>()), Times.Never);
+            equipmentAssignmentRepository.Verify(r => r.GetOpenAssignmentsAsync(It.IsAny<Expression<Func<AssetSquirrel.CoreBusiness.EquipmentAssignment, bool>>>()), Times.Never);
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
             var manufacturer = new Manufacturer { ManufacturerId = 1, Name = "HP" };
             var hardwareType = new CoreBusiness.HardwareType { HardwareTypeId = 2, Name = "Monitor" };
 
-            var matchingByEmployee = new EquipmentAssignment
+            var matchingByEmployee = new AssetSquirrel.CoreBusiness.EquipmentAssignment
             {
                 EquipmentAssignmentId = 1,
                 EquipmentId = 10,
@@ -101,7 +101,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
                 DateOfReturn = null,
                 Equipment = new CoreBusiness.Equipment { EquipmentId = 10, ModelName = "E24", SerialNumber = "SN-1", Manufacturer = manufacturer, HardwareType = hardwareType }
             };
-            var matchingByLocation = new EquipmentAssignment
+            var matchingByLocation = new AssetSquirrel.CoreBusiness.EquipmentAssignment
             {
                 EquipmentAssignmentId = 2,
                 EquipmentId = 11,
@@ -110,7 +110,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
                 DateOfReturn = null,
                 Equipment = new CoreBusiness.Equipment { EquipmentId = 11, ModelName = "E25", SerialNumber = "SN-2", Manufacturer = manufacturer, HardwareType = hardwareType }
             };
-            var nonMatching = new EquipmentAssignment
+            var nonMatching = new AssetSquirrel.CoreBusiness.EquipmentAssignment
             {
                 EquipmentAssignmentId = 3,
                 EquipmentId = 12,
@@ -119,7 +119,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
                 DateOfReturn = null,
                 Equipment = new CoreBusiness.Equipment { EquipmentId = 12, ModelName = "E26", SerialNumber = "SN-3" }
             };
-            var alreadyReturned = new EquipmentAssignment
+            var alreadyReturned = new AssetSquirrel.CoreBusiness.EquipmentAssignment
             {
                 EquipmentAssignmentId = 4,
                 EquipmentId = 13,
@@ -128,14 +128,14 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
                 Equipment = new CoreBusiness.Equipment { EquipmentId = 13, ModelName = "E27", SerialNumber = "SN-4" }
             };
 
-            var allAssignments = new List<EquipmentAssignment> { matchingByEmployee, matchingByLocation, nonMatching, alreadyReturned };
+            var allAssignments = new List<AssetSquirrel.CoreBusiness.EquipmentAssignment> { matchingByEmployee, matchingByLocation, nonMatching, alreadyReturned };
 
-            Expression<Func<EquipmentAssignment, bool>>? capturedPredicate = null;
+            Expression<Func<AssetSquirrel.CoreBusiness.EquipmentAssignment, bool>>? capturedPredicate = null;
 
             var equipmentAssignmentRepository = new Mock<IEquipmentAssignmentRepository>();
             equipmentAssignmentRepository
-                .Setup(r => r.GetOpenAssignmentsAsync(It.IsAny<Expression<Func<EquipmentAssignment, bool>>>()))
-                .Callback<Expression<Func<EquipmentAssignment, bool>>>(expr => capturedPredicate = expr)
+                .Setup(r => r.GetOpenAssignmentsAsync(It.IsAny<Expression<Func<AssetSquirrel.CoreBusiness.EquipmentAssignment, bool>>>()))
+                .Callback<Expression<Func<AssetSquirrel.CoreBusiness.EquipmentAssignment, bool>>>(expr => capturedPredicate = expr)
                 .ReturnsAsync(() => allAssignments.Where(capturedPredicate!.Compile()).ToList());
 
             var employeesRepository = new Mock<IEmployeesRepository>();

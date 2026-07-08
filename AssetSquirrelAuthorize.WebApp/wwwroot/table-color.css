@@ -32,6 +32,12 @@
     text-align: center;
     vertical-align: middle;
     border-color: var(--as-table-border);
+    /* Some tables render a .form-control-styled status icon in a cell (e.g.
+       Equipment Handover's Posted/Active columns); Bootstrap's .form-control
+       has its own ~2.375rem height, which stretches that row taller than
+       rows in tables without such a cell (e.g. Equipment Return). Pin every
+       row to that same height so all tables using #table-color match. */
+    min-height: 2.375rem;
 }
 
 #table-color tbody tr:hover td {

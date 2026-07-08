@@ -64,6 +64,7 @@ ErrorsExtensions.AddExtension(builder.Services, builder.Configuration);
 InvoicesUseCaseExtensions.AddExtension(builder.Services, builder.Configuration);
 EquipmentHandoverExtension.AddExtension(builder.Services, builder.Configuration);
 EquipmentReturnExtension.AddExtension(builder.Services, builder.Configuration);
+EquipmentAssignmentExtension.AddExtension(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 

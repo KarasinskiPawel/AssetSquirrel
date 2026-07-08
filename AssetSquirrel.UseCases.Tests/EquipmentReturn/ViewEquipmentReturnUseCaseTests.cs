@@ -30,7 +30,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
                     StorageLocationId = 3,
                     StorageLocation = storageLocation,
                     PreparedByUserId = "user-1",
-                    EquipmentAssignments = new List<EquipmentAssignment>
+                    EquipmentAssignments = new List<AssetSquirrel.CoreBusiness.EquipmentAssignment>
                     {
                         new()
                         {
