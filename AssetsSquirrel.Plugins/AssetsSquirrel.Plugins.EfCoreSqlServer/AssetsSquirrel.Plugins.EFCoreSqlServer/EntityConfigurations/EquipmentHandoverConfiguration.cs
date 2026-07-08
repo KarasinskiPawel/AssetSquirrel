@@ -18,7 +18,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
 
             builder.Property(e => e.HandoverDocumentNumber)
                 .IsRequired()
-                .HasMaxLength(12);
+                .HasMaxLength(14);
 
             builder.HasIndex(e => e.HandoverDocumentNumber)
                 .IsUnique();

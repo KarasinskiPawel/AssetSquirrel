@@ -238,7 +238,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
 
         private static async Task<string> GenerateNextDocumentNumberAsync(AssetsSquirrelContext dbContext, DateTime handoverDate)
         {
-            var prefix = $"{handoverDate:yyyy}/{handoverDate:MM}/";
+            var prefix = $"W-{handoverDate:yyyy}/{handoverDate:MM}/";
 
             var lastNumber = await dbContext.EquipmentHandovers
                 .Where(h => h.HandoverDocumentNumber.StartsWith(prefix))

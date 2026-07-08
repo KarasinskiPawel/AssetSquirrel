@@ -12,7 +12,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
 
             builder.Property(r => r.ReturnDocumentNumber)
                 .IsRequired()
-                .HasMaxLength(12);
+                .HasMaxLength(14);
 
             builder.HasIndex(r => r.ReturnDocumentNumber)
                 .IsUnique();

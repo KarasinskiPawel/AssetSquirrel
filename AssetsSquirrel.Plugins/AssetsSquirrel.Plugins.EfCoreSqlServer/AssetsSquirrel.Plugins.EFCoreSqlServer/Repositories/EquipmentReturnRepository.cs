@@ -179,7 +179,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
 
         private static async Task<string> GenerateNextDocumentNumberAsync(AssetsSquirrelContext dbContext, DateTime returnDate)
         {
-            var prefix = $"{returnDate:yyyy}/{returnDate:MM}/";
+            var prefix = $"Z-{returnDate:yyyy}/{returnDate:MM}/";
 
             var lastNumber = await dbContext.EquipmentReturns
                 .Where(r => r.ReturnDocumentNumber.StartsWith(prefix))
