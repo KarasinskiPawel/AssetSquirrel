@@ -29,11 +29,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 error.Service = serviceName;
                 error.Class = className;
                 error.Method = methodName;
-                error.InnerException = exception.InnerException.ToString();
+                error.InnerException = exception.InnerException?.ToString();
                 error.Message = exception.Message;
                 error.Source = exception.Source;
                 error.StackTrace = exception.StackTrace;
-                error.TargetSite = exception.TargetSite.ToString();
+                error.TargetSite = exception.TargetSite?.ToString();
                 error.UserLogin = "";
 
                 dbContext.Add(error);

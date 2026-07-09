@@ -53,7 +53,16 @@
         var callbackUrl = NavigationManager.GetUriWithQueryParameters(
             NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
             new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
-        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        try
+        {
+            await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+        }
+        catch (Exception)
+        {
+            message = "Error: Nie udało się wysłać e-maila. Skontaktuj się z IT albo spróbuj ponownie później.";
+            return;
+        }
 
         message = "Verification email sent. Please check your email.";
     }
