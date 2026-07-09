@@ -1,0 +1,77 @@
+@implements IDisposable
+@using AssetsSquirrel.CoreBusiness
+@using Microsoft.AspNetCore.Identity
+
+@inject NavigationManager NavigationManager
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="session-menu">
+    <AuthorizeView>
+        <Authorized>
+            <a class="session-link" href="Account/Manage" title="@(displayName ?? context.User.Identity?.Name)">
+                <i class="bi bi-person-fill session-icon" aria-hidden="true"></i>
+                <span class="session-label session-name">@(displayName ?? context.User.Identity?.Name)</span>
+            </a>
+            <form action="Account/Logout" method="post" class="session-form">
+                <AntiforgeryToken />
+                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                <button type="submit" class="session-link" title="Logout" aria-label="Logout">
+                    <i class="bi bi-arrow-bar-left session-icon" aria-hidden="true"></i>
+                    <span class="session-label">Logout</span>
+                </button>
+            </form>
+        </Authorized>
+        <NotAuthorized>
+            <a class="session-link" href="Account/Register" title="Register" aria-label="Register">
+                <i class="bi bi-person session-icon" aria-hidden="true"></i>
+                <span class="session-label">Register</span>
+            </a>
+            <a class="session-link" href="Account/Login" title="Login" aria-label="Login">
+                <i class="bi bi-person-badge session-icon" aria-hidden="true"></i>
+                <span class="session-label">Login</span>
+            </a>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    private string? currentUrl;
+    private string? displayName;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (AuthenticationStateTask is null)
+        {
+            return;
+        }
+
+        var authState = await AuthenticationStateTask;
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            var user = await UserManager.GetUserAsync(authState.User);
+            var fullName = string.Join(" ", new[] { user?.FirstName, user?.LastName }
+                .Where(s => !string.IsNullOrWhiteSpace(s)));
+            displayName = string.IsNullOrWhiteSpace(fullName) ? null : fullName;
+        }
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
