@@ -14,7 +14,10 @@ Przewodnik dla działu IT: pierwsze wdrożenie oraz proces aktualizacji `AssetSq
 - Po instalacji Hosting Bundle wykonać `iisreset`, żeby moduł ASP.NET Core V2 się załadował.
 - Uprawnienia NTFS: tożsamość puli aplikacji (patrz sekcja 2) musi mieć prawo zapisu do:
   - `C:\inetpub\wwwroot\AssetSquirrel\wwwroot\Files\Invoices` (załączniki faktur — repozytorium plików zapisuje tu na dysku),
+  - `C:\ProgramData\AssetSquirrel\DataProtection-Keys` (klucze Data Protection/antiforgery — patrz uwaga poniżej; katalog jest tworzony automatycznie przy pierwszym starcie, jeśli tożsamość puli ma prawo zapisu do `C:\ProgramData`),
   - katalogu `logs` używanego do stdout logging (sekcja 6), jeśli zostanie utworzony.
+
+**Ważne — klucze Data Protection poza katalogiem witryny:** aplikacja jawnie zapisuje klucze Data Protection (którymi m.in. szyfrowane są tokeny antiforgery używane np. przy wylogowaniu) do `C:\ProgramData\AssetSquirrel\DataProtection-Keys`, poza katalogiem publikacji, i chroni je DPAPI w wariancie "local machine" (nie wymaga włączonego "Load User Profile" dla puli aplikacji). Ten katalog **nie może** być czyszczony/nadpisywany przy aktualizacjach (sekcja 8) — działa tak samo jak `wwwroot\Files\Invoices`, tzn. leży poza artefaktami publikacji i proces kopiowania go nie dotyka. Jeśli te klucze zostaną utracone (np. ręcznie usunięty katalog), każda otwarta w przeglądarce zakładka aplikacji zacznie zgłaszać błąd antiforgery (np. przy próbie wylogowania) do czasu odświeżenia strony.
 
 ## 2. Konfiguracja puli aplikacji i witryny w IIS
 

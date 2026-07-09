@@ -10,12 +10,12 @@ AssetSquirrel is an internal IT asset-management app (equipment, employees, hand
 
 ```
 dotnet build AssetSquirrel.sln
-dotnet test AssetSquirrel.UseCases.Tests/AssetSquirrel.UseCases.Tests.csproj
+dotnet test AssetSquirrel.sln
 ```
 
 `global.json` pins the SDK to 8.0.422 (`rollForward: latestFeature`). CI (`.github/workflows/build-and-test.yml`, GitHub Actions) runs both commands above on every push/PR to `master`.
 
-Unit tests live in `AssetSquirrel.UseCases.Tests` (xUnit + Moq), one folder per feature area, covering every UseCase class — mock the relevant `PluginInterfaces` repository interface, verify entity↔DTO mapping and `Result<T>` propagation. Follow this pattern for new UseCase code.
+Unit tests live in `AssetSquirrel.UseCases.Tests` (xUnit + Moq), one folder per feature area, covering every UseCase class — mock the relevant `PluginInterfaces` repository interface, verify entity↔DTO mapping and `Result<T>` propagation. Follow this pattern for new UseCase code. `AssetSquirrelAuthorize.WebApp.Tests` (xUnit) covers standalone WebApp-project classes that don't fit the UseCase pattern (e.g. `AntiforgeryTokenExceptionHandler`) — it references the WebApp project directly rather than mocking a plugin interface.
 
 EF Core migrations live in the `AssetsSquirrel.Plugins.EFCoreSqlServer` project, DbContext is `AssetsSquirrelContext`. To add a migration, run from repo root with the WebApp as startup project:
 

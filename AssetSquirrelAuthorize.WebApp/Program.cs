@@ -1,4 +1,5 @@
 using AssetSquirrelAuthorize.UseCases.Extensions;
+using AssetSquirrelAuthorize.WebApp;
 using AssetSquirrelAuthorize.WebApp.Components;
 using AssetSquirrelAuthorize.WebApp.Components.Account;
 using AssetSquirrelAuthorize.WebApp.Extensions;
@@ -8,6 +9,8 @@ using AssetsSquirrel.CoreBusiness;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +24,19 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+// Persist Data Protection keys outside the deployed app folder so they survive IIS app-pool
+// recycles/restarts and redeploys. Without this, every recycle silently invalidates the
+// antiforgery tokens embedded in already-open Blazor Server circuits (see docs/deployment-iis.md).
+#pragma warning disable CA1416 // this app is only ever deployed to Windows/IIS, see docs/deployment-iis.md
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+        "AssetSquirrel", "DataProtection-Keys")))
+    .ProtectKeysWithDpapi(protectToLocalMachine: true);
+#pragma warning restore CA1416
+
+builder.Services.AddExceptionHandler<AntiforgeryTokenExceptionHandler>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -74,13 +90,21 @@ EquipmentAssignmentExtension.AddExtension(builder.Services, builder.Configuratio
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Registered unconditionally so AntiforgeryTokenExceptionHandler can redirect stale-token
+// requests (e.g. Logout from a page left open across a Data Protection key rotation) to Login
+// in both environments. In Development, anything it doesn't handle rethrows and is caught by
+// the framework's automatic Developer Exception Page (no ExceptionHandlingPath is set here).
+// In Production, anything it doesn't handle falls back to the generic "/Error" page.
+app.UseExceptionHandler(app.Environment.IsDevelopment()
+    ? new ExceptionHandlerOptions()
+    : new ExceptionHandlerOptions { ExceptionHandlingPath = "/Error", CreateScopeForErrors = true });
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }
 else
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
