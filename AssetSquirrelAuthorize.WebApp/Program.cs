@@ -52,7 +52,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, SmtpEmailSender>();
+builder.Services.AddScoped<IEmailSender<ApplicationUser>, SmtpEmailSender>();
 
 builder.Services.Configure<CircuitOptions>(options =>
 {
@@ -124,6 +124,14 @@ app.MapGet("/api/equipmentreturn/{id:int}/pdf", async (int id, IViewEquipmentRet
     var downloadName = $"{equipmentReturn.ReturnDocumentNumber.Replace('/', '-')}.pdf";
 
     return Results.File(pdfBytes, "application/pdf", downloadName);
+});
+
+app.MapGet("/whoami", (HttpContext context) => new
+{
+    Name = context.User.Identity?.Name,
+    IsAuthenticated = context.User.Identity?.IsAuthenticated,
+    AuthType = context.User.Identity?.AuthenticationType,
+    Claims = context.User.Claims.Select(c => new { c.Type, c.Value })
 });
 
 using (var scope = app.Services.CreateScope())
