@@ -1,0 +1,57 @@
+/*
+  Styling for the Identity account pages (Components/Account/Pages/*.razor), wrapped in
+  AuthCard.razor. Centralized here (global CSS) rather than scoped CSS, matching the
+  dialog.css convention, since every account page reuses the same wrapper.
+*/
+
+.auth-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 3.5rem);
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    border: 1px solid var(--as-border);
+    border-radius: var(--as-radius-lg);
+    background-color: var(--as-dialog-bg);
+    box-shadow: var(--as-dialog-glow);
+    padding: 2rem;
+    text-align: center;
+}
+
+.auth-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-brand-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--as-radius);
+}
+
+.auth-brand-name {
+    font-family: var(--as-font-display);
+    letter-spacing: var(--as-letter-spacing-wide);
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    color: var(--as-text-primary);
+}
+
+.auth-card-body {
+    text-align: left;
+}
+
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
