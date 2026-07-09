@@ -1,6 +1,7 @@
 @import url('dialog.css');
 @import url('table-color.css');
 @import url('width.css');
+@import url('auth.css');
 
 html, body {
     font-family: var(--as-font-body);
