@@ -90,21 +90,20 @@ EquipmentAssignmentExtension.AddExtension(builder.Services, builder.Configuratio
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// Registered unconditionally so AntiforgeryTokenExceptionHandler can redirect stale-token
-// requests (e.g. Logout from a page left open across a Data Protection key rotation) to Login
-// in both environments. In Development, anything it doesn't handle rethrows and is caught by
-// the framework's automatic Developer Exception Page (no ExceptionHandlingPath is set here).
-// In Production, anything it doesn't handle falls back to the generic "/Error" page.
-app.UseExceptionHandler(app.Environment.IsDevelopment()
-    ? new ExceptionHandlerOptions()
-    : new ExceptionHandlerOptions { ExceptionHandlingPath = "/Error", CreateScopeForErrors = true });
-
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }
 else
 {
+    // Registered with a fallback path so AntiforgeryTokenExceptionHandler can redirect
+    // stale-token requests (e.g. Logout from a page left open across a Data Protection key
+    // rotation) to Login; anything else it doesn't handle falls back to the generic "/Error" page.
+    app.UseExceptionHandler(new ExceptionHandlerOptions
+    {
+        ExceptionHandlingPath = "/Error",
+        CreateScopeForErrors = true,
+    });
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
