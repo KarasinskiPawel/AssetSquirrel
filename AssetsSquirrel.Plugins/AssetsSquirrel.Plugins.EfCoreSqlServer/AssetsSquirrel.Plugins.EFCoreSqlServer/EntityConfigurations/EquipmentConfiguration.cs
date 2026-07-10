@@ -16,6 +16,8 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.EntityConfigurations
         {
             builder.HasKey(e => e.EquipmentId);
 
+            builder.HasIndex(e => e.InventoryNumber).IsUnique();
+
             builder.HasOne(e => e.Suppiler)
                    .WithMany(s => s.Equipments)
                    .HasForeignKey(e => e.SuppilerId);

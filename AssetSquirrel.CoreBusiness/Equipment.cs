@@ -25,6 +25,13 @@ namespace AssetSquirrel.CoreBusiness
         public string ModelName { get; set; } = string.Empty;
         [Required]
         public string? SerialNumber { get; set; }
+        // Internal asset tag, distinct from the manufacturer's SerialNumber.
+        // Auto-generated on add (see AddEquipmentUseCase) as "491" + 8 digits;
+        // must stay unique (see EquipmentConfiguration's unique index).
+        [Required]
+        [MaxLength(11)]
+        [RegularExpression(@"^491\d{8}$", ErrorMessage = "Format numeru inwentarzowego: 491 + 8 cyfr.")]
+        public string InventoryNumber { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime DateAdd { get; set; } = DateTime.Now;
         public DateTime? DateRemoved { get; set; }

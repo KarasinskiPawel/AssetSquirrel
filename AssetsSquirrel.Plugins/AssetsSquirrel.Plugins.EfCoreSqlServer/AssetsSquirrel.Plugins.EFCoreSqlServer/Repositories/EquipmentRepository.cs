@@ -35,6 +35,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                         return Result<Equipment>.Fail($"Equipment with serial number '{equipment.SerialNumber}' already exists.");
                     }
 
+                    if (await dbContext.Equipments.AnyAsync(e => e.InventoryNumber == equipment.InventoryNumber))
+                    {
+                        return Result<Equipment>.Fail($"Equipment with inventory number '{equipment.InventoryNumber}' already exists.");
+                    }
+
                     dbContext.Equipments.Add(equipment);
 
                     var history = BuildHistorySnapshot(equipment);
@@ -116,6 +121,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     InvoiceId = a.InvoiceId,
                     InvoiceNumber = a.Invoice != null ? a.Invoice.InvoiceNumber : null,
                     SerialNumber = a.SerialNumber,
+                    InventoryNumber = a.InventoryNumber,
                     RegisteredByUserId = a.RegisteredByUserId,
                     RegisteredByUserName = a.RegisteredByUser != null ? a.RegisteredByUser.UserName : null,
                     LocationId = a.LocationId,
@@ -126,6 +132,16 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 .ToListAsync();
 
             return output;
+        }
+
+        public async Task<string?> GetLastInventoryNumberAsync()
+        {
+            var dbContext = dbContextFactory.CreateDbContext();
+
+            return await dbContext.Equipments
+                .OrderByDescending(e => e.InventoryNumber)
+                .Select(e => e.InventoryNumber)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Result<Equipment>> UpdateEquipmentAsync(Equipment equipment)
@@ -139,6 +155,11 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                     if (await dbContext.Equipments.AnyAsync(e => e.SerialNumber == equipment.SerialNumber && e.EquipmentId != equipment.EquipmentId))
                     {
                         return Result<Equipment>.Fail($"Equipment with serial number '{equipment.SerialNumber}' already exists.");
+                    }
+
+                    if (await dbContext.Equipments.AnyAsync(e => e.InventoryNumber == equipment.InventoryNumber && e.EquipmentId != equipment.EquipmentId))
+                    {
+                        return Result<Equipment>.Fail($"Equipment with inventory number '{equipment.InventoryNumber}' already exists.");
                     }
 
                     dbContext.Equipments.Update(equipment);

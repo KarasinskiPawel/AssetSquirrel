@@ -13,6 +13,9 @@ namespace AssetSquirrel.UseCases.PluginInterfaces
     {
         Task<List<EquipmentDto>> GetEquipmentAsync(Expression<Func<Equipment, bool>> where);
 
+        // Highest InventoryNumber currently in the table, or null if there is none yet.
+        Task<string?> GetLastInventoryNumberAsync();
+
         Task<Result<Equipment>> DeleteEquipmentAsync(Equipment equipment);
 
         Task<Result<Equipment>> UpdateEquipmentAsync(Equipment equipment);
