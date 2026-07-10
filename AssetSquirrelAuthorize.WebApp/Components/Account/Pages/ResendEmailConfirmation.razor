@@ -8,10 +8,14 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
+@using AssetSquirrel.UseCases.PluginInterfaces
+
 @inject UserManager<ApplicationUser> UserManager
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+
+@inject IErrorsRepository ErrorsRepository;
 
 <PageTitle>Resend email confirmation</PageTitle>
 
@@ -58,8 +62,10 @@
         {
             await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            await ErrorsRepository.AddErrorAsync("", "ResendEmailConfirmation", "OnValidSubmitAsync", ex);
+
             message = "Error: Nie udało się wysłać e-maila. Skontaktuj się z IT albo spróbuj ponownie później.";
             return;
         }

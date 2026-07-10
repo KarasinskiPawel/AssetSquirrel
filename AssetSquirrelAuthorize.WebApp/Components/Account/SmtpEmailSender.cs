@@ -13,6 +13,7 @@ namespace AssetSquirrelAuthorize.WebApp.Components.Account
 
         public SmtpEmailSender(
             IConfiguration configuration,
+            
             IErrorsRepository errorsRepository
             )
         {
