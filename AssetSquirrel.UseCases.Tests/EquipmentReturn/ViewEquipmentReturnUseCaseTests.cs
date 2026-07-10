@@ -13,7 +13,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
         {
             var manufacturer = new Manufacturer { ManufacturerId = 1, Name = "Dell" };
             var hardwareType = new CoreBusiness.HardwareType { HardwareTypeId = 1, Name = "Laptop" };
-            var equipment = new CoreBusiness.Equipment { EquipmentId = 5, ModelName = "Latitude", SerialNumber = "SN-100", Manufacturer = manufacturer, HardwareType = hardwareType };
+            var equipment = new CoreBusiness.Equipment { EquipmentId = 5, ModelName = "Latitude", SerialNumber = "SN-100", InventoryNumber = "49100000030", Manufacturer = manufacturer, HardwareType = hardwareType };
             var storageLocation = new Location { LocationId = 3, City = "Łódź", Street = "Magazyn IT", EquipmentStorage = true };
             var employee = new Employee { EmployeeId = 7, FirstName = "Jan", LastName = "Kowalski" };
 
@@ -62,6 +62,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
             Assert.Equal("Laptop", dto.Items[0].HardwareTypeName);
             Assert.Equal("Latitude", dto.Items[0].ModelName);
             Assert.Equal("SN-100", dto.Items[0].SerialNumber);
+            Assert.Equal("49100000030", dto.Items[0].InventoryNumber);
         }
     }
 }

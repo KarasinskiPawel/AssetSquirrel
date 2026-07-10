@@ -99,7 +99,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
                 EmployeeId = 7,
                 LocationId = null,
                 DateOfReturn = null,
-                Equipment = new CoreBusiness.Equipment { EquipmentId = 10, ModelName = "E24", SerialNumber = "SN-1", Manufacturer = manufacturer, HardwareType = hardwareType }
+                Equipment = new CoreBusiness.Equipment { EquipmentId = 10, ModelName = "E24", SerialNumber = "SN-1", InventoryNumber = "49100000020", Manufacturer = manufacturer, HardwareType = hardwareType }
             };
             var matchingByLocation = new AssetSquirrel.CoreBusiness.EquipmentAssignment
             {
@@ -147,7 +147,7 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentReturn
             var result = await useCase.GetOpenAssignmentsAsync(7, 3);
 
             Assert.Equal(2, result.Count);
-            Assert.Contains(result, dto => dto.EquipmentAssignmentId == 1 && dto.ManufacturerName == "HP" && dto.HardwareTypeName == "Monitor" && dto.ModelName == "E24" && dto.SerialNumber == "SN-1");
+            Assert.Contains(result, dto => dto.EquipmentAssignmentId == 1 && dto.ManufacturerName == "HP" && dto.HardwareTypeName == "Monitor" && dto.ModelName == "E24" && dto.SerialNumber == "SN-1" && dto.InventoryNumber == "49100000020");
             Assert.Contains(result, dto => dto.EquipmentAssignmentId == 2);
             Assert.DoesNotContain(result, dto => dto.EquipmentAssignmentId == 3);
             Assert.DoesNotContain(result, dto => dto.EquipmentAssignmentId == 4);

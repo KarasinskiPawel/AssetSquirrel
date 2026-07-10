@@ -52,6 +52,7 @@ namespace AssetSquirrel.UseCases.EquipmentHandover
                     EquipmentId = d.EquipmentId,
                     ModelName = d.Equipment != null ? d.Equipment.ModelName : null,
                     SerialNumber = d.Equipment != null ? d.Equipment.SerialNumber : null,
+                    InventoryNumber = d.Equipment != null ? d.Equipment.InventoryNumber : null,
                     ManufacturerName = d.Equipment != null && d.Equipment.Manufacturer != null ? d.Equipment.Manufacturer.Name : null,
                     HardwareTypeName = d.Equipment != null && d.Equipment.HardwareType != null ? d.Equipment.HardwareType.Name : null,
                     Comment = d.Comment,

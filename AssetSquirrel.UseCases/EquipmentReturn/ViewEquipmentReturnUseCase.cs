@@ -47,6 +47,7 @@ namespace AssetSquirrel.UseCases.EquipmentReturn
                     HardwareTypeName = a.Equipment != null && a.Equipment.HardwareType != null ? a.Equipment.HardwareType.Name : null,
                     ModelName = a.Equipment != null ? a.Equipment.ModelName : null,
                     SerialNumber = a.Equipment != null ? a.Equipment.SerialNumber : null,
+                    InventoryNumber = a.Equipment != null ? a.Equipment.InventoryNumber : null,
                     DateOfHandover = a.DateOfHandover,
                     DateOfReturn = a.DateOfReturn
                 }).ToList()

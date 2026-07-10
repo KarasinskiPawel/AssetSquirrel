@@ -13,6 +13,7 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public int EquipmentId { get; set; }
         public string? ModelName { get; set; }
         public string? SerialNumber { get; set; }
+        public string? InventoryNumber { get; set; }
         public string? ManufacturerName { get; set; }
         public string? HardwareTypeName { get; set; }
         public string? Comment { get; set; }
