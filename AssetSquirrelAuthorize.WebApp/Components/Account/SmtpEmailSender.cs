@@ -1,6 +1,4 @@
-using System.Net;
-using System.Net.Mail;
-using AssetSquirrel.UseCases.PluginInterfaces;
+using AssetSquirrelAuthorize.WebApp.Services.EmailSend;
 using AssetsSquirrel.CoreBusiness;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,17 +6,11 @@ namespace AssetSquirrelAuthorize.WebApp.Components.Account
 {
     internal sealed class SmtpEmailSender : IEmailSender<ApplicationUser>
     {
-        private readonly IConfiguration _configuration;
-        private readonly IErrorsRepository _errorsRepository;
+        private readonly IEmailSendViaApp _emailSendViaApp;
 
-        public SmtpEmailSender(
-            IConfiguration configuration,
-            
-            IErrorsRepository errorsRepository
-            )
+        public SmtpEmailSender(IEmailSendViaApp emailSendViaApp)
         {
-            _configuration = configuration;
-            _errorsRepository = errorsRepository;
+            _emailSendViaApp = emailSendViaApp;
         }
 
         public Task SendConfirmationLinkAsync(ApplicationUser user, string email, string confirmationLink) =>
@@ -30,33 +22,27 @@ namespace AssetSquirrelAuthorize.WebApp.Components.Account
         public Task SendPasswordResetCodeAsync(ApplicationUser user, string email, string resetCode) =>
             SendEmailAsync(email, "Zresetuj hasło", $"Twój kod do zresetowania hasła: {resetCode}");
 
-        private async Task SendEmailAsync(string toEmail, string subject, string htmlMessage)
+        // Delegates the actual SMTP transmission to EmailSendViaApp -- ported
+        // from a separate application that already sends successfully through
+        // the same mailbox/relay (see AssetSquirrelAuthorize.WebApp/Services/
+        // EmailSend). EmailSendViaApp logs failures itself, so this only needs
+        // to translate a false return into the exception the Account pages'
+        // try/catch already expects.
+        private Task SendEmailAsync(string toEmail, string subject, string htmlMessage)
         {
-            var smtp = _configuration.GetSection("Smtp");
-
-            using var client = new SmtpClient
+            var message = new EmailMessage
             {
-                Host = smtp["Host"] ?? string.Empty,
-                Port = smtp.GetValue<int>("Port"),
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(smtp["Username"], smtp["Password"])
-            };
-            using var message = new MailMessage(smtp["From"]!, toEmail, subject, htmlMessage)
-            {
-                IsBodyHtml = true
+                Subject = subject,
+                Body = htmlMessage,
+                Recipients = new[] { toEmail }
             };
 
-            try
+            if (!_emailSendViaApp.Send(message, isHtml: true))
             {
-                await client.SendMailAsync(message);
+                throw new InvalidOperationException("Failed to send email.");
             }
-            catch (Exception ex)
-            {
-                await _errorsRepository.AddErrorAsync("SmtpEmailSender", nameof(SmtpEmailSender), nameof(SendEmailAsync), ex);
-                throw new InvalidOperationException("Failed to send email.", ex);
-            }
+
+            return Task.CompletedTask;
         }
     }
 }
