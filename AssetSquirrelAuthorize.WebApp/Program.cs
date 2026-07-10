@@ -3,6 +3,7 @@ using AssetSquirrelAuthorize.WebApp;
 using AssetSquirrelAuthorize.WebApp.Components;
 using AssetSquirrelAuthorize.WebApp.Components.Account;
 using AssetSquirrelAuthorize.WebApp.Extensions;
+using AssetSquirrelAuthorize.WebApp.Services.EmailSend;
 using AssetSquirrel.UseCases.EquipmentHandover.Interfaces;
 using AssetSquirrel.UseCases.EquipmentReturn.Interfaces;
 using AssetsSquirrel.CoreBusiness;
@@ -68,6 +69,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddScoped<IEmailSendViaApp, EmailSendViaApp>();
 builder.Services.AddScoped<IEmailSender<ApplicationUser>, SmtpEmailSender>();
 
 builder.Services.Configure<CircuitOptions>(options =>
