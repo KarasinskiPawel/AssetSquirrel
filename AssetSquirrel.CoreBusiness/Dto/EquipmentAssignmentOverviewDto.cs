@@ -12,6 +12,7 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public string? HardwareTypeName { get; set; }
         public string? ModelName { get; set; }
         public string? SerialNumber { get; set; }
+        public string? InventoryNumber { get; set; }
         public string? InvoiceNumber { get; set; }
         public bool IsActive { get; set; }
 

@@ -67,7 +67,7 @@
             }
         </InputSelect>
 
-        <TextSearchBar placeholderText="serial number, invoice number..."
+        <TextSearchBar placeholderText="serial number, inventory number, invoice number..."
                        TextSearchBarCallback="SearchCallback">
         </TextSearchBar>
     </div>
@@ -90,7 +90,7 @@
                     <th scope="col"> Manufacturer </th>
                     <th scope="col"> Type </th>
                     <th scope="col"> Model </th>
-                    <th scope="col"> Serial number </th>
+                    <th scope="col"> Serial &amp; Inventory Nr. </th>
                     <th scope="col"> Invoice number </th>
                     <th scope="col"> Status </th>
                 </tr>
@@ -109,7 +109,7 @@
                             <td> @item.ManufacturerName </td>
                             <td> @item.HardwareTypeName </td>
                             <td> @item.ModelName </td>
-                            <td> @item.SerialNumber </td>
+                            <td> @item.SerialNumber <br /> @item.InventoryNumber </td>
                             <td> @item.InvoiceNumber </td>
                             <td>
                                 @if (item.IsAssigned)

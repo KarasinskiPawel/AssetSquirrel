@@ -63,14 +63,29 @@
         {
             <div class="row col-12 mt-4">
                 <div class="col-12">
+                    <div class="row mb-2">
+                        <div class="col-3">
+                            <input class="form-control form-control-sm" placeholder="Serial / Inventory nr." @bind="filterSerialNumber" @bind:event="oninput" />
+                        </div>
+                        <div class="col-3">
+                            <input class="form-control form-control-sm" placeholder="Manufacturer" @bind="filterManufacturer" @bind:event="oninput" />
+                        </div>
+                        <div class="col-3">
+                            <input class="form-control form-control-sm" placeholder="Hardware type" @bind="filterHardwareType" @bind:event="oninput" />
+                        </div>
+                        <div class="col-3">
+                            <input class="form-control form-control-sm" placeholder="Model" @bind="filterModel" @bind:event="oninput" />
+                        </div>
+                    </div>
+
                     <table id="table-color" class="table table-bordered">
                         <thead>
                             <tr class="text-center">
                                 <th scope="col"></th>
+                                <th scope="col">Serial &amp; Inventory Nr.</th>
                                 <th scope="col">Manufacturer</th>
                                 <th scope="col">Hardware type</th>
                                 <th scope="col">Model</th>
-                                <th scope="col">Serial number</th>
                                 <th scope="col">Handover date</th>
                             </tr>
                         </thead>
@@ -81,19 +96,25 @@
                                     <td colspan="6" class="text-muted text-center">No equipment currently assigned.</td>
                                 </tr>
                             }
+                            else if (!FilteredOpenAssignments().Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-muted text-center">Brak pozycji spełniających filtr.</td>
+                                </tr>
+                            }
                             else
                             {
-                                @foreach (var assignment in openAssignments)
+                                @foreach (var assignment in FilteredOpenAssignments())
                                 {
                                     <tr>
                                         <td class="text-center">
                                             <input type="checkbox" checked="@selectedAssignmentIds.Contains(assignment.EquipmentAssignmentId)"
                                                    @onchange="(e => ToggleSelection(assignment.EquipmentAssignmentId, (bool)(e.Value ?? false)))" />
                                         </td>
+                                        <td>@assignment.SerialNumber<br />@assignment.InventoryNumber</td>
                                         <td>@assignment.ManufacturerName</td>
                                         <td>@assignment.HardwareTypeName</td>
                                         <td>@assignment.ModelName</td>
-                                        <td>@assignment.SerialNumber</td>
                                         <td>@(assignment.DateOfHandover?.ToShortDateString())</td>
                                     </tr>
                                 }
@@ -160,6 +181,11 @@
 
     List<int> selectedAssignmentIds = new();
 
+    string filterManufacturer = string.Empty;
+    string filterHardwareType = string.Empty;
+    string filterModel = string.Empty;
+    string filterSerialNumber = string.Empty;
+
     int? selectedEmployeeId;
     int? selectedLocationId;
 
@@ -190,6 +216,17 @@
 
         openAssignments = await AddEquipmentReturnUseCase.GetOpenAssignmentsAsync(selectedEmployeeId, selectedLocationId);
         selectedAssignmentIds.Clear();
+    }
+
+    private IEnumerable<EquipmentAssignmentDto> FilteredOpenAssignments()
+    {
+        return (openAssignments ?? Enumerable.Empty<EquipmentAssignmentDto>())
+            .Where(a => string.IsNullOrWhiteSpace(filterManufacturer) || (a.ManufacturerName?.Contains(filterManufacturer, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Where(a => string.IsNullOrWhiteSpace(filterHardwareType) || (a.HardwareTypeName?.Contains(filterHardwareType, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Where(a => string.IsNullOrWhiteSpace(filterModel) || (a.ModelName?.Contains(filterModel, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Where(a => string.IsNullOrWhiteSpace(filterSerialNumber) ||
+                (a.SerialNumber?.Contains(filterSerialNumber, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (a.InventoryNumber?.Contains(filterSerialNumber, StringComparison.OrdinalIgnoreCase) ?? false));
     }
 
     private void ToggleSelection(int equipmentAssignmentId, bool isSelected)

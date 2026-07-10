@@ -82,6 +82,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                         HardwareTypeName = e.HardwareType != null ? e.HardwareType.Name : null,
                         ModelName = e.ModelName,
                         SerialNumber = e.SerialNumber,
+                        InventoryNumber = e.InventoryNumber,
                         InvoiceNumber = e.Invoice != null ? e.Invoice.InvoiceNumber : null,
                         IsActive = e.IsActive,
                         AssignedEmployeeId = assignment != null ? assignment.EmployeeId : null,
@@ -121,6 +122,7 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 {
                     query = query.Where(x =>
                         (x.SerialNumber != null && x.SerialNumber.Contains(filter.SearchText)) ||
+                        (x.InventoryNumber != null && x.InventoryNumber.Contains(filter.SearchText)) ||
                         (x.InvoiceNumber != null && x.InvoiceNumber.Contains(filter.SearchText)));
                 }
 

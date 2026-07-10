@@ -25,7 +25,17 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentHandover
                     HandoverDate = new DateTime(2026, 1, 15),
                     Comment = "First handover",
                     IsPosted = true,
-                    IsActive = true
+                    IsActive = true,
+                    EquipmentHandoverDetails = new List<EquipmentHandoverDetail>
+                    {
+                        new()
+                        {
+                            EquipmentHandoverDetailId = 1000,
+                            EquipmentId = 500,
+                            Equipment = new AssetSquirrel.CoreBusiness.Equipment { EquipmentId = 500, ModelName = "ThinkPad T14", SerialNumber = "SN-500", InventoryNumber = "49100000010" },
+                            IsActive = true
+                        }
+                    }
                 },
                 new()
                 {
@@ -54,6 +64,10 @@ namespace AssetSquirrel.UseCases.Tests.EquipmentHandover
             Assert.Equal(2, result.Count);
             Assert.Contains(result, dto => dto.EquipmentHandoverId == 1 && dto.HandoverDocumentNumber == "HD-001" && dto.ToEmployeeId == 200);
             Assert.Contains(result, dto => dto.EquipmentHandoverId == 2 && dto.HandoverDocumentNumber == "HD-002" && dto.ToEmployeeId == 201);
+
+            var detail = Assert.Single(result.Single(dto => dto.EquipmentHandoverId == 1).EquipmentHandoverDetails);
+            Assert.Equal("SN-500", detail.SerialNumber);
+            Assert.Equal("49100000010", detail.InventoryNumber);
         }
     }
 }

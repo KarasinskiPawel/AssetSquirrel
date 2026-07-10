@@ -70,21 +70,23 @@ namespace AssetSquirrelAuthorize.WebApp.Services
 
             y += lineHeight;
 
-            double[] columnX = { margin, margin + 120, margin + 240, margin + 380 };
-            gfx.DrawString("Producent", headerFont, XBrushes.Black, new XPoint(columnX[0], y));
-            gfx.DrawString("Typ sprzętu", headerFont, XBrushes.Black, new XPoint(columnX[1], y));
-            gfx.DrawString("Model", headerFont, XBrushes.Black, new XPoint(columnX[2], y));
-            gfx.DrawString("Numer seryjny", headerFont, XBrushes.Black, new XPoint(columnX[3], y));
+            double[] columnX = { margin, margin + 90, margin + 195, margin + 300, margin + 415 };
+            gfx.DrawString("Nr inwentarzowy", headerFont, XBrushes.Black, new XPoint(columnX[0], y));
+            gfx.DrawString("Producent", headerFont, XBrushes.Black, new XPoint(columnX[1], y));
+            gfx.DrawString("Typ sprzętu", headerFont, XBrushes.Black, new XPoint(columnX[2], y));
+            gfx.DrawString("Model", headerFont, XBrushes.Black, new XPoint(columnX[3], y));
+            gfx.DrawString("Numer seryjny", headerFont, XBrushes.Black, new XPoint(columnX[4], y));
             y += 4;
             gfx.DrawLine(XPens.Black, margin, y, page.Width.Point - margin, y);
             y += lineHeight;
 
             foreach (var item in equipmentReturn.Items)
             {
-                gfx.DrawString(item.ManufacturerName ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[0], y));
-                gfx.DrawString(item.HardwareTypeName ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[1], y));
-                gfx.DrawString(item.ModelName ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[2], y));
-                gfx.DrawString(item.SerialNumber ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[3], y));
+                gfx.DrawString(item.InventoryNumber ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[0], y));
+                gfx.DrawString(item.ManufacturerName ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[1], y));
+                gfx.DrawString(item.HardwareTypeName ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[2], y));
+                gfx.DrawString(item.ModelName ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[3], y));
+                gfx.DrawString(item.SerialNumber ?? "-", bodyFont, XBrushes.Black, new XPoint(columnX[4], y));
                 y += lineHeight;
             }
 
