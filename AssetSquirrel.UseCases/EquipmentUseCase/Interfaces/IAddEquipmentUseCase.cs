@@ -8,6 +8,9 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
     {
         Task<Result<EquipmentDto>> AddEquipmentAsync(EquipmentDto equipment);
 
+        // Suggested next inventory number, for the Add form to pre-fill on load.
+        Task<string> GetNextInventoryNumberAsync();
+
         Task<List<SuppilerDto>> GetSuppilersAsync(Expression<Func<Suppiler, bool>> where);
         Task<List<ManufacturerDto>> GetManufacturersAsync(Expression<Func<Manufacturer, bool>> where);
         Task<List<HardwareTypeDto>> GetHardwareTypesAsync(Expression<Func<CoreBusiness.HardwareType, bool>> where);

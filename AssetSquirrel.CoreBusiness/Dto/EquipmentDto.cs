@@ -26,6 +26,13 @@ namespace AssetSquirrel.CoreBusiness.Dto
         public string ModelName { get; set; } = string.Empty;
         [Required]
         public string? SerialNumber { get; set; }
+        // AddEquipmentDialogBox pre-fills this with the suggested next number
+        // (AddEquipmentUseCase.GetNextInventoryNumberAsync); AddEquipmentAsync
+        // auto-generates one itself if this is left blank/empty by a caller.
+        [Required]
+        [MaxLength(11)]
+        [RegularExpression(@"^491\d{8}$", ErrorMessage = "Format numeru inwentarzowego: 491 + 8 cyfr.")]
+        public string InventoryNumber { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime DateAdd { get; set; } = DateTime.Now;
         public DateTime? DateRemoved { get; set; }

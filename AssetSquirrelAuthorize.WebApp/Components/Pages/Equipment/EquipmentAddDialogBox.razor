@@ -129,6 +129,25 @@ else
 
             <div class="row mt-3 mb-3">
                 <div class="offset-1 col-3">
+                    <label class="col-form-label"> Inventory number </label>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="Equipment.InventoryNumber"></InputText>
+                </div>
+                <div class="col-1">
+                    @if (System.Text.RegularExpressions.Regex.IsMatch(Equipment.InventoryNumber ?? "", @"^491\d{8}$"))
+                    {
+                        <i class="form-control bi bi-check-circle"></i>
+                    }
+                    else
+                    {
+                        <i class="form-control bi bi-exclamation-triangle text-danger alert-danger"></i>
+                    }
+                </div>
+            </div>
+
+            <div class="row mt-3 mb-3">
+                <div class="offset-1 col-3">
                     <label class="col-form-label"> Modal name </label>
                 </div>
                 <div class="col-6">
@@ -238,6 +257,7 @@ else
         hardwareTypes = await AddEquipmentUseCase.GetHardwareTypesAsync(a => a.IsActive == true);
         invoices = await AddEquipmentUseCase.GetInvoicesAsync(a => true);
         storageLocations = await AddEquipmentUseCase.GetLocationsAsync(a => a.EquipmentStorage && a.IsActive);
+        Equipment.InventoryNumber = await AddEquipmentUseCase.GetNextInventoryNumberAsync();
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;

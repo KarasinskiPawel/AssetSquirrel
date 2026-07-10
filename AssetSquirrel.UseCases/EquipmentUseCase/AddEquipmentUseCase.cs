@@ -37,12 +37,38 @@ namespace AssetSquirrel.UseCases.EquipmentUseCase
             this.locationRepository = locationRepository;
         }
 
+        private const int MaxInventoryNumberAttempts = 5;
+
         public async Task<Result<EquipmentDto>> AddEquipmentAsync(EquipmentDto equipment)
         {
-            var result = await equipmentRepository.AddEquipmentAsync(equipment.Adapt<Equipment>());
+            var entity = equipment.Adapt<Equipment>();
+            var autoGenerateInventoryNumber = string.IsNullOrWhiteSpace(entity.InventoryNumber);
 
-            return result.Select(e => e.Adapt<EquipmentDto>());
+            for (var attempt = 1; attempt <= MaxInventoryNumberAttempts; attempt++)
+            {
+                if (autoGenerateInventoryNumber)
+                {
+                    entity.InventoryNumber = InventoryNumberGenerator.Next(await equipmentRepository.GetLastInventoryNumberAsync());
+                }
+
+                var result = await equipmentRepository.AddEquipmentAsync(entity);
+
+                if (result.Success || !autoGenerateInventoryNumber || !IsInventoryNumberConflict(result.Message))
+                {
+                    return result.Select(e => e.Adapt<EquipmentDto>());
+                }
+            }
+
+            return Result<EquipmentDto>.Fail("Nie udało się wygenerować unikalnego numeru inwentarzowego. Spróbuj ponownie.");
         }
+
+        public async Task<string> GetNextInventoryNumberAsync()
+        {
+            return InventoryNumberGenerator.Next(await equipmentRepository.GetLastInventoryNumberAsync());
+        }
+
+        private static bool IsInventoryNumberConflict(string? message) =>
+            message?.Contains("inventory number", StringComparison.OrdinalIgnoreCase) == true;
 
         public Task<List<HardwareTypeDto>> GetHardwareTypesAsync(Expression<Func<CoreBusiness.HardwareType, bool>> where)
         {

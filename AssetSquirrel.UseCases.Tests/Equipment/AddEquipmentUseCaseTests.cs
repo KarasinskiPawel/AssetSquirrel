@@ -55,6 +55,181 @@ namespace AssetSquirrel.UseCases.Tests.Equipment
         }
 
         [Fact]
+        public async Task AddEquipmentAsync_AutoGeneratesInventoryNumber_WhenNotProvided()
+        {
+            var equipmentRepository = new Mock<IEquipmentRepository>();
+            equipmentRepository
+                .Setup(r => r.GetLastInventoryNumberAsync())
+                .ReturnsAsync("49100000074");
+
+            CoreBusiness.Equipment? captured = null;
+            equipmentRepository
+                .Setup(r => r.AddEquipmentAsync(It.IsAny<CoreBusiness.Equipment>()))
+                .Callback<CoreBusiness.Equipment>(e => captured = e)
+                .ReturnsAsync((CoreBusiness.Equipment e) => Result<CoreBusiness.Equipment>.Ok(e));
+
+            var hardwareTypeRepository = new Mock<IHardwareTypeRepository>();
+            var manufacturersRepository = new Mock<IManufacturersRepository>();
+            var suppilersRepository = new Mock<ISuppilersRepository>();
+            var invoiceRepository = new Mock<IInvoiceRepository>();
+            var locationRepository = new Mock<ILocationRepository>();
+
+            var useCase = new AddEquipmentUseCase(
+                equipmentRepository.Object,
+                hardwareTypeRepository.Object,
+                manufacturersRepository.Object,
+                suppilersRepository.Object,
+                invoiceRepository.Object,
+                locationRepository.Object);
+
+            var dto = new EquipmentDto { ModelName = "ThinkPad T14", SerialNumber = "SN-12345" };
+
+            var result = await useCase.AddEquipmentAsync(dto);
+
+            Assert.True(result.Success);
+            Assert.Equal("49100000075", captured?.InventoryNumber);
+            Assert.Equal("49100000075", result.Data?.InventoryNumber);
+            equipmentRepository.Verify(r => r.AddEquipmentAsync(It.IsAny<CoreBusiness.Equipment>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddEquipmentAsync_KeepsProvidedInventoryNumber_WithoutGenerating()
+        {
+            var equipmentRepository = new Mock<IEquipmentRepository>();
+            CoreBusiness.Equipment? captured = null;
+            equipmentRepository
+                .Setup(r => r.AddEquipmentAsync(It.IsAny<CoreBusiness.Equipment>()))
+                .Callback<CoreBusiness.Equipment>(e => captured = e)
+                .ReturnsAsync((CoreBusiness.Equipment e) => Result<CoreBusiness.Equipment>.Ok(e));
+
+            var hardwareTypeRepository = new Mock<IHardwareTypeRepository>();
+            var manufacturersRepository = new Mock<IManufacturersRepository>();
+            var suppilersRepository = new Mock<ISuppilersRepository>();
+            var invoiceRepository = new Mock<IInvoiceRepository>();
+            var locationRepository = new Mock<ILocationRepository>();
+
+            var useCase = new AddEquipmentUseCase(
+                equipmentRepository.Object,
+                hardwareTypeRepository.Object,
+                manufacturersRepository.Object,
+                suppilersRepository.Object,
+                invoiceRepository.Object,
+                locationRepository.Object);
+
+            var dto = new EquipmentDto { ModelName = "ThinkPad T14", SerialNumber = "SN-12345", InventoryNumber = "49100000042" };
+
+            var result = await useCase.AddEquipmentAsync(dto);
+
+            Assert.True(result.Success);
+            Assert.Equal("49100000042", captured?.InventoryNumber);
+            equipmentRepository.Verify(r => r.GetLastInventoryNumberAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task AddEquipmentAsync_RetriesWithNextNumber_WhenGeneratedInventoryNumberConflicts()
+        {
+            var equipmentRepository = new Mock<IEquipmentRepository>();
+            equipmentRepository
+                .SetupSequence(r => r.GetLastInventoryNumberAsync())
+                .ReturnsAsync("49100000074")
+                .ReturnsAsync("49100000075");
+
+            var attempts = new List<string?>();
+            equipmentRepository
+                .Setup(r => r.AddEquipmentAsync(It.IsAny<CoreBusiness.Equipment>()))
+                .ReturnsAsync((CoreBusiness.Equipment e) =>
+                {
+                    attempts.Add(e.InventoryNumber);
+                    return attempts.Count == 1
+                        ? Result<CoreBusiness.Equipment>.Fail("Equipment with inventory number '49100000075' already exists.")
+                        : Result<CoreBusiness.Equipment>.Ok(e);
+                });
+
+            var hardwareTypeRepository = new Mock<IHardwareTypeRepository>();
+            var manufacturersRepository = new Mock<IManufacturersRepository>();
+            var suppilersRepository = new Mock<ISuppilersRepository>();
+            var invoiceRepository = new Mock<IInvoiceRepository>();
+            var locationRepository = new Mock<ILocationRepository>();
+
+            var useCase = new AddEquipmentUseCase(
+                equipmentRepository.Object,
+                hardwareTypeRepository.Object,
+                manufacturersRepository.Object,
+                suppilersRepository.Object,
+                invoiceRepository.Object,
+                locationRepository.Object);
+
+            var dto = new EquipmentDto { ModelName = "ThinkPad T14", SerialNumber = "SN-12345" };
+
+            var result = await useCase.AddEquipmentAsync(dto);
+
+            Assert.True(result.Success);
+            Assert.Equal(new[] { "49100000075", "49100000076" }, attempts);
+            equipmentRepository.Verify(r => r.AddEquipmentAsync(It.IsAny<CoreBusiness.Equipment>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task AddEquipmentAsync_DoesNotRetry_WhenFailureIsUnrelatedToInventoryNumber()
+        {
+            var equipmentRepository = new Mock<IEquipmentRepository>();
+            equipmentRepository
+                .Setup(r => r.GetLastInventoryNumberAsync())
+                .ReturnsAsync("49100000074");
+            equipmentRepository
+                .Setup(r => r.AddEquipmentAsync(It.IsAny<CoreBusiness.Equipment>()))
+                .ReturnsAsync(Result<CoreBusiness.Equipment>.Fail("Equipment with serial number 'SN-12345' already exists."));
+
+            var hardwareTypeRepository = new Mock<IHardwareTypeRepository>();
+            var manufacturersRepository = new Mock<IManufacturersRepository>();
+            var suppilersRepository = new Mock<ISuppilersRepository>();
+            var invoiceRepository = new Mock<IInvoiceRepository>();
+            var locationRepository = new Mock<ILocationRepository>();
+
+            var useCase = new AddEquipmentUseCase(
+                equipmentRepository.Object,
+                hardwareTypeRepository.Object,
+                manufacturersRepository.Object,
+                suppilersRepository.Object,
+                invoiceRepository.Object,
+                locationRepository.Object);
+
+            var dto = new EquipmentDto { ModelName = "ThinkPad T14", SerialNumber = "SN-12345" };
+
+            var result = await useCase.AddEquipmentAsync(dto);
+
+            Assert.False(result.Success);
+            Assert.Equal("Equipment with serial number 'SN-12345' already exists.", result.Message);
+            equipmentRepository.Verify(r => r.AddEquipmentAsync(It.IsAny<CoreBusiness.Equipment>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetNextInventoryNumberAsync_ReturnsGeneratedNumber()
+        {
+            var equipmentRepository = new Mock<IEquipmentRepository>();
+            equipmentRepository
+                .Setup(r => r.GetLastInventoryNumberAsync())
+                .ReturnsAsync("49100000074");
+
+            var hardwareTypeRepository = new Mock<IHardwareTypeRepository>();
+            var manufacturersRepository = new Mock<IManufacturersRepository>();
+            var suppilersRepository = new Mock<ISuppilersRepository>();
+            var invoiceRepository = new Mock<IInvoiceRepository>();
+            var locationRepository = new Mock<ILocationRepository>();
+
+            var useCase = new AddEquipmentUseCase(
+                equipmentRepository.Object,
+                hardwareTypeRepository.Object,
+                manufacturersRepository.Object,
+                suppilersRepository.Object,
+                invoiceRepository.Object,
+                locationRepository.Object);
+
+            var result = await useCase.GetNextInventoryNumberAsync();
+
+            Assert.Equal("49100000075", result);
+        }
+
+        [Fact]
         public async Task AddEquipmentAsync_ReturnsFailureWithMessage_WhenRepositoryReportsFailure()
         {
             var equipmentRepository = new Mock<IEquipmentRepository>();

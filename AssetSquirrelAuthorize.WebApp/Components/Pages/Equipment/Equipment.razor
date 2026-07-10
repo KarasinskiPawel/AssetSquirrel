@@ -27,7 +27,7 @@
             <option value="false">Inactive</option>
         </InputSelect>
 
-        <TextSearchBar placeholderText="serial number, model..."
+        <TextSearchBar placeholderText="serial number, model, inventory number..."
                        TextSearchBarCallback="SearchCallback">
         </TextSearchBar>
     </div>
@@ -39,6 +39,7 @@
             <thead>
                 <tr class="text-center">
                     <th scope="col"> Lp. </th>
+                    <th scope="col"> Inventory number </th>
                     <th scope="col"> Suppiler name </th>
                     <th scope="col"> Manufacturer name </th>
                     <th scope="col"> Hardware type </th>
@@ -62,6 +63,7 @@
                     {
                         <tr>
                             <td> @(equipments.IndexOf(equipment) + 1) </td>
+                            <td> @equipment.InventoryNumber </td>
                             <td> @equipment.SuppilerName </td>
                             <td> @equipment.ManufacturerName </td>
                             <td> @equipment.HardwareTypeName </td>
@@ -189,7 +191,8 @@ Title="Add equipment">
     {
         equipments = await ViewEquipmentUseCase.GetEquipmentAsync(
             a => (a.ModelName.Contains(equipmentRequest.SearchText ?? "") ||
-            a.SerialNumber.Contains(equipmentRequest.SearchText ?? "")) &&
+            a.SerialNumber.Contains(equipmentRequest.SearchText ?? "") ||
+            a.InventoryNumber.Contains(equipmentRequest.SearchText ?? "")) &&
             a.IsActive == equipmentRequest.IsActive
         );
 
