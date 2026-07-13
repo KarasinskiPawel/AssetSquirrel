@@ -28,6 +28,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row col-12 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -87,6 +93,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalAddDocument"
            Title="Attach signed document">
@@ -112,10 +119,12 @@
     EquipmentReturnDto? selectedReturnForItems;
     string searchText = string.Empty;
     string employeeSearchText = string.Empty;
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         returns = await ViewEquipmentReturn.GetEquipmentReturnsAsync(a => true);
+        isLoading = false;
     }
 
     private void RedirectToAddEquipmentReturn()

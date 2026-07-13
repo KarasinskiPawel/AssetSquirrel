@@ -13,10 +13,8 @@
 
 @if(isLoading)
 {
-    <div class="dialog-body d-flex justify-content-center align-items-center" style="min-height: 200px;">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
+    <div class="dialog-body">
+        <LoadingSpinner />
     </div>
 }
 else

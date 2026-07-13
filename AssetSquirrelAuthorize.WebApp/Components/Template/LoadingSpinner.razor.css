@@ -1,0 +1,33 @@
+.loading-spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    min-height: 320px;
+    width: 100%;
+}
+
+.loading-spinner {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    border: 0.4em solid var(--as-glow-cyan);
+    border-top-color: var(--as-accent-cyan);
+    animation: loading-spinner-spin 0.9s linear infinite;
+}
+
+.loading-spinner-text {
+    margin: 0;
+    font-family: var(--as-font-display);
+    letter-spacing: var(--as-letter-spacing-wide);
+    text-transform: uppercase;
+    font-size: 1rem;
+    color: var(--as-text-primary);
+}
+
+@keyframes loading-spinner-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

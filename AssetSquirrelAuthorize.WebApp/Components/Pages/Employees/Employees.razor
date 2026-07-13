@@ -23,6 +23,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row offset-1 col-10 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -89,6 +95,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalAddEmployeeVisible"
 Title="Add employee">
@@ -113,10 +120,12 @@ Title="Edit employee">
 
     List<EmployeeDto> employees { get; set; }
     EmployeeDto employee { get; set; }
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         employees = await ViewEmployeesUseCase.GetEmployeesAsync(a => true);
+        isLoading = false;
     }
 
     public void OnCancelHideModalAddEmployee()

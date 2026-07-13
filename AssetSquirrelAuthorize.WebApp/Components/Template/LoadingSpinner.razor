@@ -1,0 +1,8 @@
+<div class="loading-spinner-container">
+    <div class="loading-spinner" role="status" aria-label="@Text"></div>
+    <p class="loading-spinner-text">@Text</p>
+</div>
+
+@code {
+    [Parameter] public string Text { get; set; } = "Ładowanie...";
+}

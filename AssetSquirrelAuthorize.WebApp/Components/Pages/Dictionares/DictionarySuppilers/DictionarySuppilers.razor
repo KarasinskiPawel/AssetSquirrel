@@ -21,6 +21,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row offset-1 col-10 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -81,6 +87,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="addSuppilererModal"
 Title="Add new suppiler.">
@@ -106,10 +113,12 @@ Title="Edycja danych dostawcy">
 
     List<SuppilerDto> suppilers { get; set; }
     SuppilerDto Suppiler { get; set; }
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         suppilers = await ViewSuppilersUseCase.GetSuppilersAsync(a => true);
+        isLoading = false;
     }
 
     public async Task SearchSuppilerCallback(string searchFilter)

@@ -33,6 +33,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row col-12 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -101,6 +107,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalAddEquipment"
 Title="Add equipment">
@@ -128,10 +135,12 @@ Title="Add equipment">
 
     List<EquipmentDto> equipments { get; set;}
     EquipmentDto equipment;
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         equipments = await ViewEquipmentUseCase.GetEquipmentAsync(a => a.IsActive == true);
+        isLoading = false;
     }
 
     public void OnCancelHideModalEditEquipment()
