@@ -14,6 +14,13 @@ namespace AssetSquirrelAuthorize.WebApp.Services.EmailSend
     // section + user-secrets/appsettings.Production.json) instead of a hardcoded
     // password, and to log failures via this project's IErrorsRepository instead
     // of iKomfortCore's ErrorHandlingStatic.
+    //
+    // A 2026-07-10 test with the password hardcoded (matching this class's
+    // known-working value byte-for-byte) sent mail successfully where the
+    // config-based version had been failing with "5.7.1 Client host rejected" --
+    // root cause turned out to be a missing trailing "!" in the password stored
+    // in that server's appsettings.Production.json, not network/NAT/PTR. Fix the
+    // stored password there, not here.
     public class EmailSendViaApp : IEmailSendViaApp
     {
         private readonly IConfiguration _configuration;
