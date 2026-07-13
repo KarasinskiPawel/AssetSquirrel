@@ -29,9 +29,9 @@ namespace AssetSquirrel.CoreBusiness.Dto
         // AddEquipmentDialogBox pre-fills this with the suggested next number
         // (AddEquipmentUseCase.GetNextInventoryNumberAsync); AddEquipmentAsync
         // auto-generates one itself if this is left blank/empty by a caller.
+        // Widened/format no longer enforced -- see Equipment.InventoryNumber.
         [Required]
-        [MaxLength(11)]
-        [RegularExpression(@"^491\d{8}$", ErrorMessage = "Format numeru inwentarzowego: 491 + 8 cyfr.")]
+        [MaxLength(20)]
         public string InventoryNumber { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime DateAdd { get; set; } = DateTime.Now;

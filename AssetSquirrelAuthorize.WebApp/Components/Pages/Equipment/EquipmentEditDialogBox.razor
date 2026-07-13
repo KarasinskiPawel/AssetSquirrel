@@ -136,7 +136,7 @@
                         <InputText class="form-control" @bind-Value="Equipment.InventoryNumber"></InputText>
                     </div>
                     <div class="col-1">
-                        @if (System.Text.RegularExpressions.Regex.IsMatch(Equipment.InventoryNumber ?? "", @"^491\d{8}$"))
+                        @if (!string.IsNullOrWhiteSpace(Equipment.InventoryNumber))
                         {
                             <i class="form-control bi bi-check-circle"></i>
                         }

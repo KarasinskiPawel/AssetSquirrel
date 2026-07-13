@@ -27,10 +27,13 @@ namespace AssetSquirrel.CoreBusiness
         public string? SerialNumber { get; set; }
         // Internal asset tag, distinct from the manufacturer's SerialNumber.
         // Auto-generated on add (see AddEquipmentUseCase) as "491" + 8 digits;
-        // must stay unique (see EquipmentConfiguration's unique index).
+        // must stay unique (see EquipmentConfiguration's unique index). Widened
+        // from 11 to 20 chars and format no longer enforced by a regex -- the
+        // 2026-07-13 historical import (Hardware.xlsx) carries ~1450 legacy
+        // inventory numbers in other formats (e.g. "X4010100122", ".../M"
+        // suffixes) that must be kept verbatim, not just "491"+8 digits.
         [Required]
-        [MaxLength(11)]
-        [RegularExpression(@"^491\d{8}$", ErrorMessage = "Format numeru inwentarzowego: 491 + 8 cyfr.")]
+        [MaxLength(20)]
         public string InventoryNumber { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime DateAdd { get; set; } = DateTime.Now;
