@@ -2,6 +2,9 @@
 @using AssetSquirrel.CoreBusiness
 @using AssetSquirrel.CoreBusiness.Dto
 @using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces
+@using AssetSquirrel.UseCases.Suppilers.Interfaces
+@using AssetSquirrel.UseCases.Manufacturers.Interfaces
+@using AssetSquirrel.UseCases.HardwareType.Interfaces
 @using AssetSquirrelAuthorize.WebApp.Components.ViewModels
 @using AssetsSquirrel.CoreBusiness
 @using Microsoft.AspNetCore.Identity
@@ -9,12 +12,15 @@
 
 @inject IJSRuntime JSRuntime
 @inject IViewEquipmentUseCase ViewEquipmentUseCase
+@inject IViewSuppilersUseCase ViewSuppilersUseCase
+@inject IViewManufacturerUseCase ViewManufacturerUseCase
+@inject IViewHardwareTypeUseCase ViewHardwareTypeUseCase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @rendermode InteractiveServer
 
 <div class="row col-12">
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center flex-wrap gap-2">
         <AdminOnly>
             <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEquipment())">
                 <i class="bi bi-motherboard"></i>
@@ -22,13 +28,49 @@
             </button>
         </AdminOnly>
 
-        <InputSelect class="form-control-sm w-10" @bind-Value="equipmentRequest.IsActive">
+        <InputSelect class="form-control-sm w-10" @bind-Value="equipmentRequest.IsActive" @bind-Value:after="SearchEquipments">
             <option value="true">Active</option>
             <option value="false">Inactive</option>
         </InputSelect>
 
+        <InputSelect class="form-control-sm" @bind-Value="equipmentRequest.SuppilerId" @bind-Value:after="SearchEquipments">
+            <option value=""> ...suppiler... </option>
+            @if (suppilers is not null)
+            {
+                @foreach (var suppiler in suppilers)
+                {
+                    <option value="@suppiler.SuppilerId">@suppiler.Name</option>
+                }
+            }
+        </InputSelect>
+
+        <InputSelect class="form-control-sm" @bind-Value="equipmentRequest.ManufacturerId" @bind-Value:after="SearchEquipments">
+            <option value=""> ...manufacturer... </option>
+            @if (manufacturers is not null)
+            {
+                @foreach (var manufacturer in manufacturers)
+                {
+                    <option value="@manufacturer.ManufacturerId">@manufacturer.Name</option>
+                }
+            }
+        </InputSelect>
+
+        <InputSelect class="form-control-sm" @bind-Value="equipmentRequest.HardwareTypeId" @bind-Value:after="SearchEquipments">
+            <option value=""> ...type... </option>
+            @if (hardwareTypes is not null)
+            {
+                @foreach (var hardwareType in hardwareTypes)
+                {
+                    <option value="@hardwareType.HardwareTypeId">@hardwareType.Name</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mt-2">
         <TextSearchBar placeholderText="serial number, model, inventory number..."
-                       TextSearchBarCallback="SearchCallback">
+                       TextSearchBarCallback="SearchCallback"
+                       FullWidth="true">
         </TextSearchBar>
     </div>
 </div>
@@ -45,12 +87,11 @@ else
             <thead>
                 <tr class="text-center">
                     <th scope="col"> Lp. </th>
-                    <th scope="col"> Inventory number </th>
                     <th scope="col"> Suppiler name </th>
                     <th scope="col"> Manufacturer name </th>
                     <th scope="col"> Hardware type </th>
                     <th scope="col"> Model name </th>
-                    <th scope="col"> Serial number </th>
+                    <th scope="col"> Serial &amp; Inventory Nr. </th>
                     <th scope="col"> Invoice number </th>
                     <th scope="col"> Description </th>
                     <th scope="col"> Date add </th>
@@ -69,12 +110,11 @@ else
                     {
                         <tr>
                             <td> @(equipments.IndexOf(equipment) + 1) </td>
-                            <td> @equipment.InventoryNumber </td>
                             <td> @equipment.SuppilerName </td>
                             <td> @equipment.ManufacturerName </td>
                             <td> @equipment.HardwareTypeName </td>
                             <td> @equipment.ModelName </td>
-                            <td> @equipment.SerialNumber </td>
+                            <td> @equipment.SerialNumber <br /> @equipment.InventoryNumber </td>
                             <td> @equipment.InvoiceNumber </td>
                             <td> @equipment.Description </td>
                             <td> @equipment.DateAdd.ToShortDateString() </td>
@@ -137,9 +177,16 @@ Title="Add equipment">
     EquipmentDto equipment;
     bool isLoading = true;
 
+    List<SuppilerDto>? suppilers;
+    List<ManufacturerDto>? manufacturers;
+    List<HardwareTypeDto>? hardwareTypes;
+
     protected override async Task OnInitializedAsync()
     {
         equipments = await ViewEquipmentUseCase.GetEquipmentAsync(a => a.IsActive == true);
+        suppilers = await ViewSuppilersUseCase.GetSuppilersAsync(s => s.IsActive);
+        manufacturers = await ViewManufacturerUseCase.GetManufacturersAsync(m => m.IsActive);
+        hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(h => h.IsActive);
         isLoading = false;
     }
 
@@ -202,7 +249,10 @@ Title="Add equipment">
             a => (a.ModelName.Contains(equipmentRequest.SearchText ?? "") ||
             a.SerialNumber.Contains(equipmentRequest.SearchText ?? "") ||
             a.InventoryNumber.Contains(equipmentRequest.SearchText ?? "")) &&
-            a.IsActive == equipmentRequest.IsActive
+            a.IsActive == equipmentRequest.IsActive &&
+            (equipmentRequest.SuppilerId == null || a.SuppilerId == equipmentRequest.SuppilerId) &&
+            (equipmentRequest.ManufacturerId == null || a.ManufacturerId == equipmentRequest.ManufacturerId) &&
+            (equipmentRequest.HardwareTypeId == null || a.HardwareTypeId == equipmentRequest.HardwareTypeId)
         );
 
         StateHasChanged();

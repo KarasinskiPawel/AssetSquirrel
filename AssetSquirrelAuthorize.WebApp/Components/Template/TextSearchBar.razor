@@ -1,11 +1,13 @@
-﻿<InputText class="form-control-sm w-25"
-    @bind-Value="searchFilter"
-    placeholder="@placeholderText">
-</InputText>
+﻿<div class="d-flex gap-1 @(FullWidth ? "flex-grow-1" : "w-25")">
+    <InputText class="form-control-sm flex-grow-1"
+        @bind-Value="searchFilter"
+        placeholder="@placeholderText">
+    </InputText>
 
-<button class="btn btn-sm btn-outline-danger" @onclick="(() => HandleSearch())" title="Dezaktywuj lokalizację.">
-    <i class="bi bi-search"></i>
-</button>
+    <button class="btn btn-sm btn-outline-danger" @onclick="(() => HandleSearch())" title="Dezaktywuj lokalizację.">
+        <i class="bi bi-search"></i>
+    </button>
+</div>
 
 @code {
     [Parameter]
@@ -13,6 +15,9 @@
 
     [Parameter]
     public EventCallback<string> TextSearchBarCallback { get; set; }
+
+    [Parameter]
+    public bool FullWidth { get; set; } = false;
 
     public string searchFilter { get; set; } = string.Empty;
 
