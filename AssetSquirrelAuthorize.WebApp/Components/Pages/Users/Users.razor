@@ -12,6 +12,12 @@
 
 @rendermode InteractiveServer
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row offset-1 col-10 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -82,6 +88,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalEditUser"
 Title="Edit user">
@@ -99,6 +106,7 @@ Title="Edit user">
     UserListItem? editedUser;
     bool modalEditUser = false;
     string? currentUserId;
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,6 +114,7 @@ Title="Edit user">
         currentUserId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         await LoadUsers();
+        isLoading = false;
     }
 
     private async Task LoadUsers()

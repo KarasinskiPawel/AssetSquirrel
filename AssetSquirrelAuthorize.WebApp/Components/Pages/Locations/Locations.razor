@@ -26,6 +26,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row offset-1 col-10 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -115,6 +121,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalAddLocation"
 Title="Add location">
@@ -139,10 +146,12 @@ Title="Edit location">
 
     List<LocationDto> locations { get; set; }
     LocationDto Location { get; set; }
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         locations = await ViewLocationsUseCase.GetLocationsAsync(a => true);
+        isLoading = false;
     }
 
     public async void SearchLocationCallback(string searchFilter)

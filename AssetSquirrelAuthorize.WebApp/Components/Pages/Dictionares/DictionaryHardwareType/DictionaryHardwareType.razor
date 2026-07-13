@@ -20,6 +20,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row offset-1 col-10 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -80,6 +86,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalAddHardwareType"
     Title="Add hardware type">
@@ -105,10 +112,12 @@
     string searchText = string.Empty;
     List<HardwareTypeDto> hardwareTypes = new List<HardwareTypeDto>();
     HardwareTypeDto hardwareType;
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(a => true);
+        isLoading = false;
     }
 
     public async Task SearchHardwareTypes()

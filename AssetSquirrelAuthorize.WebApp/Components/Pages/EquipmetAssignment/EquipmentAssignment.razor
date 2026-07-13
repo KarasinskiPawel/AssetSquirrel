@@ -73,6 +73,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row col-12 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -134,6 +140,7 @@
         </table>
     </div>
 </div>
+}
 
 @code {
     EquipmentAssignmentFilter filter = new EquipmentAssignmentFilter();
@@ -146,6 +153,7 @@
 
     string? sortColumn;
     bool sortDescending;
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -155,6 +163,7 @@
         hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(h => h.IsActive);
 
         await Search();
+        isLoading = false;
     }
 
     private async Task SearchCallback(string searchText)

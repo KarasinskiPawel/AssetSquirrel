@@ -25,6 +25,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row offset-1 col-10 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -93,6 +99,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalAddInvoice"
 Title="Add invoice">
@@ -127,10 +134,12 @@ Title="Add invoice">
 
     List<InvoiceDto> invoices;
     InvoiceDto Invoice { get; set; } = new InvoiceDto();
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         invoices = await ViewInvoicesUseCase.GetInvoicesAsync(a => true);
+        isLoading = false;
     }
 
     public void ShowModalAddInvoiceDocument(InvoiceDto invoice)

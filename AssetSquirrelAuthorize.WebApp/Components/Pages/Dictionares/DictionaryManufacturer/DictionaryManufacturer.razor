@@ -21,6 +21,12 @@
     </div>
 </div>
 
+@if (isLoading)
+{
+    <LoadingSpinner />
+}
+else
+{
 <div class="row offset-1 col-10 mt-3">
     <div id="table-container">
         <table id="table-color" class="table table-bordered">
@@ -81,6 +87,7 @@
         </table>
     </div>
 </div>
+}
 
 <DialogBox Show="modalAddManufacturerVisible"
     Title="Add manufacturer">
@@ -106,10 +113,12 @@
     string searchText = string.Empty;
     List<ManufacturerDto> manufacturers = new List<ManufacturerDto>();
     ManufacturerDto Manufacturer { get; set; }
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         manufacturers = await ViewManufacturerUseCase.GetManufacturersAsync(a => true);
+        isLoading = false;
     }
 
     public async Task SearchBarCallback(string searchText)
