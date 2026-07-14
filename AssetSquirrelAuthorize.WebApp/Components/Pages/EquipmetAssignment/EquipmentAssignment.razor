@@ -17,13 +17,8 @@
 @rendermode InteractiveServer
 
 <div class="row col-12">
-    <div class="d-flex align-items-center flex-wrap gap-2">
-        <InputSelect class="form-control-sm w-10" @bind-Value="filter.IsActive" @bind-Value:after="Search">
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-        </InputSelect>
-
-        <InputSelect class="form-control-sm" @bind-Value="filter.LocationId" @bind-Value:after="Search">
+    <div class="row offset-2 col-8 d-flex align-items-center flex-wrap gap-2">
+        <InputSelect class="form-control-sm w-20" @bind-Value="filter.LocationId" @bind-Value:after="Search">
             <option value=""> ...location... </option>
             @if (locations is not null)
             {
@@ -34,7 +29,7 @@
             }
         </InputSelect>
 
-        <InputSelect class="form-control-sm" @bind-Value="filter.EmployeeId" @bind-Value:after="Search">
+        <InputSelect class="form-control-sm w-20" @bind-Value="filter.EmployeeId" @bind-Value:after="Search">
             <option value=""> ...employee... </option>
             @if (employees is not null)
             {
@@ -45,7 +40,7 @@
             }
         </InputSelect>
 
-        <InputSelect class="form-control-sm" @bind-Value="filter.ManufacturerId" @bind-Value:after="Search">
+        <InputSelect class="form-control-sm w-20" @bind-Value="filter.ManufacturerId" @bind-Value:after="Search">
             <option value=""> ...manufacturer... </option>
             @if (manufacturers is not null)
             {
@@ -56,7 +51,7 @@
             }
         </InputSelect>
 
-        <InputSelect class="form-control-sm" @bind-Value="filter.HardwareTypeId" @bind-Value:after="Search">
+        <InputSelect class="form-control-sm w-20" @bind-Value="filter.HardwareTypeId" @bind-Value:after="Search">
             <option value=""> ...type... </option>
             @if (hardwareTypes is not null)
             {
@@ -67,9 +62,13 @@
             }
         </InputSelect>
 
+        <InputSelect class="form-control-sm w-10" @bind-Value="filter.IsActive" @bind-Value:after="Search">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </InputSelect>
     </div>
 
-    <div class="d-flex align-items-center gap-2 mt-2">
+    <div class="row d-flex align-items-center gap-2 mt-2 offset-3 col-6">
         <TextSearchBar placeholderText="serial number, inventory number, invoice number..."
                        TextSearchBarCallback="SearchCallback"
                        FullWidth="true">
@@ -108,7 +107,7 @@ else
             <tbody>
                 @if (items is not null && items.Count > 0)
                 {
-                    @foreach (var item in items)
+                    @foreach (EquipmentAssignmentOverviewDto item in items)
                     {
                         <tr>
                             <td> @(items.IndexOf(item) + 1) </td>
