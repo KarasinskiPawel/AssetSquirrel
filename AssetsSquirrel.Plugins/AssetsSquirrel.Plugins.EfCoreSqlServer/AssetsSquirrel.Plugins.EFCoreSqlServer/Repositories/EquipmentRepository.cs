@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
@@ -132,6 +133,77 @@ namespace AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories
                 .ToListAsync();
 
             return output;
+        }
+
+        public async Task<int> GetEquipmentCountAsync(Expression<Func<Equipment, bool>> where, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var dbContext = dbContextFactory.CreateDbContext();
+
+                return await dbContext.Equipments.Where(where).CountAsync(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentRepository", "GetEquipmentCountAsync", e);
+                return 0;
+            }
+        }
+
+        public async Task<List<EquipmentDto>> GetEquipmentPageAsync(Expression<Func<Equipment, bool>> where, int startIndex, int count, string sortColumn = null, bool sortDescending = false, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var dbContext = dbContextFactory.CreateDbContext();
+
+                return await dbContext.Equipments.Where(where)
+                    .Select(a => new EquipmentDto
+                    {
+                        EquipmentId = a.EquipmentId,
+                        SuppilerId = a.SuppilerId,
+                        SuppilerName = a.Suppiler.Name,
+                        ManufacturerId = a.ManufacturerId,
+                        ManufacturerName = a.Manufacturer.Name,
+                        HardwareTypeId = a.HardwareTypeId,
+                        HardwareTypeName = a.HardwareType.Name,
+                        ModelName = a.ModelName,
+                        IsActive = a.IsActive,
+                        DateAdd = a.DateAdd,
+                        DateRemoved = a.DateRemoved,
+                        Description = a.Description,
+                        InvoiceId = a.InvoiceId,
+                        InvoiceNumber = a.Invoice != null ? a.Invoice.InvoiceNumber : null,
+                        SerialNumber = a.SerialNumber,
+                        InventoryNumber = a.InventoryNumber,
+                        RegisteredByUserId = a.RegisteredByUserId,
+                        RegisteredByUserName = a.RegisteredByUser != null ? a.RegisteredByUser.UserName : null,
+                        LocationId = a.LocationId,
+                        LocationName = a.Location != null ? (a.Location.City + " " + a.Location.Street) : null
+                    })
+                    .OrderBy(a => a.ModelName)
+                    .ThenBy(a => a.SerialNumber)
+                    .Skip(startIndex)
+                    .Take(count)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Virtualize cancels a superseded ItemsProviderRequest (e.g. during
+                // initial viewport measurement or fast scrolling) via its own token --
+                // this is expected control flow, not an error. Let it propagate so
+                // Virtualize's own cancellation handling deals with it; logging it
+                // here would flood the Errors table and mask real failures.
+                throw;
+            }
+            catch (Exception e)
+            {
+                await errorsRepository.AddErrorAsync("AssetsSquirrel.Plugins.EFCoreSqlServer.Repositories", "EquipmentRepository", "GetEquipmentPageAsync", e);
+                return new List<EquipmentDto>();
+            }
         }
 
         public async Task<string?> GetLastInventoryNumberAsync()
