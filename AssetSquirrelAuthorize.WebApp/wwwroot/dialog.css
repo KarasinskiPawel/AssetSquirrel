@@ -45,3 +45,9 @@
     background-color: var(--as-bg-elevated);
     border-top: 1px solid var(--as-border);
 }
+
+@media (max-width: 1366px) {
+    #dialog .dialog-header {
+        font-size: 18px;
+    }
+}

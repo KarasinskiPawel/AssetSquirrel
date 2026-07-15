@@ -43,3 +43,10 @@
 #table-color tbody tr:hover td {
     background-color: var(--as-table-row-hover);
 }
+
+@media (max-width: 1366px) {
+    #table-color thead tr th,
+    #table-color tbody tr td {
+        font-size: 10px;
+    }
+}

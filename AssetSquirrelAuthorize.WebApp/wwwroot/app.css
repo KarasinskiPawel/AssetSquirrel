@@ -64,3 +64,9 @@ h1:focus {
 .as-bg-red {
     background-color: #FF0000;
 }
+
+@media (max-width: 1366px) {
+    html {
+        font-size: 14px;
+    }
+}
