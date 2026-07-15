@@ -68,11 +68,19 @@
         </AdminOnly>
     </div>
 
-    <div class="row offset-3 col-5 d-flex align-items-center gap-2 mt-2">
-        <TextSearchBar placeholderText="serial number, model, inventory number..."
-                       TextSearchBarCallback="SearchCallback"
-                       FullWidth="true">
-        </TextSearchBar>
+    <div class="row d-flex align-items-center flex-nowrap gap-2 mt-2 offset-3 col-6">
+        <div class="offset-2 col-5">
+            <TextSearchBar placeholderText="serial number, model, inventory number..."
+                        TextSearchBarCallback="SearchCallback"
+                        FullWidth="true">
+            </TextSearchBar>
+        </div>
+        <div class=col-1>
+            <button class="btn btn-sm btn-outline-info text-nowrap" @onclick="ExportToExcel" title="Export to Excel">
+                <i class="bi bi-file-earmark-excel"></i>
+                Export
+            </button>
+        </div>
     </div>
 </div>
 
@@ -284,6 +292,19 @@ Title="Add equipment">
         }
 
         StateHasChanged();
+    }
+
+    private async Task ExportToExcel()
+    {
+        await JSRuntime.InvokeVoidAsync("Information", "Przygotowywanie pliku...");
+
+        var query = new List<string> { $"isActive={equipmentRequest.IsActive}" };
+        if (equipmentRequest.SuppilerId is not null) query.Add($"suppilerId={equipmentRequest.SuppilerId}");
+        if (equipmentRequest.ManufacturerId is not null) query.Add($"manufacturerId={equipmentRequest.ManufacturerId}");
+        if (equipmentRequest.HardwareTypeId is not null) query.Add($"hardwareTypeId={equipmentRequest.HardwareTypeId}");
+        if (!string.IsNullOrEmpty(equipmentRequest.SearchText)) query.Add($"searchText={Uri.EscapeDataString(equipmentRequest.SearchText)}");
+
+        await JSRuntime.InvokeVoidAsync("openInNewTab", $"/api/equipment/export?{string.Join("&", query)}");
     }
 
     public async Task RemoveEquipment(EquipmentDto equipment)

@@ -4,8 +4,13 @@ using AssetSquirrelAuthorize.WebApp.Components;
 using AssetSquirrelAuthorize.WebApp.Components.Account;
 using AssetSquirrelAuthorize.WebApp.Extensions;
 using AssetSquirrelAuthorize.WebApp.Services.EmailSend;
+using AssetSquirrel.CoreBusiness;
+using AssetSquirrel.UseCases.EquipmentAssignment;
+using AssetSquirrel.UseCases.EquipmentAssignment.Interfaces;
 using AssetSquirrel.UseCases.EquipmentHandover.Interfaces;
+using AssetSquirrel.UseCases.EquipmentUseCase.Interfaces;
 using AssetSquirrel.UseCases.EquipmentReturn.Interfaces;
+using AssetSquirrel.UseCases.Invoices.Interfaces;
 using AssetsSquirrel.CoreBusiness;
 using AssetsSquirrel.Plugins.EFCoreSqlServer;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -150,6 +155,84 @@ app.MapGet("/api/equipmentreturn/{id:int}/pdf", async (int id, IViewEquipmentRet
 
     return Results.File(pdfBytes, "application/pdf", downloadName);
 });
+
+app.MapGet("/api/equipment/export", async (
+    bool isActive,
+    int? suppilerId,
+    int? manufacturerId,
+    int? hardwareTypeId,
+    string? searchText,
+    IViewEquipmentUseCase viewEquipmentUseCase) =>
+{
+    var text = searchText ?? string.Empty;
+
+    var equipment = await viewEquipmentUseCase.GetEquipmentAsync(a =>
+        (a.ModelName.Contains(text) || a.SerialNumber.Contains(text) || a.InventoryNumber.Contains(text)) &&
+        a.IsActive == isActive &&
+        (suppilerId == null || a.SuppilerId == suppilerId) &&
+        (manufacturerId == null || a.ManufacturerId == manufacturerId) &&
+        (hardwareTypeId == null || a.HardwareTypeId == hardwareTypeId));
+
+    var headers = new[] { "Suppiler name", "Manufacturer name", "Hardware type", "Model name", "Serial number", "Inventory number", "Invoice number", "Description", "Date add", "Date removed", "Is active?", "Added by" };
+    var rows = equipment.Select(e => (IReadOnlyList<object?>)new object?[]
+    {
+        e.SuppilerName, e.ManufacturerName, e.HardwareTypeName, e.ModelName, e.SerialNumber, e.InventoryNumber,
+        e.InvoiceNumber, e.Description, e.DateAdd, e.DateRemoved, e.IsActive, e.RegisteredByUserName
+    });
+
+    var bytes = ExcelExportHelper.BuildWorkbook("Equipment", headers, rows);
+    return Results.File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{DateTime.Now:yyyy-MM-dd}-equipment.xlsx");
+}).RequireAuthorization();
+
+app.MapGet("/api/equipmentassignment/export", async (
+    bool isActive,
+    int? locationId,
+    int? employeeId,
+    int? manufacturerId,
+    int? hardwareTypeId,
+    string? searchText,
+    IViewEquipmentAssignmentUseCase viewEquipmentAssignmentUseCase) =>
+{
+    var filter = new EquipmentAssignmentFilter
+    {
+        IsActive = isActive,
+        LocationId = locationId,
+        EmployeeId = employeeId,
+        ManufacturerId = manufacturerId,
+        HardwareTypeId = hardwareTypeId,
+        SearchText = searchText
+    };
+
+    var items = await viewEquipmentAssignmentUseCase.GetEquipmentAssignmentOverviewAsync(filter);
+
+    var headers = new[] { "Location", "Person", "Handover date", "Suppiler", "Manufacturer", "Type", "Model", "Serial number", "Inventory number", "Invoice number", "Status" };
+    var rows = items.Select(i => (IReadOnlyList<object?>)new object?[]
+    {
+        i.AssignedLocationName, i.AssignedEmployeeName, i.DateOfHandover, i.SuppilerName, i.ManufacturerName,
+        i.HardwareTypeName, i.ModelName, i.SerialNumber, i.InventoryNumber, i.InvoiceNumber,
+        i.IsAssigned ? "Assigned" : "Available"
+    });
+
+    var bytes = ExcelExportHelper.BuildWorkbook("Equipment Assignment", headers, rows);
+    return Results.File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{DateTime.Now:yyyy-MM-dd}-equipmentassignment.xlsx");
+}).RequireAuthorization();
+
+app.MapGet("/api/invoices/export", async (string? searchText, IViewInvoicesUseCase viewInvoicesUseCase) =>
+{
+    var text = searchText ?? string.Empty;
+
+    var invoices = await viewInvoicesUseCase.GetInvoicesAsync(a =>
+        a.InvoiceNumber.Contains(text) || a.Description.Contains(text));
+
+    var headers = new[] { "Invoice number", "Invoice date", "Description", "File path", "File upload date", "User" };
+    var rows = invoices.Select(i => (IReadOnlyList<object?>)new object?[]
+    {
+        i.InvoiceNumber, i.InvoiceDate, i.Description, i.FilePath, i.UploadDate, i.UserName
+    });
+
+    var bytes = ExcelExportHelper.BuildWorkbook("Invoices", headers, rows);
+    return Results.File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{DateTime.Now:yyyy-MM-dd}-invoices.xlsx");
+}).RequireAuthorization();
 
 app.MapGet("/whoami", (HttpContext context) => new
 {
