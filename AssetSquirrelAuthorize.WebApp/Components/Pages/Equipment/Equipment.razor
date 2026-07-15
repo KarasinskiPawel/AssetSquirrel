@@ -9,6 +9,7 @@
 @using AssetsSquirrel.CoreBusiness
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
+@using System.Linq.Expressions
 
 @inject IJSRuntime JSRuntime
 @inject IViewEquipmentUseCase ViewEquipmentUseCase
@@ -104,23 +105,21 @@ else
                 </tr>
             </thead>
             <tbody>
-                @if (equipments is not null && equipments.Count() > 0)
-                {
-                    @foreach(var equipment in equipments)
-                    {
+                <Virtualize @ref="equipmentVirtualize" ItemsProvider="LoadEquipmentAsync" Context="row">
+                    <ItemContent>
                         <tr>
-                            <td> @(equipments.IndexOf(equipment) + 1) </td>
-                            <td> @equipment.SuppilerName </td>
-                            <td> @equipment.ManufacturerName </td>
-                            <td> @equipment.HardwareTypeName </td>
-                            <td> @equipment.ModelName </td>
-                            <td> @equipment.SerialNumber <br /> @equipment.InventoryNumber </td>
-                            <td> @equipment.InvoiceNumber </td>
-                            <td> @equipment.Description </td>
-                            <td> @equipment.DateAdd.ToShortDateString() </td>
-                            <td> @equipment.DateRemoved?.ToShortDateString() </td>
+                            <td> @row.Position </td>
+                            <td> @row.Equipment.SuppilerName </td>
+                            <td> @row.Equipment.ManufacturerName </td>
+                            <td> @row.Equipment.HardwareTypeName </td>
+                            <td> @row.Equipment.ModelName </td>
+                            <td> @row.Equipment.SerialNumber <br /> @row.Equipment.InventoryNumber </td>
+                            <td> @row.Equipment.InvoiceNumber </td>
+                            <td> @row.Equipment.Description </td>
+                            <td> @row.Equipment.DateAdd.ToShortDateString() </td>
+                            <td> @row.Equipment.DateRemoved?.ToShortDateString() </td>
                             <td>
-                                @if(equipment.IsActive)
+                                @if(row.Equipment.IsActive)
                                 {
                                     <i class="bi bi-shield-check form-control as-bg-green"></i>
                                 }
@@ -129,20 +128,25 @@ else
                                     <i class="bi bi-shield-x form-control as-bg-red"></i>
                                 }
                             </td>
-                            <td> @equipment.RegisteredByUserName </td>
+                            <td> @row.Equipment.RegisteredByUserName </td>
                             <td>
                                 <AdminOnly>
-                                    <button class="btn btn-sm btn-outline-warning" title="Edit" @onclick="(() => ShowModalEditEquipment(equipment))">
+                                    <button class="btn btn-sm btn-outline-warning" title="Edit" @onclick="(() => ShowModalEditEquipment(row.Equipment))">
                                         <i class="bi bi-pen"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger" title="Dezaktywuj sprzęt." @onclick="(() => RemoveEquipment(equipment))">
+                                    <button class="btn btn-sm btn-outline-danger" title="Dezaktywuj sprzęt." @onclick="(() => RemoveEquipment(row.Equipment))">
                                         <i class="bi bi-trash3"></i>
                                     </button>
                                 </AdminOnly>
                             </td>
                         </tr>
-                    }
-                }
+                    </ItemContent>
+                    <Placeholder>
+                        <tr>
+                            <td colspan="13" class="text-center text-muted">Ładowanie...</td>
+                        </tr>
+                    </Placeholder>
+                </Virtualize>
             </tbody>
         </table>
     </div>
@@ -173,21 +177,48 @@ Title="Add equipment">
     // string searchText = string.Empty;
     // bool? searchActive = null;
 
-    List<EquipmentDto> equipments { get; set;}
-    EquipmentDto equipment;
+    EquipmentDto? equipment;
     bool isLoading = true;
 
     List<SuppilerDto>? suppilers;
     List<ManufacturerDto>? manufacturers;
     List<HardwareTypeDto>? hardwareTypes;
 
+    Virtualize<EquipmentRow>? equipmentVirtualize;
+    int totalCount;
+
+    record EquipmentRow(int Position, EquipmentDto Equipment);
+
     protected override async Task OnInitializedAsync()
     {
-        equipments = await ViewEquipmentUseCase.GetEquipmentAsync(a => a.IsActive == true);
         suppilers = await ViewSuppilersUseCase.GetSuppilersAsync(s => s.IsActive);
         manufacturers = await ViewManufacturerUseCase.GetManufacturersAsync(m => m.IsActive);
         hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(h => h.IsActive);
+        totalCount = await ViewEquipmentUseCase.GetEquipmentCountAsync(BuildPredicate());
         isLoading = false;
+    }
+
+    private Expression<Func<AssetSquirrel.CoreBusiness.Equipment, bool>> BuildPredicate()
+    {
+        return a => (a.ModelName.Contains(equipmentRequest.SearchText ?? "") ||
+            a.SerialNumber.Contains(equipmentRequest.SearchText ?? "") ||
+            a.InventoryNumber.Contains(equipmentRequest.SearchText ?? "")) &&
+            a.IsActive == equipmentRequest.IsActive &&
+            (equipmentRequest.SuppilerId == null || a.SuppilerId == equipmentRequest.SuppilerId) &&
+            (equipmentRequest.ManufacturerId == null || a.ManufacturerId == equipmentRequest.ManufacturerId) &&
+            (equipmentRequest.HardwareTypeId == null || a.HardwareTypeId == equipmentRequest.HardwareTypeId);
+    }
+
+    private async ValueTask<ItemsProviderResult<EquipmentRow>> LoadEquipmentAsync(ItemsProviderRequest request)
+    {
+        var count = Math.Max(request.Count, 200);
+        var items = await ViewEquipmentUseCase.GetEquipmentPageAsync(BuildPredicate(), request.StartIndex, count, cancellationToken: request.CancellationToken);
+
+        var rows = items
+            .Select((dto, i) => new EquipmentRow(request.StartIndex + i + 1, dto))
+            .ToList();
+
+        return new ItemsProviderResult<EquipmentRow>(rows, totalCount);
     }
 
     public void OnCancelHideModalEditEquipment()
@@ -245,15 +276,12 @@ Title="Add equipment">
 
     public async Task SearchEquipments()
     {
-        equipments = await ViewEquipmentUseCase.GetEquipmentAsync(
-            a => (a.ModelName.Contains(equipmentRequest.SearchText ?? "") ||
-            a.SerialNumber.Contains(equipmentRequest.SearchText ?? "") ||
-            a.InventoryNumber.Contains(equipmentRequest.SearchText ?? "")) &&
-            a.IsActive == equipmentRequest.IsActive &&
-            (equipmentRequest.SuppilerId == null || a.SuppilerId == equipmentRequest.SuppilerId) &&
-            (equipmentRequest.ManufacturerId == null || a.ManufacturerId == equipmentRequest.ManufacturerId) &&
-            (equipmentRequest.HardwareTypeId == null || a.HardwareTypeId == equipmentRequest.HardwareTypeId)
-        );
+        totalCount = await ViewEquipmentUseCase.GetEquipmentCountAsync(BuildPredicate());
+
+        if (equipmentVirtualize is not null)
+        {
+            await equipmentVirtualize.RefreshDataAsync();
+        }
 
         StateHasChanged();
     }

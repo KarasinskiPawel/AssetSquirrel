@@ -105,23 +105,21 @@ else
                 </tr>
             </thead>
             <tbody>
-                @if (items is not null && items.Count > 0)
-                {
-                    @foreach (EquipmentAssignmentOverviewDto item in items)
-                    {
+                <Virtualize @ref="assignmentVirtualize" ItemsProvider="LoadAssignmentsAsync" Context="row">
+                    <ItemContent>
                         <tr>
-                            <td> @(items.IndexOf(item) + 1) </td>
-                            <td> @item.AssignedLocationName </td>
-                            <td> @item.AssignedEmployeeName </td>
-                            <td> @item.DateOfHandover?.ToShortDateString() </td>
-                            <td> @item.SuppilerName </td>
-                            <td> @item.ManufacturerName </td>
-                            <td> @item.HardwareTypeName </td>
-                            <td> @item.ModelName </td>
-                            <td> @item.SerialNumber <br /> @item.InventoryNumber </td>
-                            <td> @item.InvoiceNumber </td>
+                            <td> @row.Position </td>
+                            <td> @row.Item.AssignedLocationName </td>
+                            <td> @row.Item.AssignedEmployeeName </td>
+                            <td> @row.Item.DateOfHandover?.ToShortDateString() </td>
+                            <td> @row.Item.SuppilerName </td>
+                            <td> @row.Item.ManufacturerName </td>
+                            <td> @row.Item.HardwareTypeName </td>
+                            <td> @row.Item.ModelName </td>
+                            <td> @row.Item.SerialNumber <br /> @row.Item.InventoryNumber </td>
+                            <td> @row.Item.InvoiceNumber </td>
                             <td>
-                                @if (item.IsAssigned)
+                                @if (row.Item.IsAssigned)
                                 {
                                     <span class="badge as-bg-green">Assigned</span>
                                 }
@@ -131,9 +129,14 @@ else
                                 }
                             </td>
                         </tr>
-                    }
-                }
-                else
+                    </ItemContent>
+                    <Placeholder>
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">Ładowanie...</td>
+                        </tr>
+                    </Placeholder>
+                </Virtualize>
+                @if (totalCount == 0)
                 {
                     <tr>
                         <td colspan="10" class="text-muted text-center">No equipment matches the current filters.</td>
@@ -148,7 +151,6 @@ else
 @code {
     EquipmentAssignmentFilter filter = new EquipmentAssignmentFilter();
 
-    List<EquipmentAssignmentOverviewDto>? items;
     List<LocationDto>? locations;
     List<EmployeeDto>? employees;
     List<ManufacturerDto>? manufacturers;
@@ -157,6 +159,11 @@ else
     string? sortColumn;
     bool sortDescending;
     bool isLoading = true;
+    int totalCount;
+
+    Virtualize<AssignmentRow>? assignmentVirtualize;
+
+    record AssignmentRow(int Position, EquipmentAssignmentOverviewDto Item);
 
     protected override async Task OnInitializedAsync()
     {
@@ -164,8 +171,8 @@ else
         employees = await ViewEmployeesUseCase.GetEmployeesAsync(e => e.IsActive);
         manufacturers = await ViewManufacturerUseCase.GetManufacturersAsync(m => m.IsActive);
         hardwareTypes = await ViewHardwareTypeUseCase.GetHardwareTypesAsync(h => h.IsActive);
+        totalCount = await ViewEquipmentAssignmentUseCase.GetEquipmentAssignmentOverviewCountAsync(filter);
 
-        await Search();
         isLoading = false;
     }
 
@@ -177,13 +184,29 @@ else
 
     private async Task Search()
     {
-        items = await ViewEquipmentAssignmentUseCase.GetEquipmentAssignmentOverviewAsync(filter);
-        ApplySort();
+        totalCount = await ViewEquipmentAssignmentUseCase.GetEquipmentAssignmentOverviewCountAsync(filter);
+
+        if (assignmentVirtualize is not null)
+        {
+            await assignmentVirtualize.RefreshDataAsync();
+        }
 
         StateHasChanged();
     }
 
-    private void SortBy(string column)
+    private async ValueTask<ItemsProviderResult<AssignmentRow>> LoadAssignmentsAsync(ItemsProviderRequest request)
+    {
+        var count = Math.Max(request.Count, 200);
+        var items = await ViewEquipmentAssignmentUseCase.GetEquipmentAssignmentOverviewPageAsync(filter, request.StartIndex, count, sortColumn, sortDescending, request.CancellationToken);
+
+        var rows = items
+            .Select((dto, i) => new AssignmentRow(request.StartIndex + i + 1, dto))
+            .ToList();
+
+        return new ItemsProviderResult<AssignmentRow>(rows, totalCount);
+    }
+
+    private async Task SortBy(string column)
     {
         if (sortColumn == column)
         {
@@ -195,26 +218,7 @@ else
             sortDescending = false;
         }
 
-        ApplySort();
-    }
-
-    private void ApplySort()
-    {
-        if (items is null || sortColumn is null)
-        {
-            return;
-        }
-
-        Func<EquipmentAssignmentOverviewDto, string?> keySelector = sortColumn switch
-        {
-            nameof(EquipmentAssignmentOverviewDto.AssignedLocationName) => a => a.AssignedLocationName,
-            nameof(EquipmentAssignmentOverviewDto.AssignedEmployeeName) => a => a.AssignedEmployeeName,
-            _ => a => null
-        };
-
-        items = sortDescending
-            ? items.OrderByDescending(keySelector, StringComparer.OrdinalIgnoreCase).ToList()
-            : items.OrderBy(keySelector, StringComparer.OrdinalIgnoreCase).ToList();
+        await Search();
     }
 
     private string SortIcon(string column)
