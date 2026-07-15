@@ -19,21 +19,9 @@
 
 @rendermode InteractiveServer
 
-<div class="row col-12">
-    <div class="d-flex align-items-center flex-wrap gap-2">
-        <AdminOnly>
-            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEquipment())">
-                <i class="bi bi-motherboard"></i>
-                Add equipment
-            </button>
-        </AdminOnly>
-
-        <InputSelect class="form-control-sm w-10" @bind-Value="equipmentRequest.IsActive" @bind-Value:after="SearchEquipments">
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-        </InputSelect>
-
-        <InputSelect class="form-control-sm" @bind-Value="equipmentRequest.SuppilerId" @bind-Value:after="SearchEquipments">
+<div class="col-12">
+    <div class="row offset-2 col-8 d-flex align-items-center flex-wrap gap-2">
+        <InputSelect class="form-control-sm w-20" @bind-Value="equipmentRequest.SuppilerId" @bind-Value:after="SearchEquipments">
             <option value=""> ...suppiler... </option>
             @if (suppilers is not null)
             {
@@ -44,7 +32,7 @@
             }
         </InputSelect>
 
-        <InputSelect class="form-control-sm" @bind-Value="equipmentRequest.ManufacturerId" @bind-Value:after="SearchEquipments">
+        <InputSelect class="form-control-sm w-20" @bind-Value="equipmentRequest.ManufacturerId" @bind-Value:after="SearchEquipments">
             <option value=""> ...manufacturer... </option>
             @if (manufacturers is not null)
             {
@@ -55,7 +43,7 @@
             }
         </InputSelect>
 
-        <InputSelect class="form-control-sm" @bind-Value="equipmentRequest.HardwareTypeId" @bind-Value:after="SearchEquipments">
+        <InputSelect class="form-control-sm w-20" @bind-Value="equipmentRequest.HardwareTypeId" @bind-Value:after="SearchEquipments">
             <option value=""> ...type... </option>
             @if (hardwareTypes is not null)
             {
@@ -65,9 +53,21 @@
                 }
             }
         </InputSelect>
+
+            <InputSelect class="form-control-sm w-10" @bind-Value="equipmentRequest.IsActive" @bind-Value:after="SearchEquipments">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </InputSelect>
+
+        <AdminOnly>
+            <button class="btn btn-sm btn-outline-dark" style="width: 10rem; margin: 0.5rem;" @onclick="(() => ShowModalAddEquipment())">
+                <i class="bi bi-motherboard"></i>
+                Add equipment
+            </button>
+        </AdminOnly>
     </div>
 
-    <div class="d-flex align-items-center gap-2 mt-2">
+    <div class="row offset-3 col-5 d-flex align-items-center gap-2 mt-2">
         <TextSearchBar placeholderText="serial number, model, inventory number..."
                        TextSearchBarCallback="SearchCallback"
                        FullWidth="true">
