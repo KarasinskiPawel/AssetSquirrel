@@ -22,6 +22,11 @@
         <TextSearchBar placeholderText="...invoice number, description..."
                        TextSearchBarCallback="SearchInvoicesCallback">
         </TextSearchBar>
+
+        <button class="btn btn-sm btn-outline-info" @onclick="ExportToExcel" title="Export to Excel">
+            <i class="bi bi-file-earmark-excel"></i>
+            Export
+        </button>
     </div>
 </div>
 
@@ -252,5 +257,16 @@ Title="Add invoice">
             a => a.InvoiceNumber.Contains(searchText) ||
             a.Description.Contains(searchText)
         );
+    }
+
+    private async Task ExportToExcel()
+    {
+        await JSRuntime.InvokeVoidAsync("Information", "Przygotowywanie pliku...");
+
+        var url = string.IsNullOrEmpty(searchText)
+            ? "/api/invoices/export"
+            : $"/api/invoices/export?searchText={Uri.EscapeDataString(searchText)}";
+
+        await JSRuntime.InvokeVoidAsync("openInNewTab", url);
     }
 }

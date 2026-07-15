@@ -13,6 +13,7 @@
 @inject IViewEmployeesUseCase ViewEmployeesUseCase
 @inject IViewManufacturerUseCase ViewManufacturerUseCase
 @inject IViewHardwareTypeUseCase ViewHardwareTypeUseCase
+@inject IJSRuntime JSRuntime
 
 @rendermode InteractiveServer
 
@@ -68,11 +69,19 @@
         </InputSelect>
     </div>
 
-    <div class="row d-flex align-items-center gap-2 mt-2 offset-3 col-6">
-        <TextSearchBar placeholderText="serial number, inventory number, invoice number..."
-                       TextSearchBarCallback="SearchCallback"
-                       FullWidth="true">
-        </TextSearchBar>
+    <div class="row d-flex align-items-center flex-nowrap gap-2 mt-2 offset-3 col-6">
+        <div class="offset-2 col-5">
+            <TextSearchBar placeholderText="serial number, inventory number, invoice number..."
+                        TextSearchBarCallback="SearchCallback"
+                        FullWidth="true">
+            </TextSearchBar>
+        </div>
+        <div class=col-1>
+            <button class="btn btn-sm btn-outline-info text-nowrap" @onclick="ExportToExcel" title="Export to Excel">
+                <i class="bi bi-file-earmark-excel"></i>
+                Export
+            </button>
+        </div>
     </div>
 </div>
 
@@ -192,6 +201,20 @@ else
         }
 
         StateHasChanged();
+    }
+
+    private async Task ExportToExcel()
+    {
+        await JSRuntime.InvokeVoidAsync("Information", "Przygotowywanie pliku...");
+
+        var query = new List<string> { $"isActive={filter.IsActive}" };
+        if (filter.LocationId is not null) query.Add($"locationId={filter.LocationId}");
+        if (filter.EmployeeId is not null) query.Add($"employeeId={filter.EmployeeId}");
+        if (filter.ManufacturerId is not null) query.Add($"manufacturerId={filter.ManufacturerId}");
+        if (filter.HardwareTypeId is not null) query.Add($"hardwareTypeId={filter.HardwareTypeId}");
+        if (!string.IsNullOrEmpty(filter.SearchText)) query.Add($"searchText={Uri.EscapeDataString(filter.SearchText)}");
+
+        await JSRuntime.InvokeVoidAsync("openInNewTab", $"/api/equipmentassignment/export?{string.Join("&", query)}");
     }
 
     private async ValueTask<ItemsProviderResult<AssignmentRow>> LoadAssignmentsAsync(ItemsProviderRequest request)
