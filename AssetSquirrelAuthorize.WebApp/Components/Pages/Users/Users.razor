@@ -3,10 +3,13 @@
 
 @using System.Security.Claims
 @using AssetsSquirrel.CoreBusiness
+@using AssetsSquirrel.Plugins.EFCoreSqlServer
 @using AssetSquirrelAuthorize.WebApp.Components.ViewModels
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 
 @inject UserManager<ApplicationUser> UserManager
+@inject IDbContextFactory<AssetsSquirrelContext> DbContextFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
 
@@ -117,27 +120,34 @@ Title="Edit user">
         isLoading = false;
     }
 
+    // Reads via its own IDbContextFactory-created DbContext instead of the
+    // shared, per-circuit UserManager -- UserMenu.razor (rendered in the layout
+    // on every page) also calls UserManager concurrently on page load, and this
+    // page's per-user loop is long enough to reliably collide with it on
+    // UserManager's shared DbContext ("A second operation was started on this
+    // context instance before a previous operation completed").
     private async Task LoadUsers()
     {
-        var loaded = new List<UserListItem>();
+        await using var dbContext = await DbContextFactory.CreateDbContextAsync();
 
-        foreach (var user in UserManager.Users.ToList())
-        {
-            var roles = await UserManager.GetRolesAsync(user);
+        var now = DateTimeOffset.UtcNow;
 
-            loaded.Add(new UserListItem
+        users = await (
+            from user in dbContext.Users
+            select new UserListItem
             {
                 Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Role = roles.FirstOrDefault() ?? "",
-                IsLockedOut = await UserManager.IsLockedOutAsync(user)
-            });
-        }
-
-        users = loaded;
+                Role = (from userRole in dbContext.UserRoles
+                        join role in dbContext.Roles on userRole.RoleId equals role.Id
+                        where userRole.UserId == user.Id
+                        select role.Name).FirstOrDefault() ?? "",
+                IsLockedOut = user.LockoutEnd.HasValue && user.LockoutEnd.Value >= now
+            }
+        ).ToListAsync();
     }
 
     private void ShowModalEditUser(UserListItem user)
