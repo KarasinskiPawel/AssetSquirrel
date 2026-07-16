@@ -97,6 +97,6 @@
 
 .icon-menu {
     font-size: 24px;
-    height: fit-content;
-    margin-top: 0.4rem;
+    line-height: 1;
+    margin-right: 1ch;
 }
