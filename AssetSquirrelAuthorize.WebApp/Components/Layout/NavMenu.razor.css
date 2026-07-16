@@ -46,10 +46,11 @@
         border: none;
         border-left: 2px solid transparent;
         border-radius: var(--as-radius);
-        height: 3rem;
+        min-height: 3rem;
         display: flex;
         align-items: center;
-        line-height: 3rem;
+        line-height: 1.2;
+        padding: 0.4rem 0;
         width: 100%;
         font-family: var(--as-font-body);
         font-weight: 600;

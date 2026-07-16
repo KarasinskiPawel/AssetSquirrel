@@ -28,8 +28,8 @@
     --as-glow-violet: rgba(124, 58, 237, 0.25);
 
     /* Typography */
-    --as-font-display: 'Orbitron', 'Segoe UI', sans-serif;
-    --as-font-body: 'Rajdhani', 'Segoe UI', Arial, sans-serif;
+    --as-font-display: 'IBM Plex Serif', 'Segoe UI', serif;
+    --as-font-body: 'IBM Plex Serif', 'Segoe UI', serif;
     --as-letter-spacing-wide: 0.05em;
 
     /* Shape */
