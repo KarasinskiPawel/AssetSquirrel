@@ -1,3 +1,4 @@
+
 # Import Danych Sprzętu z Hardware.xlsx
 
 ## Cel

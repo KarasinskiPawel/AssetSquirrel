@@ -15,9 +15,9 @@ Dodać widoczny wskaźnik ładowania (spinner) na każdym widoku listy danych w 
 
 ## Zakres (co wchodzi)
 
-- Nowy, wspólny reużywalny komponent spinnera (np. `Components/Template/LoadingSpinner.razor`) — jeden standard wizualny, użyty na wszystkich 10 wymienionych widokach listy, widoczny od momentu wejścia na stronę do momentu, aż wszystkie zapytania startowe danej strony są zakończone.
-- Zamiana dzisiejszego ręcznie skopiowanego markupu `isLoading`/`spinner-border` w `EquipmentAddDialogBox.razor` i `EquipmentEditDialogBox.razor` na ten sam nowy wspólny komponent (ujednolicenie — jeden standard wszędzie, zgodnie z Odpowiedzią #1).
-- Większy, bardziej dopasowany wizualnie spinner z podpisem tekstowym, z osobnym stylem dla motywu light i dla dark (nie jeden uniwersalny kolor).
+- Dodanie wskaźnika ładowania (wzorowanego na istniejącym `spinner-border` z dialogów Equipment) na wszystkich 10 wymienionych wyżej widokach listy, widocznego od momentu wejścia na stronę do momentu, aż lista danych jest gotowa do wyrenderowania.
+- Rozważenie wydzielenia wspólnego, reużywalnego komponentu spinnera (np. pod `Components/Template/`), żeby nie kopiować tego samego markupu po raz jedenasty — zamiast tego użyć go też w dwóch istniejących dialogach Equipment (ujednolicenie), o ile to nie zmienia ich dzisiejszego wyglądu/zachowania.
+- Dopracowanie stylu spinnera pod oba motywy (light/dark), zgodnie z istniejącymi tokenami (`--as-accent-cyan` lub odpowiedni token), żeby nie wyglądał "przypadkowo" jak goły Bootstrap.
 
 ## Poza zakresem (co nie wchodzi)
 
@@ -34,16 +34,16 @@ Dodać widoczny wskaźnik ładowania (spinner) na każdym widoku listy danych w 
 
 1. Każdy z 10 wymienionych widoków listy musi pokazywać wskaźnik ładowania od momentu wejścia na stronę do momentu, aż odpowiadające mu dane są wczytane i gotowe do wyrenderowania.
 2. Wskaźnik ładowania musi zniknąć i ustąpić miejsca normalnej tabeli/listy natychmiast po zakończeniu pobierania danych.
-3. Wskaźnik ładowania musi zawsze odzwierciedlać rzeczywisty stan pobierania danych w danym cyklu życia komponentu — bez dodatkowego mechanizmu zapobiegającego ponownemu pojawieniu się przy przejściu z prerenderowania statycznego do trybu `InteractiveServer` (świadomie zaakceptowane, patrz Odpowiedzi #5); to nie jest traktowane jako błąd, tylko jako naturalny efekt tego, że `OnInitializedAsync` faktycznie odpala się drugi raz.
+3. Wskaźnik ładowania nie może migać (pojawiać się, znikać i pojawiać się ponownie) przy przejściu z prerenderowania statycznego do trybu `InteractiveServer` na tej samej stronie.
 4. Wskaźnik ładowania musi być czytelny w obu motywach (light/dark), z kolorem dopasowanym do pozostałych elementów UI (nie goły domyślny Bootstrap).
 5. Istniejące zachowanie stron dla przypadku "brak danych" (np. "No invoices found.", "No equipment matches the current filters.") musi pojawiać się tylko PO zakończeniu ładowania, gdy lista jest faktycznie pusta — nie w trakcie samego ładowania.
 
 ## Kryteria sukcesu
 
-- Wejście na każdy z 10 widoków listy pokazuje wspólny komponent spinnera, który ustępuje miejsca danym, gdy wszystkie zapytania startowe danej strony się zakończą.
+- Wejście na każdy z 10 widoków listy pokazuje spinner, który ustępuje miejsca danym po ich wczytaniu, bez migania.
 - Widoki z komunikatem "brak danych" nie pokazują go już migawkowo podczas ładowania — tylko spinner, a potem albo dane, albo faktyczny komunikat o braku danych.
-- Wygląd spinnera jest identyczny (ten sam komponent) na wszystkich widokach i wyraźnie różny między motywem light i dark, z czytelnym podpisem tekstowym.
-- `EquipmentAddDialogBox.razor`/`EquipmentEditDialogBox.razor` używają tego samego nowego komponentu zamiast własnego, ręcznie skopiowanego markupu, bez regresji w ich dzisiejszym zachowaniu.
+- Wygląd spinnera jest konsekwentny między wszystkimi widokami i dopasowany do obu motywów.
+- Brak regresji w istniejącym zachowaniu dwóch dialogów Equipment, które już mają swój spinner (jeśli zostaną przepisane na wspólny komponent).
 
 ## Pytania otwarte
 
@@ -55,8 +55,8 @@ Dodać widoczny wskaźnik ładowania (spinner) na każdym widoku listy danych w 
 
 ## Odpowiedzi
 
-1. **Wspólny reużywalny komponent — jeden standard wszędzie.** Jeden komponent (np. `Components/Template/LoadingSpinner.razor`) użyty na wszystkich 10 widokach listy, i docelowo także jako zamiennik dzisiejszego ręcznie skopiowanego markupu w `EquipmentAddDialogBox.razor`/`EquipmentEditDialogBox.razor` — nie osobne, powtórzone bloki `@if (isLoading) { ... }` w każdym pliku.
-2. **Duży, dopasowany osobno dla jasnego i ciemnego motywu, z tekstem.** Nie mały `spinner-border` wzorowany 1:1 na dialogach — większy, bardziej widoczny wskaźnik, z podpisem tekstowym (np. "Ładowanie..."), i z **osobnym** stylem/kolorystyką dla motywu light i dla dark (nie jeden uniwersalny kolor działający "jakoś" w obu).
-3. **Do zakończenia wszystkich zapytań startowych.** Na stronach z wieloma niezależnymi zapytaniami przy starcie (np. `EquipmentAssignment.razor` — 4 listy słownikowe + główna lista) spinner zostaje widoczny, aż WSZYSTKIE się zakończą, nie tylko główna lista danych.
-4. **Tak.** `Users.razor` wchodzi do zakresu jako pełnoprawny widok listy, tak jak pozostałe 9.
-5. **Bez dodatkowych mechanizmów.** Nie wprowadzamy nic specjalnego, żeby zapobiec drugiemu odpaleniu `OnInitializedAsync` przy przejściu z prerenderowania do `InteractiveServer` (np. żadnego flagowania "już pobrane" między trybami) — spinner po prostu odzwierciedla aktualny stan pobierania w danym cyklu życia komponentu, nawet jeśli to znaczy, że przy tym przejściu na chwilę pojawi się ponownie. To zmienia Wymaganie funkcjonalne #3 (patrz niżej) — nie wymuszamy braku tego zjawiska, tylko godzimy się z nim jako świadomym, zaakceptowanym kompromisem.
+1. Wspólny reużywalny komponent - jeden standard wszędzie.
+2. Duży, bardziej dopasowany oddzielnie dla jasnego i ciemnego motywu z teksetm
+3. Do zakończenia wszystkich zapytań.
+4. Tak
+5. Bez dodtakowych mechanizmów.
