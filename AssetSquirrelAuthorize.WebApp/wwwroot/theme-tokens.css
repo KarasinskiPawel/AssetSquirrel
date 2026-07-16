@@ -28,8 +28,8 @@
     --as-glow-violet: rgba(124, 58, 237, 0.25);
 
     /* Typography */
-    --as-font-display: 'IBM Plex Serif', 'Segoe UI', serif;
-    --as-font-body: 'IBM Plex Serif', 'Segoe UI', serif;
+    --as-font-display: 'Kameron', 'Segoe UI', serif;
+    --as-font-body: 'Kameron', 'Segoe UI', serif;
     --as-letter-spacing-wide: 0.05em;
 
     /* Shape */
